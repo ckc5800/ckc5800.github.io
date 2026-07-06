@@ -1,0 +1,22 @@
+title: 이윤선 | AI Engineer
+description: 6년 경력 AI 엔지니어 포트폴리오
+author: 이윤선
+email: yoon7829@gmail.com
+github: ckc5800
+github_url: https://github.com/ckc5800
+
+# GitHub Pages
+remote_theme:
+url: https://ckc5800.github.io
+baseurl:
+
+# Build settings
+markdown: kramdown
+plugins:
+  - jekyll-feed
+
+# Exclude files
+exclude:
+  - .gitignore
+  - Gemfile
+  - Gemfile.lock
