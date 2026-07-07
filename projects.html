@@ -101,6 +101,42 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
+    <h3>🎙️ Speaker Diarization with Pyannote (AICESS)</h3>
+    <p><strong>Period:</strong> 2025.04 ~ 2025.07</p>
+    <p><strong>Role:</strong> 화자 분할 모델 파인튜닝 및 STT 통합</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>AIG 상담센터에서 상담 품질을 분석하려면 "누가" "언제" 말했는지 파악해야 합니다. 기존 STT는 음성 인식만 제공했기 때문에, 상담사와 고객의 발화를 구분할 수 없었습니다. Pyannote를 이용한 화자 분할 모델을 도입하고 한국어 데이터로 파인튜닝하여 이 문제를 해결했습니다.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <p><strong>모델 파인튜닝:</strong> Pyannote 사전 학습 모델을 한국어 상담 데이터로 파인튜닝했습니다. 음성 길이, 발화 유형, 배경 잡음 등 다양한 시나리오에서 화자를 정확히 구분하도록 최적화했습니다.</p>
+    <p><strong>시스템 통합:</strong> 화자 분할(Speaker Diarization) → STT → 분석 파이프라인을 구축했습니다. 각 화자별로 발화 구간을 명확히 분리하여 상담 분석, 품질 관리, 감정 분석 등 후속 작업이 가능하도록 했습니다.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">성과</h4>
+    <ul style="list-style-position: inside; line-height: 2;">
+        <li>✓ 화자 분할 정확도: 85% 이상 (한국어 상담 데이터)</li>
+        <li>✓ 상담사/고객 발화 구분 자동화 (수동 작업 제거)</li>
+        <li>✓ 음성 시스템과의 통합 파이프라인 구축</li>
+        <li>✓ AIG 상담센터 품질 분석 시스템 기초 마련</li>
+    </ul>
+
+    <h4 style="margin-top: 20px; color: #555;">시스템 대시보드</h4>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
+        <img src="/assets/images/image 9.png" alt="Speaker Diarization System" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
+    </div>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">Pyannote</span>
+        <span class="tech-tag">Speaker Diarization</span>
+        <span class="tech-tag">Fine-tuning</span>
+        <span class="tech-tag">PyTorch</span>
+        <span class="tech-tag">Audio Processing</span>
+    </div>
+</div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+<div style="margin-bottom: 50px;">
     <h3>⚙️ Kubernetes-based AI Infrastructure (Infiniic)</h3>
     <p><strong>Period:</strong> 2022.08 ~ 2025.04</p>
     <p><strong>Role:</strong> 회사 최초 K8s 기반 AI 플랫폼 설계 및 구축</p>
@@ -135,38 +171,6 @@ title: Projects
         <span class="tech-tag">ArgoCD</span>
         <span class="tech-tag">Prometheus</span>
         <span class="tech-tag">Grafana</span>
-    </div>
-</div>
-
-<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
-
-<div style="margin-bottom: 50px;">
-    <h3>🔬 3D Semantic Segmentation Research (Infiniic)</h3>
-    <p><strong>Period:</strong> 2022.08 ~ 2025.04</p>
-    <p><strong>Role:</strong> 센서 퓨전 기반 자율주행 연구 및 모델 개발</p>
-
-    <h4 style="margin-top: 20px; color: #555;">배경</h4>
-    <p>자율주행 자동차의 정확한 환경 인식은 안전의 핵심입니다. 기존의 2D 세그멘테이션은 도로, 장애물, 보행자 등을 2차원 평면에서만 인식하기 때문에, 3차원 공간에서의 정확한 거리와 높이 정보를 놓칠 수 있습니다. LiDAR(3D 포인트 클라우드)와 카메라(2D 이미지)를 결합한 센서 퓨전 기반 3D 시맨틱 세그멘테이션 모델이 필요했습니다.</p>
-
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>모델 아키텍처:</strong> Trans-Unet(Transformer + U-Net 하이브리드) 아키텍처를 설계하여 LiDAR 포인트 클라우드와 카메라 이미지를 효과적으로 퓨전했습니다. Transformer의 장거리 의존성 학습과 U-Net의 다중 스케일 피처 추출을 결합하여 정확도를 극대화했습니다.</p>
-    <p><strong>연구 기여:</strong> 학술 논문 2편을 제1저자로 게재하여 센서 퓨전 기반 3D 세그멘테이션의 방법론을 제시했습니다. 추가로 생성 모델(Latent Diffusion)을 활용한 학습 데이터 부족 문제 해결 연구도 수행하여 국방기술학회에서 우수 논문상을 수상했습니다.</p>
-
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ 논문 2편 게재 (제1저자, 한국자동차학회 2022.11, 2023.04)</li>
-        <li>✓ 특허 2건 등록 (제1발명자, 등록번호: 10-2538225, 10-2538231)</li>
-        <li>✓ 우수 논문상 수상 (국방기술학회 2023.11)</li>
-        <li>✓ 자율주행 도메인 3D 환경 인식 정확도 향상 입증</li>
-    </ul>
-
-    <div class="tech-tags" style="margin-top: 20px;">
-        <span class="tech-tag">Trans-Unet</span>
-        <span class="tech-tag">Sensor Fusion</span>
-        <span class="tech-tag">PyTorch</span>
-        <span class="tech-tag">LiDAR</span>
-        <span class="tech-tag">Computer Vision</span>
-        <span class="tech-tag">Autonomous Driving</span>
     </div>
 </div>
 
@@ -214,42 +218,6 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>🎙️ Speaker Diarization with Pyannote (AICESS)</h3>
-    <p><strong>Period:</strong> 2025.04 ~ 2025.07</p>
-    <p><strong>Role:</strong> 화자 분할 모델 파인튜닝 및 STT 통합</p>
-
-    <h4 style="margin-top: 20px; color: #555;">배경</h4>
-    <p>AIG 상담센터에서 상담 품질을 분석하려면 "누가" "언제" 말했는지 파악해야 합니다. 기존 STT는 음성 인식만 제공했기 때문에, 상담사와 고객의 발화를 구분할 수 없었습니다. Pyannote를 이용한 화자 분할 모델을 도입하고 한국어 데이터로 파인튜닝하여 이 문제를 해결했습니다.</p>
-
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>모델 파인튜닝:</strong> Pyannote 사전 학습 모델을 한국어 상담 데이터로 파인튜닝했습니다. 음성 길이, 발화 유형, 배경 잡음 등 다양한 시나리오에서 화자를 정확히 구분하도록 최적화했습니다.</p>
-    <p><strong>시스템 통합:</strong> 화자 분할(Speaker Diarization) → STT → 분석 파이프라인을 구축했습니다. 각 화자별로 발화 구간을 명확히 분리하여 상담 분석, 품질 관리, 감정 분석 등 후속 작업이 가능하도록 했습니다.</p>
-
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ 화자 분할 정확도: 85% 이상 (한국어 상담 데이터)</li>
-        <li>✓ 상담사/고객 발화 구분 자동화 (수동 작업 제거)</li>
-        <li>✓ 음성 시스템과의 통합 파이프라인 구축</li>
-        <li>✓ AIG 상담센터 품질 분석 시스템 기초 마련</li>
-    </ul>
-
-    <h4 style="margin-top: 20px; color: #555;">시스템 대시보드</h4>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
-        <img src="/assets/images/image 9.png" alt="Speaker Diarization System" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
-    </div>
-
-    <div class="tech-tags" style="margin-top: 20px;">
-        <span class="tech-tag">Pyannote</span>
-        <span class="tech-tag">Speaker Diarization</span>
-        <span class="tech-tag">Fine-tuning</span>
-        <span class="tech-tag">PyTorch</span>
-        <span class="tech-tag">Audio Processing</span>
-    </div>
-</div>
-
-<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
-
-<div style="margin-bottom: 50px;">
     <h3>🚗 Tank Object Detection Model (Infiniic)</h3>
     <p><strong>Period:</strong> 2023.01 ~ 2023.08</p>
     <p><strong>Role:</strong> 전차 탐지 모델 개발 및 프로덕션 최적화</p>
@@ -280,6 +248,38 @@ title: Projects
         <span class="tech-tag">PyTorch</span>
         <span class="tech-tag">TensorRT</span>
         <span class="tech-tag">Defense Domain</span>
+    </div>
+</div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+<div style="margin-bottom: 50px;">
+    <h3>🔬 3D Semantic Segmentation Research (Infiniic)</h3>
+    <p><strong>Period:</strong> 2022.08 ~ 2025.04</p>
+    <p><strong>Role:</strong> 센서 퓨전 기반 자율주행 연구 및 모델 개발</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>자율주행 자동차의 정확한 환경 인식은 안전의 핵심입니다. 기존의 2D 세그멘테이션은 도로, 장애물, 보행자 등을 2차원 평면에서만 인식하기 때문에, 3차원 공간에서의 정확한 거리와 높이 정보를 놓칠 수 있습니다. LiDAR(3D 포인트 클라우드)와 카메라(2D 이미지)를 결합한 센서 퓨전 기반 3D 시맨틱 세그멘테이션 모델이 필요했습니다.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <p><strong>모델 아키텍처:</strong> Trans-Unet(Transformer + U-Net 하이브리드) 아키텍처를 설계하여 LiDAR 포인트 클라우드와 카메라 이미지를 효과적으로 퓨전했습니다. Transformer의 장거리 의존성 학습과 U-Net의 다중 스케일 피처 추출을 결합하여 정확도를 극대화했습니다.</p>
+    <p><strong>연구 기여:</strong> 학술 논문 2편을 제1저자로 게재하여 센서 퓨전 기반 3D 세그멘테이션의 방법론을 제시했습니다. 추가로 생성 모델(Latent Diffusion)을 활용한 학습 데이터 부족 문제 해결 연구도 수행하여 국방기술학회에서 우수 논문상을 수상했습니다.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">성과</h4>
+    <ul style="list-style-position: inside; line-height: 2;">
+        <li>✓ 논문 2편 게재 (제1저자, 한국자동차학회 2022.11, 2023.04)</li>
+        <li>✓ 특허 2건 등록 (제1발명자, 등록번호: 10-2538225, 10-2538231)</li>
+        <li>✓ 우수 논문상 수상 (국방기술학회 2023.11)</li>
+        <li>✓ 자율주행 도메인 3D 환경 인식 정확도 향상 입증</li>
+    </ul>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">Trans-Unet</span>
+        <span class="tech-tag">Sensor Fusion</span>
+        <span class="tech-tag">PyTorch</span>
+        <span class="tech-tag">LiDAR</span>
+        <span class="tech-tag">Computer Vision</span>
+        <span class="tech-tag">Autonomous Driving</span>
     </div>
 </div>
 
