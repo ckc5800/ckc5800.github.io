@@ -11,7 +11,7 @@ title: Projects
     <p><strong>Role:</strong> PM 및 풀스택 개발</p>
 
     <h4 style="margin-top: 20px; color: #555;">배경</h4>
-    <p>음성 합성 시스템의 응답 시간 2.3초 개선 필요 및 동시 처리 채널 확대(12ch → 24ch).</p>
+    <p>고객 상담 센터에서 실시간 음성 합성이 필요했고, 기존 시스템의 응답 시간(2.3초) 및 동시 처리 채널(12개) 제약 극복 필요. 음성 품질도 중요.</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>시스템 아키텍처:</strong> FastAPI WebSocket/REST 게이트웨이 + vLLM-Omni(Qwen3-TTS) 추론 엔진 + Redis 분산락 & 캐싱 + React 대시보드. 문장 단위 논리 청킹 및 WebSocket 스트리밍으로 TTFB 단축.</p>
