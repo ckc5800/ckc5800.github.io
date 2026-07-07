@@ -6,12 +6,12 @@ title: Projects
 <h2>Projects</h2>
 
 <div style="margin-bottom: 50px;">
-    <h3>🎤 Qwen3-TTS Enterprise Gateway (AICESS)</h3>
+    <h3>🎤 TTS 프로젝트</h3>
     <p><strong>Period:</strong> 2025.04 ~ Present</p>
-    <p><strong>Role:</strong> 혼자 풀스택 설계 및 구축 (Architecture, Backend, Frontend, DevOps)</p>
+    <p><strong>Role:</strong> PM 및 풀스택 개발</p>
 
     <h4 style="margin-top: 20px; color: #555;">배경</h4>
-    <p>AIG 상담센터 TTS 시스템의 응답 시간 2.3초 문제 및 동시 채널 부족(12ch). 실시간 음성 합성 요구로 인한 시스템 재설계 필요.</p>
+    <p>음성 합성 시스템의 응답 시간 2.3초 개선 필요 및 동시 처리 채널 확대(12ch → 24ch).</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>시스템 아키텍처:</strong> FastAPI WebSocket/REST 게이트웨이 + vLLM-Omni(Qwen3-TTS) 추론 엔진 + Redis 분산락 & 캐싱 + React 대시보드. 문장 단위 논리 청킹 및 WebSocket 스트리밍으로 TTFB 단축.</p>
