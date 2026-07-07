@@ -20,10 +20,11 @@ title: Projects
     <h4 style="margin-top: 20px; color: #555;">성과 (KPI)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
         <li>✓ <strong>TTFB: 2292ms → 334ms (85% 단축, 6.85배 개선)</strong></li>
-        <li>✓ <strong>RTF (Real-Time Factor): 0.1 이하</strong> (10초 음성 생성 약 1초 소요)</li>
-        <li>✓ 동시 처리 채널: 14개 → 24개 (71% 확대)</li>
-        <li>✓ 초저지연 스트리밍: 500ms 이내 첫 오디오 출력</li>
-        <li>✓ 동일 문장 재요청 시 0ms 응답 (Redis 캐싱)</li>
+        <li>✓ <strong>Throughput: 0.68 → 1.41 rps (2배)</strong> - uni executor로 mp 직렬화 제거</li>
+        <li>✓ <strong>최적화 후: ~1.7 rps (2.5배 향상)</strong> - FP8 양자화 + limit 튜닝</li>
+        <li>✓ 동시 처리 채널: 12 → 24 (2배)</li>
+        <li>✓ 단건 지연시간 15% 감소 (FP8 Talker 양자화)</li>
+        <li>✓ RTF (Real-Time Factor): 0.1 이하</li>
     </ul>
 
     <h4 style="margin-top: 20px; color: #555;">운영 대시보드</h4>
