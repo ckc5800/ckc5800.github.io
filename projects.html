@@ -59,7 +59,7 @@ title: Projects
     </ol>
 
     <div class="tech-tags" style="margin-top: 20px;">
-        <span class="tech-tag">Python 3.12</span>
+        <span class="tech-tag">Python 3.11+</span>
         <span class="tech-tag">FastAPI</span>
         <span class="tech-tag">WebSocket</span>
         <span class="tech-tag">vLLM-Omni</span>
@@ -77,7 +77,7 @@ title: Projects
     <p><strong>Role:</strong> STT 배포 및 서빙 담당 (팀 협업)</p>
 
     <h4 style="margin-top: 20px; color: #555;">배경</h4>
-    <p>하루 수천 건 전화 통화 실시간 처리 필요. 기존 STT 시스템 병목으로 인한 채널 부족 및 추론 지연 불안정.</p>
+    <p>AIG 상담센터의 대량 상담 전화 실시간 처리 필요. 기존 STT 시스템 병목으로 인한 채널 부족 및 추론 지연 불안정.</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>시스템 재구축:</strong> Triton Inference Server 기반 음성인식 파이프라인 모듈화. Docker 구조 개선 및 코드 재사용성 향상.</p>
@@ -178,7 +178,7 @@ title: Projects
     <p><strong>Role:</strong> 사내 지식 관리 및 요약 시스템 개발</p>
 
     <h4 style="margin-top: 20px; color: #555;">배경</h4>
-    <p>수백 건 일일 문서 (회의록, 기술 문서, 프로젝트 리포트) 생성. 핵심 내용 자동 요약 및 검색 시스템 필요.</p>
+    <p>사내 회의록, 기술 문서, 프로젝트 리포트 등 문서 지속 생성. 핵심 내용 자동 요약 시스템 필요.</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>모델 선택 및 파인튜닝:</strong> BART/T5 모델 비교 실험. 회의록, 기술 문서 등 다양한 도메인 데이터로 파인튜닝. Hugging Face 사전 학습 모델 기반 프로토타입 → Kubernetes 배포.</p>
@@ -198,65 +198,6 @@ title: Projects
         <span class="tech-tag">Hugging Face</span>
         <span class="tech-tag">NLP</span>
         <span class="tech-tag">Kubernetes</span>
-    </div>
-</div>
-
-<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
-
-<div style="margin-bottom: 50px;">
-    <h3>🚗 Tank Object Detection Model (Infiniic)</h3>
-    <p><strong>Period:</strong> 2023.01 ~ 2023.08</p>
-    <p><strong>Role:</strong> 전차 탐지 모델 개발 및 프로덕션 최적화</p>
-
-    <h4 style="margin-top: 20px; color: #555;">배경</h4>
-    <p>정찰/드론 영상에서 전차 자동 탐지 필요. 기존 수동 분석의 시간 및 비용 문제.</p>
-
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>모델 개발:</strong> YOLOv5/v8 기반 전차 탐지 모델. 다양한 조도, 각도, 배경 시나리오 강건성 확보를 위한 데이터 증강 및 하이퍼파라미터 튜닝.</p>
-    <p><strong>모델 학습 및 검증:</strong> 국방 도메인 데이터 기반 학습 및 성능 검증. 다양한 환경 시나리오에서의 탐지 강건성 확보.</p>
-
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ YOLO 기반 전차 탐지 모델 개발 완료</li>
-        <li>✓ 데이터 증강 및 하이퍼파라미터 튜닝으로 탐지 강건성 확보</li>
-    </ul>
-
-    <div class="tech-tags" style="margin-top: 20px;">
-        <span class="tech-tag">YOLO</span>
-        <span class="tech-tag">Object Detection</span>
-        <span class="tech-tag">PyTorch</span>
-        <span class="tech-tag">TensorRT</span>
-        <span class="tech-tag">Defense Domain</span>
-    </div>
-</div>
-
-<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
-
-<div style="margin-bottom: 50px;">
-    <h3>🔬 3D Semantic Segmentation Research (Infiniic)</h3>
-    <p><strong>Period:</strong> 2022.08 ~ 2022.12</p>
-    <p><strong>Role:</strong> 센서 퓨전 기반 자율주행 연구 및 모델 개발</p>
-
-    <h4 style="margin-top: 20px; color: #555;">배경</h4>
-    <p>자율주행 환경 인식에 3D 거리/높이 정보 필수. 기존 2D 세그멘테이션의 한계로 인한 센서 퓨전 필요.</p>
-
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>모델 아키텍처:</strong> Trans-Unet (Transformer + U-Net 하이브리드) 설계로 LiDAR 포인트 클라우드 + 카메라 이미지 효과적 퓨전. Transformer 장거리 의존성 + U-Net 다중 스케일 피처 추출 결합.</p>
-    <p><strong>연구 기여:</strong> 논문 2편 제1저자 게재 (한국자동차학회 2022.11, 2023.04). Latent Diffusion 기반 합성 데이터 생성 연구로 국방기술학회 우수 논문상 수상.</p>
-
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ 논문 2편 게재 (제1저자, 한국자동차학회 2022.11, 2023.04)</li>
-        <li>✓ 특허 2건 등록 (제1발명자, 등록번호: 1025382250000, 1025382310000)</li>
-    </ul>
-
-    <div class="tech-tags" style="margin-top: 20px;">
-        <span class="tech-tag">Trans-Unet</span>
-        <span class="tech-tag">Sensor Fusion</span>
-        <span class="tech-tag">PyTorch</span>
-        <span class="tech-tag">LiDAR</span>
-        <span class="tech-tag">Computer Vision</span>
-        <span class="tech-tag">Autonomous Driving</span>
     </div>
 </div>
 
@@ -295,6 +236,64 @@ title: Projects
         <span class="tech-tag">PyTorch</span>
         <span class="tech-tag">LoRA Fine-tuning</span>
         <span class="tech-tag">Data Augmentation</span>
+    </div>
+</div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+<div style="margin-bottom: 50px;">
+    <h3>🚗 Tank Object Detection Model (Infiniic)</h3>
+    <p><strong>Period:</strong> 2023.01 ~ 2023.08</p>
+    <p><strong>Role:</strong> 전차 탐지 모델 개발</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>정찰/드론 영상에서 전차 자동 탐지 필요. 기존 수동 분석의 시간 및 비용 문제.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <p><strong>모델 개발:</strong> YOLOv5/v8 기반 전차 탐지 모델. 다양한 조도, 각도, 배경 시나리오 강건성 확보를 위한 데이터 증강 및 하이퍼파라미터 튜닝.</p>
+    <p><strong>모델 학습 및 검증:</strong> 국방 도메인 데이터 기반 학습 및 성능 검증. 다양한 환경 시나리오에서의 탐지 강건성 확보.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">성과</h4>
+    <ul style="list-style-position: inside; line-height: 2;">
+        <li>✓ YOLO 기반 전차 탐지 모델 개발 완료</li>
+        <li>✓ 데이터 증강 및 하이퍼파라미터 튜닝으로 탐지 강건성 확보</li>
+    </ul>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">YOLO</span>
+        <span class="tech-tag">Object Detection</span>
+        <span class="tech-tag">PyTorch</span>
+        <span class="tech-tag">Defense Domain</span>
+    </div>
+</div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+<div style="margin-bottom: 50px;">
+    <h3>🔬 3D Semantic Segmentation Research (Infiniic)</h3>
+    <p><strong>Period:</strong> 2022.08 ~ 2022.12</p>
+    <p><strong>Role:</strong> 센서 퓨전 기반 자율주행 연구 및 모델 개발</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>자율주행 환경 인식에 3D 거리/높이 정보 필수. 기존 2D 세그멘테이션의 한계로 인한 센서 퓨전 필요.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <p><strong>모델 아키텍처:</strong> Trans-Unet (Transformer + U-Net 하이브리드) 설계로 LiDAR 포인트 클라우드 + 카메라 이미지 효과적 퓨전. Transformer 장거리 의존성 + U-Net 다중 스케일 피처 추출 결합.</p>
+    <p><strong>연구 기여:</strong> 논문 2편 제1저자 게재 (한국자동차공학회 2022.11, 2023.04) 및 특허 2건 등록 (제1발명자).</p>
+
+    <h4 style="margin-top: 20px; color: #555;">성과</h4>
+    <ul style="list-style-position: inside; line-height: 2;">
+        <li>✓ 논문 2편 게재 (제1저자, 한국자동차공학회 2022.11, 2023.04)</li>
+        <li>✓ 특허 2건 등록 (제1발명자, 등록번호: 1025382250000, 1025382310000)</li>
+    </ul>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">Trans-Unet</span>
+        <span class="tech-tag">Sensor Fusion</span>
+        <span class="tech-tag">PyTorch</span>
+        <span class="tech-tag">LiDAR</span>
+        <span class="tech-tag">Computer Vision</span>
+        <span class="tech-tag">Autonomous Driving</span>
     </div>
 </div>
 
