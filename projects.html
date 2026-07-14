@@ -359,3 +359,36 @@ title: Projects
         <span class="tech-tag">Data Engineering</span>
     </div>
 </div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+<div>
+    <h3>🤖 LangGraph 기반 Corrective-RAG Agent <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
+    <p><strong>Period:</strong> 2026.07</p>
+    <p><strong>Role:</strong> LLM Agent 시스템 학습 목적의 개인 구축 프로젝트</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>LLM Agent 시스템(RAG, tool orchestration, state 관리)의 E2E 구축 역량 확보 목적. 포트폴리오 기술문서를 지식 베이스로 하는 Q&A Agent를 전부 로컬 환경(Ollama)에서 구현.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <p><strong>Agent 실행 흐름:</strong> LangGraph StateGraph로 retrieve → grade(검색 품질 자가 평가) → rewrite(질문 재작성) → generate 흐름 설계. 검색 결과가 부족하면 질문을 재작성해 재검색하는 self-corrective 루프 구현.</p>
+    <p><strong>RAG 파이프라인:</strong> 문서 청킹 → BGE-M3 임베딩 → FAISS 벡터 검색. 문서 근거 기반 답변 + 출처 인용, 근거 없으면 답변 거부(hallucination 억제). FastAPI 서빙 레이어 포함.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">평가 루프 및 개선 (실측)</h4>
+    <ul style="list-style-position: inside; line-height: 2;">
+        <li>✓ 10문항 평가셋으로 정답률/재작성률/지연시간 측정 파이프라인 구축</li>
+        <li>✓ <strong>재작성률 100% 이상 신호 → State 스키마 버그 등 2건 발견·수정</strong></li>
+        <li>✓ 개선 결과: 정답률 50% → 60%, 재작성률 100% → 30%, 지연 96s → 79s</li>
+    </ul>
+
+    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/rag-agent" target="_blank" style="color: #1a1a1a; font-weight: 600;">🔗 GitHub 저장소 (코드 및 개선 히스토리)</a></p>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">LangGraph</span>
+        <span class="tech-tag">RAG</span>
+        <span class="tech-tag">FAISS</span>
+        <span class="tech-tag">Ollama</span>
+        <span class="tech-tag">FastAPI</span>
+        <span class="tech-tag">Evaluation</span>
+    </div>
+</div>
