@@ -395,3 +395,36 @@ title: Projects
         <span class="tech-tag">Evaluation</span>
     </div>
 </div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+<div>
+    <h3>🔌 Portfolio MCP Server <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
+    <p><strong>Period:</strong> 2026.07</p>
+    <p><strong>Role:</strong> MCP(Model Context Protocol) 서버 설계 및 구현</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>포트폴리오를 AI 도구 생태계에 연결 — Claude Desktop/Claude Code 등 MCP 클라이언트가 경력·프로젝트·논문 정보를 도구로 조회할 수 있도록 표준 프로토콜 서버 구현.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <p><strong>도구 설계:</strong> read-only 도구 4개 — 구조화 조회(프로필/프로젝트/논문·특허) + BM25 문서 검색. 검색 실패 시 다음 행동을 안내하는 actionable 오류 응답 설계.</p>
+    <p><strong>경량 아키텍처:</strong> 의존성 2개(MCP SDK + rank_bm25)만으로 구성 — 임베딩 서버·외부 API·GPU 불필요, clone 후 30초 내 동작. 추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">특징</h4>
+    <ul style="list-style-position: inside; line-height: 2;">
+        <li>✓ FastMCP 기반 stdio 서버, Pydantic 입력 검증, read-only 어노테이션</li>
+        <li>✓ 확정 사실(profile.json)과 서술형 문서 검색의 이원화 구조</li>
+        <li>✓ 스모크 테스트 포함 (MCP 클라이언트 세션으로 전체 도구 실호출 검증)</li>
+        <li>✓ RAG Agent 프로젝트와 동일 지식 베이스 공유 — RAG와 MCP 두 방식의 노출 비교 경험</li>
+    </ul>
+
+    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/portfolio-mcp" target="_blank" style="color: #1a1a1a; font-weight: 600;">🔗 GitHub 저장소</a></p>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">MCP</span>
+        <span class="tech-tag">FastMCP</span>
+        <span class="tech-tag">BM25</span>
+        <span class="tech-tag">Pydantic</span>
+        <span class="tech-tag">Python</span>
+    </div>
+</div>
