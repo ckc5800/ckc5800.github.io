@@ -373,6 +373,7 @@ title: Projects
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>Agent 실행 흐름:</strong> LangGraph StateGraph로 retrieve → grade(검색 품질 자가 평가) → rewrite(질문 재작성) → generate 흐름 설계. 검색 결과가 부족하면 질문을 재작성해 재검색하는 self-corrective 루프 구현.</p>
     <p><strong>RAG 파이프라인:</strong> 문서 청킹 → BGE-M3 임베딩 → <strong>FAISS + BM25 하이브리드 검색 (RRF 직접 구현)</strong>. 문서 근거 기반 답변 + 출처 인용, 근거 없으면 답변 거부(hallucination 억제). FastAPI 서빙 레이어 포함.</p>
+    <p><strong>Tool Orchestration:</strong> LLM이 도구(검색/계산/날짜)를 선택 호출하는 multi-step Agent 레이어. 소형 모델의 tool calling 무응답을 감지해 검색을 강제 호출하는 결정적 폴백 설계.</p>
 
     <h4 style="margin-top: 20px; color: #555;">평가 루프 및 개선 (실측)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
@@ -387,6 +388,7 @@ title: Projects
     <div class="tech-tags" style="margin-top: 20px;">
         <span class="tech-tag">LangGraph</span>
         <span class="tech-tag">RAG</span>
+        <span class="tech-tag">Tool Calling</span>
         <span class="tech-tag">Hybrid Search (FAISS + BM25)</span>
         <span class="tech-tag">Ollama</span>
         <span class="tech-tag">FastAPI</span>
