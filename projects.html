@@ -372,13 +372,14 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>Agent 실행 흐름:</strong> LangGraph StateGraph로 retrieve → grade(검색 품질 자가 평가) → rewrite(질문 재작성) → generate 흐름 설계. 검색 결과가 부족하면 질문을 재작성해 재검색하는 self-corrective 루프 구현.</p>
-    <p><strong>RAG 파이프라인:</strong> 문서 청킹 → BGE-M3 임베딩 → FAISS 벡터 검색. 문서 근거 기반 답변 + 출처 인용, 근거 없으면 답변 거부(hallucination 억제). FastAPI 서빙 레이어 포함.</p>
+    <p><strong>RAG 파이프라인:</strong> 문서 청킹 → BGE-M3 임베딩 → <strong>FAISS + BM25 하이브리드 검색 (RRF 직접 구현)</strong>. 문서 근거 기반 답변 + 출처 인용, 근거 없으면 답변 거부(hallucination 억제). FastAPI 서빙 레이어 포함.</p>
 
     <h4 style="margin-top: 20px; color: #555;">평가 루프 및 개선 (실측)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
         <li>✓ 10문항 평가셋으로 정답률/재작성률/지연시간 측정 파이프라인 구축</li>
-        <li>✓ <strong>재작성률 100% 이상 신호 → State 스키마 버그 등 2건 발견·수정</strong></li>
-        <li>✓ 개선 결과: 정답률 50% → 60%, 재작성률 100% → 30%, 지연 96s → 79s</li>
+        <li>✓ <strong>평가 지표 이상 신호로 결함 4건 발견·수정</strong> — State 스키마 버그(재작성률 100% 신호), 한국어 판정 파싱, 키워드 질문 검색 실패, RRF 중복 키</li>
+        <li>✓ 고유명사 질문 검색 실패 → BM25+FAISS 하이브리드 도입으로 검색 기인 실패 3건 → 1건</li>
+        <li>✓ 정답률 50% → 60%, 재작성률 100% → 30% (개선 전 과정 git 히스토리에 기록)</li>
     </ul>
 
     <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/rag-agent" target="_blank" style="color: #1a1a1a; font-weight: 600;">🔗 GitHub 저장소 (코드 및 개선 히스토리)</a></p>
@@ -386,7 +387,7 @@ title: Projects
     <div class="tech-tags" style="margin-top: 20px;">
         <span class="tech-tag">LangGraph</span>
         <span class="tech-tag">RAG</span>
-        <span class="tech-tag">FAISS</span>
+        <span class="tech-tag">Hybrid Search (FAISS + BM25)</span>
         <span class="tech-tag">Ollama</span>
         <span class="tech-tag">FastAPI</span>
         <span class="tech-tag">Evaluation</span>
