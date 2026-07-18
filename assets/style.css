@@ -194,6 +194,57 @@ p {
     font-weight: 500;
 }
 
+/* ===== Project TOC ===== */
+.toc {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 26px;
+    background-color: var(--secondary-white);
+    border-left: 4px solid var(--primary-black);
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 60px;
+}
+
+.toc-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #999;
+    margin-bottom: 12px;
+}
+
+.toc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.toc-link {
+    display: inline-block;
+    padding: 6px 14px;
+    border: 1px solid #d5d5d5;
+    border-radius: 20px;
+    background-color: var(--primary-white);
+    color: var(--primary-black);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.toc-link:hover {
+    background-color: var(--primary-black);
+    color: var(--primary-white);
+    border-color: var(--primary-black);
+}
+
+/* 앵커 이동 시 고정 내비게이션에 제목이 가리지 않도록 */
+h3[id] {
+    scroll-margin-top: 100px;
+}
+
 /* ===== Skills Section ===== */
 .skills-grid {
     display: grid;
