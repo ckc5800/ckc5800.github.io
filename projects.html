@@ -5,8 +5,31 @@ title: Projects
 
 <h2>Projects</h2>
 
+<div style="background-color: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 8px; padding: 22px 28px; margin-bottom: 50px; line-height: 2.1; font-size: 15px;">
+    <div><strong style="display: inline-block; min-width: 110px;">MiCo AI</strong>
+        <a href="#tts" style="color: #1a1a1a;">TTS 프로젝트</a> ·
+        <a href="#stt" style="color: #1a1a1a;">STT 배포</a> ·
+        <a href="#diarization" style="color: #1a1a1a;">Speaker Diarization</a></div>
+    <div><strong style="display: inline-block; min-width: 110px;">인피닉</strong>
+        <a href="#k8s" style="color: #1a1a1a;">Kubernetes 인프라</a> ·
+        <a href="#nlp" style="color: #1a1a1a;">NLP 요약</a> ·
+        <a href="#latent" style="color: #1a1a1a;">생성모델 연구</a> ·
+        <a href="#tank" style="color: #1a1a1a;">전차 탐지</a> ·
+        <a href="#seg3d" style="color: #1a1a1a;">3D Segmentation</a></div>
+    <div><strong style="display: inline-block; min-width: 110px;">이전 경력</strong>
+        <a href="#ocr" style="color: #1a1a1a;">OCR Annotation Tool</a> ·
+        <a href="#quhedge" style="color: #1a1a1a;">금융 데이터 파이프라인</a></div>
+    <div><strong style="display: inline-block; min-width: 110px;">개인·팀·대회</strong>
+        <a href="#rag" style="color: #1a1a1a;">RAG Agent</a> ·
+        <a href="#mcp" style="color: #1a1a1a;">MCP Server</a> ·
+        <a href="#pdm" style="color: #1a1a1a;">예지보전</a> ·
+        <a href="#llmbench" style="color: #1a1a1a;">llm-bench</a> ·
+        <a href="#ecg" style="color: #1a1a1a;">심전도 진단</a> ·
+        <a href="#deid" style="color: #1a1a1a;">Face De-ID</a></div>
+</div>
+
 <div style="margin-bottom: 50px;">
-    <h3>🎤 TTS 프로젝트</h3>
+    <h3 id="tts">TTS 프로젝트</h3>
     <p><strong>Period:</strong> 2025.09 ~ Present</p>
     <p><strong>Role:</strong> PM 및 풀스택 개발</p>
 
@@ -15,21 +38,21 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>시스템 아키텍처:</strong> FastAPI WebSocket/REST 게이트웨이 + vLLM-Omni(Qwen3-TTS) 추론 엔진 + Redis 분산락 & 캐싱 + React 대시보드. 문장 단위 논리 청킹 및 WebSocket 스트리밍으로 TTFB 단축.</p>
-    <p><strong>성능 최적화:</strong> H100/L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 극대화. Redis 캐싱으로 동일 문장 0ms 응답 구현. 5가지 엔지니어링 문제 해결 (팝 노이즈, GC 누수, 세션 탈취, ITN 토크나이저, CPU 병목).</p>
+    <p><strong>성능 최적화:</strong> H100/L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 활용 개선. Redis 캐싱으로 동일 문장 0ms 응답 구현. 5가지 엔지니어링 문제 해결 (팝 노이즈, GC 누수, 세션 탈취, ITN 토크나이저, CPU 병목).</p>
     <p><strong>기능 확장:</strong> ICL(In-Context Learning) 기반 음성복제 기능 구현. OpenAI TTS API 호환 인터페이스 및 기존 WebSocket 프로토콜 호환 레이어 개발. Redis 기반 Atomic quota, 분산락, Circuit Breaker 등 장애 대응 로직 개발.</p>
     <p><strong>모델 및 품질:</strong> TTS 학습 데이터 정제 및 ZipVoice 모델 학습. Whisper 기반 CER/WER 자동 품질 측정 파이프라인 구축, 사내 운영 테스트 및 QA 수행.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과 (KPI)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ <strong>TTFB: 2292ms → 334ms (85% 단축, 6.85배 개선)</strong></li>
-        <li>✓ <strong>Throughput: 0.68 → 1.41 rps (2배)</strong></li>
-        <li>✓ <strong>최적화 후: ~1.7 rps (2.5배 향상)</strong></li>
-        <li>✓ 동시 처리 채널: 12 → 24 (2배)</li>
-        <li>✓ 단건 지연시간 15% 감소</li>
-        <li>✓ RTF (Real-Time Factor): 0.1 이하</li>
-        <li>✓ CER(문자 오류율): 평균 3~5% (Whisper-large-v3 STT 기반 자동 품질 측정)</li>
-        <li>✓ 32개 언어 지원 단일 플랫폼</li>
-        <li>✓ ITN 정규화 정확도 50.1% → 70.9%</li>
+        <li><strong>TTFB: 2292ms → 334ms (85% 단축, 6.85배 개선)</strong></li>
+        <li><strong>Throughput: 0.68 → 1.41 rps (2배)</strong></li>
+        <li><strong>최적화 후: ~1.7 rps (2.5배 향상)</strong></li>
+        <li>동시 처리 채널: 12 → 24 (2배)</li>
+        <li>단건 지연시간 15% 감소</li>
+        <li>RTF (Real-Time Factor): 0.1 이하</li>
+        <li>CER(문자 오류율): 평균 3~5% (Whisper-large-v3 STT 기반 자동 품질 측정)</li>
+        <li>32개 언어 지원 단일 플랫폼</li>
+        <li>ITN 정규화 정확도 50.1% → 70.9%</li>
     </ul>
 
     <h4 style="margin-top: 20px; color: #555;">운영 대시보드</h4>
@@ -42,19 +65,19 @@ title: Projects
     <h4 style="margin-top: 20px; color: #555;">데모 영상</h4>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
         <div style="text-align: center; padding: 20px; background-color: #f5f5f5; border-radius: 8px;">
-            <p style="margin: 0 0 10px 0; font-weight: 600;">🎥 TTS Full Synthesis</p>
-            <a href="https://drive.google.com/file/d/18mJfKttw0on_zgHEbCDJG9VlUw9YXUFe/view?usp=drive_link" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #1a1a1a; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">▶️ 영상 보기</a>
+            <p style="margin: 0 0 10px 0; font-weight: 600;">TTS Full Synthesis</p>
+            <a href="https://drive.google.com/file/d/18mJfKttw0on_zgHEbCDJG9VlUw9YXUFe/view?usp=drive_link" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #1a1a1a; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">영상 보기</a>
         </div>
         <div style="text-align: center; padding: 20px; background-color: #f5f5f5; border-radius: 8px;">
-            <p style="margin: 0 0 10px 0; font-weight: 600;">🚀 배포 및 운영</p>
-            <a href="https://drive.google.com/file/d/1FE4p0ItxPPuKvGDC90gHxbmmGTHef8YB/view?usp=drive_link" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #1a1a1a; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">▶️ 영상 보기</a>
+            <p style="margin: 0 0 10px 0; font-weight: 600;">배포 및 운영</p>
+            <a href="https://drive.google.com/file/d/1FE4p0ItxPPuKvGDC90gHxbmmGTHef8YB/view?usp=drive_link" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #1a1a1a; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">영상 보기</a>
         </div>
     </div>
 
     <h4 style="margin-top: 20px; color: #555;">핵심 엔지니어링 (5가지 문제 해결)</h4>
     <ol style="list-style-position: inside; line-height: 2;">
         <li><strong>스트리밍 오디오 팝 노이즈 제거</strong> – Residual Buffer 설계로 PCM 얼라인먼트 해결, Micro-fade 적용</li>
-        <li><strong>스토리지 누수 방지</strong> – Deep GC 추적기 구현으로 MD5 해시 캐시 파일 완벽 정리</li>
+        <li><strong>스토리지 누수 방지</strong> – Deep GC 추적기 구현으로 MD5 해시 캐시 파일 정리</li>
         <li><strong>웹소켓 세션 탈취 방어</strong> – password_changed_at 검증으로 제로-트러스트 모델 구현</li>
         <li><strong>정규식 토크나이저 고도화</strong> – 스마트 ITN 엔진 개발로 URL/이메일 자연스럽게 처리</li>
         <li><strong>CPU 병목 제거</strong> – ThreadPoolExecutor 오버헤드 제거, O(N²) → O(1) 성능 개선</li>
@@ -74,7 +97,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>📡 STT 배포 (MiCo AI)</h3>
+    <h3 id="stt">STT 배포 (MiCo AI)</h3>
     <p><strong>Period:</strong> 2025.07 ~ 2025.09</p>
     <p><strong>Role:</strong> STT 배포 및 서빙 담당 (팀 협업)</p>
 
@@ -87,11 +110,11 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ <strong>AIG 요구사항 해결 4건</strong></li>
-        <li>✓ Triton Inference Server 기반 배포 - 고성능 음성인식 파이프라인</li>
-        <li>✓ Docker 컨테이너화로 배포 자동화 및 안정성 강화</li>
-        <li>✓ 배치 처리와 스트리밍 처리 모두 지원</li>
-        <li>✓ 전처리/병렬 코드로 처리 속도 향상</li>
+        <li><strong>AIG 요구사항 해결 4건</strong></li>
+        <li>Triton Inference Server 기반 배포 - 고성능 음성인식 파이프라인</li>
+        <li>Docker 컨테이너화로 배포 자동화 및 안정성 강화</li>
+        <li>배치 처리와 스트리밍 처리 모두 지원</li>
+        <li>전처리/병렬 코드로 처리 속도 향상</li>
     </ul>
 
     <div class="tech-tags" style="margin-top: 20px;">
@@ -106,7 +129,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>🎙️ Speaker Diarization with Pyannote (MiCo AI)</h3>
+    <h3 id="diarization">Speaker Diarization with Pyannote (MiCo AI)</h3>
     <p><strong>Period:</strong> 2025.04 ~ 2025.07</p>
     <p><strong>Role:</strong> 화자 분할 모델 파인튜닝 및 STT 통합</p>
 
@@ -119,8 +142,8 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">수행 내용</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ 화자 분할 모델 파인튜닝 (데이터 수집 → 파라미터 튜닝 → 학습)</li>
-        <li>✓ 화자 분할 - STT 연동 파이프라인 작업</li>
+        <li>화자 분할 모델 파인튜닝 (데이터 수집 → 파라미터 튜닝 → 학습)</li>
+        <li>화자 분할 - STT 연동 파이프라인 작업</li>
     </ul>
 
     <div class="tech-tags" style="margin-top: 20px;">
@@ -135,7 +158,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>⚙️ Kubernetes-based AI Infrastructure (인피닉)</h3>
+    <h3 id="k8s">Kubernetes-based AI Infrastructure (인피닉)</h3>
     <p><strong>Period:</strong> 2024.03 ~ 2025.04</p>
     <p><strong>Role:</strong> 회사 최초 K8s 기반 AI 플랫폼 설계 및 구축</p>
 
@@ -148,12 +171,12 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ <strong>회사 최초 Kubernetes 기반 AI 플랫폼 설계 및 구축</strong></li>
-        <li>✓ MetalLB 로드 밸런싱, Ingress-nginx 라우팅, PersistentVolume 스토리지 통합</li>
-        <li>✓ GitLab → Jenkins → ArgoCD 완전 자동화 CI/CD 파이프라인 (GitOps 기반)</li>
-        <li>✓ Harbor 중앙 레지스트리로 Docker 이미지 관리</li>
-        <li>✓ Prometheus/Grafana/Loki/Kibana 기반 모니터링 및 로그 자동화</li>
-        <li>✓ 20개 이상의 ML 모델 운영 환경 조성 및 확장성 확보</li>
+        <li><strong>회사 최초 Kubernetes 기반 AI 플랫폼 설계 및 구축</strong></li>
+        <li>MetalLB 로드 밸런싱, Ingress-nginx 라우팅, PersistentVolume 스토리지 통합</li>
+        <li>GitLab → Jenkins → ArgoCD 완전 자동화 CI/CD 파이프라인 (GitOps 기반)</li>
+        <li>Harbor 중앙 레지스트리로 Docker 이미지 관리</li>
+        <li>Prometheus/Grafana/Loki/Kibana 기반 모니터링 및 로그 자동화</li>
+        <li>20개 이상의 ML 모델 운영 환경 조성 및 확장성 확보</li>
     </ul>
 
     <h4 style="margin-top: 20px; color: #555;">시스템 아키텍처</h4>
@@ -176,7 +199,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>📊 NLP Text Summarization System (인피닉)</h3>
+    <h3 id="nlp">NLP Text Summarization System (인피닉)</h3>
     <p><strong>Period:</strong> 2024.01 ~ 2024.07</p>
     <p><strong>Role:</strong> 사내 지식 관리 및 요약 시스템 개발</p>
 
@@ -189,10 +212,10 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ 자동 요약 시스템 구축 및 운영</li>
-        <li>✓ BART/T5 모델 파인튜닝 완료</li>
-        <li>✓ 완전 자동화 파이프라인 구축</li>
-        <li>✓ 사내 자체 개발 메신저에 기능 추가하여 회의록, 문서 요약에 적용</li>
+        <li>자동 요약 시스템 구축 및 운영</li>
+        <li>BART/T5 모델 파인튜닝 완료</li>
+        <li>완전 자동화 파이프라인 구축</li>
+        <li>사내 자체 개발 메신저에 기능 추가하여 회의록, 문서 요약에 적용</li>
     </ul>
 
     <div class="tech-tags" style="margin-top: 20px;">
@@ -207,7 +230,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>🎨 Synthetic Data Generation with Latent Diffusion (인피닉)</h3>
+    <h3 id="latent">Synthetic Data Generation with Latent Diffusion (인피닉)</h3>
     <p><strong>Period:</strong> 2023.01 ~ 2023.12</p>
     <p><strong>Role:</strong> 생성 모델을 활용한 국방 데이터 확보 연구 및 구현</p>
 
@@ -220,9 +243,9 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ <strong>우수 논문상 수상:</strong> "국방 데이터 확보를 위한 생성모델 Latent Diffusion 실험" (한국국방기술학회 2023.11)</li>
-        <li>✓ 합성 데이터 생성 자동화 파이프라인 구축</li>
-        <li>✓ 추가 논문: "GAN을 활용한 데이터 생성 연구 동향" (한국항공우주학회 2023)</li>
+        <li><strong>우수 논문상 수상:</strong> "국방 데이터 확보를 위한 생성모델 Latent Diffusion 실험" (한국국방기술학회 2023.11)</li>
+        <li>합성 데이터 생성 자동화 파이프라인 구축</li>
+        <li>추가 논문: "GAN을 활용한 데이터 생성 연구 동향" (한국항공우주학회 2023)</li>
     </ul>
 
     <h4 style="margin-top: 20px; color: #555;">생성 결과</h4>
@@ -245,7 +268,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>🚗 Tank Object Detection Model (인피닉)</h3>
+    <h3 id="tank">Tank Object Detection Model (인피닉)</h3>
     <p><strong>Period:</strong> 2023.01 ~ 2023.08</p>
     <p><strong>Role:</strong> 전차 탐지 모델 개발</p>
 
@@ -258,8 +281,8 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ YOLO 기반 전차 탐지 모델 개발 완료</li>
-        <li>✓ 데이터 증강 및 하이퍼파라미터 튜닝으로 탐지 강건성 확보</li>
+        <li>YOLO 기반 전차 탐지 모델 개발 완료</li>
+        <li>데이터 증강 및 하이퍼파라미터 튜닝으로 탐지 강건성 확보</li>
     </ul>
 
     <div class="tech-tags" style="margin-top: 20px;">
@@ -273,7 +296,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>🔬 3D Semantic Segmentation Research (인피닉)</h3>
+    <h3 id="seg3d">3D Semantic Segmentation Research (인피닉)</h3>
     <p><strong>Period:</strong> 2022.08 ~ 2022.12</p>
     <p><strong>Role:</strong> 센서 퓨전 기반 자율주행 연구 및 모델 개발</p>
 
@@ -286,8 +309,8 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ 논문 2편 게재 (제1저자, 한국자동차공학회 2022.11, 2023.04)</li>
-        <li>✓ 특허 2건 등록 (제1발명자, 등록번호: 1025382250000, 1025382310000)</li>
+        <li>논문 2편 게재 (제1저자, 한국자동차공학회 2022.11, 2023.04)</li>
+        <li>특허 2건 등록 (제1발명자, 등록번호: 1025382250000, 1025382310000)</li>
     </ul>
 
     <div class="tech-tags" style="margin-top: 20px;">
@@ -303,7 +326,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>🔍 OCR Dataset Annotation Tool (이든티앤에스)</h3>
+    <h3 id="ocr">OCR Dataset Annotation Tool (이든티앤에스)</h3>
     <p><strong>Period:</strong> 2022.04 ~ 2022.08</p>
     <p><strong>Role:</strong> 독립 개발 (Full-Stack) - GUI 도구 설계 및 구현</p>
 
@@ -316,10 +339,10 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ Annotation Tool 설계 및 단독 개발 (상용 서비스 투입 전 단계까지 참여)</li>
-        <li>✓ OCR 학습 데이터 생성 프로세스 자동화</li>
-        <li>✓ OCR 문서 인식 성능 개선</li>
-        <li>✓ <strong>프로젝트 성공 성과금 수령</strong></li>
+        <li>Annotation Tool 설계 및 단독 개발 (상용 서비스 투입 전 단계까지 참여)</li>
+        <li>OCR 학습 데이터 생성 프로세스 자동화</li>
+        <li>OCR 문서 인식 성능 개선</li>
+        <li><strong>프로젝트 성공 성과금 수령</strong></li>
     </ul>
 
     <div class="tech-tags" style="margin-top: 20px;">
@@ -334,7 +357,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div>
-    <h3>📂 Data Collection & Preprocessing (큐헷지)</h3>
+    <h3 id="quhedge">Data Collection & Preprocessing (큐헷지)</h3>
     <p><strong>Period:</strong> 2020.09 ~ 2021.09</p>
     <p><strong>Role:</strong> 인턴 - 데이터 수집 및 전처리 파이프라인 구축</p>
 
@@ -347,9 +370,9 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ 금융 데이터 자동 수집 파이프라인 구축</li>
-        <li>✓ 데이터 품질 검증 도구 개발</li>
-        <li>✓ 데이터 엔지니어링 역량 확보</li>
+        <li>금융 데이터 자동 수집 파이프라인 구축</li>
+        <li>데이터 품질 검증 도구 개발</li>
+        <li>데이터 엔지니어링 역량 확보</li>
     </ul>
 
     <div class="tech-tags" style="margin-top: 20px;">
@@ -363,7 +386,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div>
-    <h3>🤖 LangGraph 기반 Corrective-RAG Agent <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
+    <h3 id="rag">LangGraph 기반 Corrective-RAG Agent <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
     <p><strong>Period:</strong> 2026.07</p>
     <p><strong>Role:</strong> LLM Agent 시스템 학습 목적의 개인 구축 프로젝트</p>
 
@@ -377,13 +400,13 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">평가 루프 및 개선 (실측)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ 10문항 평가셋으로 정답률/재작성률/지연시간 측정 파이프라인 구축</li>
-        <li>✓ <strong>평가 지표 이상 신호로 결함 4건 발견·수정</strong> — State 스키마 버그(재작성률 100% 신호), 한국어 판정 파싱, 키워드 질문 검색 실패, RRF 중복 키</li>
-        <li>✓ 고유명사 질문 검색 실패 → BM25+FAISS 하이브리드 도입으로 검색 기인 실패 3건 → 1건</li>
-        <li>✓ 정답률 50% → 60%, 재작성률 100% → 30% (개선 전 과정 git 히스토리에 기록)</li>
+        <li>10문항 평가셋으로 정답률/재작성률/지연시간 측정 파이프라인 구축</li>
+        <li><strong>평가 지표 이상 신호로 결함 4건 발견·수정</strong> — State 스키마 버그(재작성률 100% 신호), 한국어 판정 파싱, 키워드 질문 검색 실패, RRF 중복 키</li>
+        <li>고유명사 질문 검색 실패 → BM25+FAISS 하이브리드 도입으로 검색 기인 실패 3건 → 1건</li>
+        <li>정답률 50% → 60%, 재작성률 100% → 30% (개선 전 과정 git 히스토리에 기록)</li>
     </ul>
 
-    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/rag-agent" target="_blank" style="color: #1a1a1a; font-weight: 600;">🔗 GitHub 저장소 (코드 및 개선 히스토리)</a></p>
+    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/rag-agent" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소 (코드 및 개선 히스토리)</a></p>
 
     <div class="tech-tags" style="margin-top: 20px;">
         <span class="tech-tag">LangGraph</span>
@@ -399,7 +422,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div>
-    <h3>🔌 Portfolio MCP Server <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
+    <h3 id="mcp">Portfolio MCP Server <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
     <p><strong>Period:</strong> 2026.07</p>
     <p><strong>Role:</strong> MCP(Model Context Protocol) 서버 설계 및 구현</p>
 
@@ -412,13 +435,13 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">특징</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ FastMCP 기반 stdio 서버, Pydantic 입력 검증, read-only 어노테이션</li>
-        <li>✓ 확정 사실(profile.json)과 서술형 문서 검색의 이원화 구조</li>
-        <li>✓ 스모크 테스트 포함 (MCP 클라이언트 세션으로 전체 도구 실호출 검증)</li>
-        <li>✓ RAG Agent 프로젝트와 동일 지식 베이스 공유 — RAG와 MCP 두 방식의 노출 비교 경험</li>
+        <li>FastMCP 기반 stdio 서버, Pydantic 입력 검증, read-only 어노테이션</li>
+        <li>확정 사실(profile.json)과 서술형 문서 검색의 이원화 구조</li>
+        <li>스모크 테스트 포함 (MCP 클라이언트 세션으로 전체 도구 실호출 검증)</li>
+        <li>RAG Agent 프로젝트와 동일 지식 베이스 공유 — RAG와 MCP 두 방식의 노출 비교 경험</li>
     </ul>
 
-    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/portfolio-mcp" target="_blank" style="color: #1a1a1a; font-weight: 600;">🔗 GitHub 저장소</a></p>
+    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/portfolio-mcp" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소</a></p>
 
     <div class="tech-tags" style="margin-top: 20px;">
         <span class="tech-tag">MCP</span>
@@ -432,7 +455,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>🔧 예지보전 Agent (pdm-agent) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
+    <h3 id="pdm">예지보전 Agent (pdm-agent) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
     <p><strong>Period:</strong> 2026.07</p>
     <p><strong>Role:</strong> 센서 이상 탐지 + LLM 진단 파이프라인 설계·구현</p>
 
@@ -445,12 +468,12 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">평가 (실측)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ 5개 시나리오에서 주입 결함 15건 전부 탐지 — 재현율 100%, 오탐 0건 (통제 실험 기준임을 명시)</li>
-        <li>✓ 추세 탐지기가 "한계치 도달까지 약 29시간" RUL 추정 산출</li>
-        <li>✓ LLM 진단이 탐지 근거만으로 베어링 마모/윤활 불량 원인 후보 도출</li>
+        <li>5개 시나리오에서 주입 결함 15건 전부 탐지 — 재현율 100%, 오탐 0건 (통제 실험 기준임을 명시)</li>
+        <li>추세 탐지기가 "한계치 도달까지 약 29시간" RUL 추정 산출</li>
+        <li>LLM 진단이 탐지 근거만으로 베어링 마모/윤활 불량 원인 후보 도출</li>
     </ul>
 
-    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/pdm-agent" target="_blank" style="color: #1a1a1a; font-weight: 600;">🔗 GitHub 저장소</a></p>
+    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/pdm-agent" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소</a></p>
 
     <div class="tech-tags" style="margin-top: 20px;">
         <span class="tech-tag">Time Series</span>
@@ -464,7 +487,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div>
-    <h3>📊 llm-bench <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
+    <h3 id="llmbench">llm-bench <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
     <p><strong>Period:</strong> 2026.07</p>
     <p><strong>Role:</strong> LLM 추론 벤치마크 CLI 설계·구현</p>
 
@@ -476,11 +499,11 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">실측 사례</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>✓ 로컬 Ollama에서 동시성을 올려도 처리량이 8.1 tokens/s에 고정되고 TTFT만 0.6s→12.4s로 악화되는 병목 포착</li>
-        <li>✓ 원인: Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화 — 도구가 큐잉 병목을 수치로 증명</li>
+        <li>로컬 Ollama에서 동시성을 올려도 처리량이 8.1 tokens/s에 고정되고 TTFT만 0.6s→12.4s로 악화되는 병목 포착</li>
+        <li>원인: Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화 — 도구가 큐잉 병목을 수치로 증명</li>
     </ul>
 
-    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/llm-bench" target="_blank" style="color: #1a1a1a; font-weight: 600;">🔗 GitHub 저장소</a></p>
+    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/llm-bench" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소</a></p>
 
     <div class="tech-tags" style="margin-top: 20px;">
         <span class="tech-tag">Benchmark</span>
@@ -494,7 +517,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>❤️ 심전도 부정맥 진단 AI <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">대회 참가</span></h3>
+    <h3 id="ecg">심전도 부정맥 진단 AI <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">대회 참가</span></h3>
     <p><strong>Period:</strong> 2021 (Heart Disease AI Datathon 2021)</p>
     <p><strong>Role:</strong> 심전도 부정맥 진단 트랙 참가 — 모델·전처리 개발</p>
 
@@ -521,7 +544,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div style="margin-bottom: 50px;">
-    <h3>🕶 AI Face De-ID (얼굴 정보 자동 비식별화) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">팀 프로젝트</span></h3>
+    <h3 id="deid">AI Face De-ID (얼굴 정보 자동 비식별화) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">팀 프로젝트</span></h3>
     <p><strong>Period:</strong> 2021</p>
     <p><strong>Role:</strong> 4인 팀 프로젝트 (데이터 어드벤처 팀)</p>
 
@@ -547,7 +570,7 @@ title: Projects
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <div>
-    <h3>🗂 그 외 프로젝트 (2021)</h3>
+    <h3>그 외 프로젝트 (2021)</h3>
     <ul style="list-style-position: inside; line-height: 2;">
         <li><strong>욕설 탐지 모델</strong> — 한국어 텍스트 분류 (NLP)</li>
     </ul>
