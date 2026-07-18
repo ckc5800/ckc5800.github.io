@@ -493,12 +493,62 @@ title: Projects
 
 <hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
 
+<div style="margin-bottom: 50px;">
+    <h3>❤️ 심전도 부정맥 진단 AI <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">대회 참가</span></h3>
+    <p><strong>Period:</strong> 2021 (Heart Disease AI Datathon 2021)</p>
+    <p><strong>Role:</strong> 심전도 부정맥 진단 트랙 참가 — 모델·전처리 개발</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>과기정통부·NIA 주최, 연세대·서울대병원 주관 의료 AI 데이터톤. 심전도(ECG) 데이터셋으로 부정맥 여부를 진단하는 AI 모델 개발 트랙에 참가.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <p><strong>신호 전처리:</strong> 기저선 변동(Baseline Wandering) 제거 — 침식·팽창 연산 및 spline 보간, 주파수 노이즈 제거, 근전도 노이즈는 moving average로 평활화.</p>
+    <p><strong>모델:</strong> 8개 lead 중 심전도 관찰에 유리한 lead I의 5,000차원 신호를 입력으로, 1-D Convolution Layer(filter 32, kernel 5)를 계층적으로 연결한 1D-CNN으로 주기적 feature를 추출해 정상/부정맥 이진 분류.</p>
+
+    <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin: 20px 0; max-width: 480px;">
+        <img src="/assets/images/ecg-datathon-poster.png" alt="Heart Disease AI Datathon 2021" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
+    </div>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">1D-CNN</span>
+        <span class="tech-tag">ECG / Bio-signal</span>
+        <span class="tech-tag">Signal Processing</span>
+        <span class="tech-tag">Time Series</span>
+        <span class="tech-tag">PyTorch</span>
+    </div>
+</div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+<div style="margin-bottom: 50px;">
+    <h3>🕶 AI Face De-ID (얼굴 정보 자동 비식별화) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">팀 프로젝트</span></h3>
+    <p><strong>Period:</strong> 2021</p>
+    <p><strong>Role:</strong> 4인 팀 프로젝트 (데이터 어드벤처 팀)</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>공공 데이터 비식별화에 쓰이는 모자이크 처리는 원본 데이터의 정보 손실을 일으켜, Re-ID·행동 인식 등 얼굴 데이터가 필요한 후속 태스크에 활용하기 어려움. 이를 해결하기 위해 <strong>AI로 생성한 가짜 얼굴로 원본 얼굴을 대체</strong>하는 비식별화 기법을 제안.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <p>거리 영상에서 보행자 얼굴 영역 검출 및 랜드마크 검출 → 생성 모델 기반 가짜 얼굴 합성으로 정보 손실을 최소화하면서 개인정보를 보호하는 라벨링 파이프라인.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
+        <img src="/assets/images/deid-overview.png" alt="Face De-ID 개요" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
+        <img src="/assets/images/deid-result.png" alt="Face Detection 결과" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
+    </div>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">Computer Vision</span>
+        <span class="tech-tag">Face Detection</span>
+        <span class="tech-tag">Generative Model</span>
+        <span class="tech-tag">Privacy / De-ID</span>
+    </div>
+</div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
 <div>
     <h3>🗂 그 외 프로젝트 (2021)</h3>
-    <p style="color: #666; font-size: 14px;">석사 졸업 전후 진행한 소규모 프로젝트들입니다. 코드가 보존되어 있지 않아 목록으로만 남깁니다.</p>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li><strong>심전도(ECG) 이상 탐지</strong> — 생체 시계열 신호 기반 탐지 모델</li>
         <li><strong>욕설 탐지 모델</strong> — 한국어 텍스트 분류 (NLP)</li>
-        <li><strong>얼굴 정보 자동 비식별화</strong> — AI 모델 기반 영상 개인정보 보호 처리 (Computer Vision)</li>
     </ul>
 </div>
