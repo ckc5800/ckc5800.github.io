@@ -428,3 +428,65 @@ title: Projects
         <span class="tech-tag">Python</span>
     </div>
 </div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+<div style="margin-bottom: 50px;">
+    <h3>🔧 예지보전 Agent (pdm-agent) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
+    <p><strong>Period:</strong> 2026.07</p>
+    <p><strong>Role:</strong> 센서 이상 탐지 + LLM 진단 파이프라인 설계·구현</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>음성 AI에서 실시간 신호를 다뤄온 경험을 산업 설비 시계열로 확장. 회전기계 센서(진동·온도·전류)에서 이상을 탐지하고 LLM이 정비 진단 리포트를 작성하는 예지보전 데모.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <p><strong>설계 원칙 — "탐지는 결정적 알고리즘, LLM은 해석만":</strong> 이상 탐지는 z-score(순간 충격)·EWMA 관리한계(과열)·추세 회귀+간이 RUL 추정(베어링 마모)의 신호처리 알고리즘이 담당. LLM은 탐지 근거를 종합해 원인 추정·권고 조치를 작성하되, 근거 밖 수치 생성을 프롬프트로 차단.</p>
+    <p><strong>시뮬레이터:</strong> 부하 변동을 포함한 회전기계 모델에 결함 3종 주입 — 주입 시점이 ground truth로 남아 탐지기를 정량 평가.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">평가 (실측)</h4>
+    <ul style="list-style-position: inside; line-height: 2;">
+        <li>✓ 5개 시나리오에서 주입 결함 15건 전부 탐지 — 재현율 100%, 오탐 0건 (통제 실험 기준임을 명시)</li>
+        <li>✓ 추세 탐지기가 "한계치 도달까지 약 29시간" RUL 추정 산출</li>
+        <li>✓ LLM 진단이 탐지 근거만으로 베어링 마모/윤활 불량 원인 후보 도출</li>
+    </ul>
+
+    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/pdm-agent" target="_blank" style="color: #1a1a1a; font-weight: 600;">🔗 GitHub 저장소</a></p>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">Time Series</span>
+        <span class="tech-tag">Anomaly Detection</span>
+        <span class="tech-tag">Signal Processing</span>
+        <span class="tech-tag">Predictive Maintenance</span>
+        <span class="tech-tag">LLM</span>
+    </div>
+</div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+<div>
+    <h3>📊 llm-bench <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
+    <p><strong>Period:</strong> 2026.07</p>
+    <p><strong>Role:</strong> LLM 추론 벤치마크 CLI 설계·구현</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>TTS 게이트웨이 TTFB를 2292ms에서 334ms로 줄이며 손으로 하던 측정을 도구화. OpenAI 호환 엔드포인트(Ollama, vLLM 등)에 동시 부하를 걸어 TTFT·지연 percentile·처리량을 측정하는 CLI.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <p><strong>측정 설계:</strong> asyncio + httpx로 동시성 수준별 스윕. 스트리밍 청크 단위로 TTFT(첫 토큰까지 시간)와 tokens/s를 요청별 기록, p50/p95 집계. 예열 요청으로 모델 로드 시간을 측정에서 분리. 의존성은 httpx 하나, 차트는 SVG 직접 생성.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">실측 사례</h4>
+    <ul style="list-style-position: inside; line-height: 2;">
+        <li>✓ 로컬 Ollama에서 동시성을 올려도 처리량이 8.1 tokens/s에 고정되고 TTFT만 0.6s→12.4s로 악화되는 병목 포착</li>
+        <li>✓ 원인: Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화 — 도구가 큐잉 병목을 수치로 증명</li>
+    </ul>
+
+    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/llm-bench" target="_blank" style="color: #1a1a1a; font-weight: 600;">🔗 GitHub 저장소</a></p>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">Benchmark</span>
+        <span class="tech-tag">asyncio</span>
+        <span class="tech-tag">TTFT / Latency</span>
+        <span class="tech-tag">Observability</span>
+        <span class="tech-tag">Python</span>
+    </div>
+</div>
