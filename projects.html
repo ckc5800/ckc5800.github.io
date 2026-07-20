@@ -121,8 +121,8 @@ title: Projects
     <p>AIG 상담센터의 대량 상담 전화 실시간 처리 필요. 기존 STT 시스템 병목으로 인한 채널 부족 및 추론 지연 불안정.</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>시스템 재구축:</strong> Triton Inference Server 기반 음성인식 파이프라인 모듈화. Docker 구조 개선 및 코드 재사용성 향상.</p>
-    <p><strong>성능 최적화:</strong> 전처리 병렬화 및 배치/스트리밍 처리 통합. 컨테이너 모니터링 강화 및 안정성 확보.</p>
+    <p><strong>AIG STT 구조 개선:</strong> Triton Inference Server 기반 음성인식 파이프라인을 모듈화하고 로그·Docker 구조를 개선해 코드 재사용성을 확보. 전처리 병렬화로 처리 속도를 높이고, 컨테이너 재시작 모니터링 등 안정성 설정을 보강.</p>
+    <p><strong>사내 회의록 STT:</strong> 회의록 기능에 STT를 탑재 — Whisper 계열 모델별 성능을 조사·정리해 WhisperX 최적 파라미터를 찾고, 파일 기반과 스트리밍 기반 처리를 모두 구현. 엔진-브로커(API-HTTP) 통신 오류 수정과 QA까지 수행.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
     <ul style="list-style-position: inside; line-height: 2;">
@@ -131,6 +131,7 @@ title: Projects
         <li>Docker 컨테이너화로 배포 자동화 및 안정성 강화</li>
         <li>배치 처리와 스트리밍 처리 모두 지원</li>
         <li>전처리/병렬 코드로 처리 속도 향상</li>
+        <li>사내 회의록 기능에 STT 탑재 (파일/스트리밍 처리, STT-화자분리 연동)</li>
     </ul>
 
     <div class="tech-tags" style="margin-top: 20px;">
