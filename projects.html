@@ -182,8 +182,8 @@ title: Projects
     <p>20개 이상의 AI 서비스/API 운영 중 수동 배포로 배포 시간 수시간 소요. 자동화, 스케일링, 리소스 효율 개선 필요.</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>인프라 설계:</strong> MetalLB 로드 밸런싱 + Ingress-nginx 라우팅 + PersistentVolume NFS 스토리지. Harbor 중앙 이미지 관리 + ArgoCD GitOps 선언적 배포.</p>
-    <p><strong>CI/CD 파이프라인:</strong> GitLab에서 Jenkins와 Harbor 레지스트리를 거쳐 ArgoCD로 배포되는 완전 자동화 파이프라인. Prometheus/Grafana 실시간 모니터링 + Loki/Kibana 로그 자동화.</p>
+    <p><strong>인프라 설계:</strong> 온프레미스 클러스터라 클라우드식 로드밸런서가 없어 MetalLB로 LoadBalancer를 직접 구성, Ingress-nginx로 외부 요청 라우팅과 서비스 노출 구조를 설계. 서비스는 Docker로 컨테이너화해 Deployment/StatefulSet으로 배포하고, 영속 데이터는 NFS 기반 PV/PVC로 관리. Harbor 중앙 이미지 관리 + ArgoCD GitOps 선언적 배포.</p>
+    <p><strong>CI/CD 파이프라인:</strong> GitLab에 소스가 올라오면 Jenkins와 Argo Workflow가 이미지를 빌드해 Harbor 레지스트리에 올리고 ArgoCD가 클러스터에 배포하는 완전 자동화 파이프라인. Prometheus/Grafana 실시간 모니터링과 AlertManager 경보 + Loki/ELK 로그 자동화.</p>
     <p><strong>운영:</strong> 구축에서 끝나지 않고 클러스터 장애 대응과 리소스 관리까지 담당 — NFS 기반 PV/PVC로 모델·데이터 볼륨을 관리하며 20개 이상의 ML 모델 운영 환경을 유지.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
