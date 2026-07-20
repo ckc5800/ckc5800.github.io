@@ -90,13 +90,14 @@ title: Projects
         </div>
     </div>
 
-    <h4 style="margin-top: 20px; color: #555;">핵심 엔지니어링 (5가지 문제 해결)</h4>
+    <h4 style="margin-top: 20px; color: #555;">핵심 엔지니어링 (6가지 문제 해결)</h4>
     <ol style="list-style-position: inside; line-height: 2;">
         <li><strong>스트리밍 팝 노이즈</strong> — 스트리밍 중 간헐적으로 '틱' 잡음 발생. PCM 청크가 홀수 바이트로 끊겨 와 16bit 샘플 정렬이 깨지는 것이 원인. 잔여 바이트를 다음 청크에 이어 붙이는 Residual Buffer로 정렬을 보장하고, 청크 경계에 Micro-fade를 적용해 해결</li>
         <li><strong>스토리지 누수</strong> — 보이스를 삭제해도 디스크 사용량이 계속 증가. 원본을 지워도 파생된 MD5 해시 캐시 파일이 남는 구조여서, 파생 파일까지 추적해 함께 지우는 Deep GC를 구현해 차단</li>
         <li><strong>웹소켓 세션 탈취 방어</strong> — 비밀번호를 바꿔도 이미 발급된 토큰으로 웹소켓 연결이 열리는 허점 발견. 토큰 발급 시점과 password_changed_at을 대조해 변경 이전 토큰을 전부 무효화</li>
         <li><strong>ITN 정규화</strong> — URL·이메일을 한국어로 부자연스럽게 읽는 문제. 자연스러운 발음으로 변환하는 스마트 ITN 엔진을 직접 개발해 정규화 정확도 50.1% → 70.9%</li>
         <li><strong>CPU 병목</strong> — 요청마다 ThreadPoolExecutor가 새로 생성되는 오버헤드를 프로파일링으로 발견. 이를 걷어내고 텍스트 처리 로직을 O(N²) → O(1)로 개선</li>
+        <li><strong>SSE 스트리밍 호환</strong> — ZipVoice 엔진이 첫 청크에만 WAV 헤더를 포함해 브라우저 decodeAudioData()가 두 번째 청크부터 실패. 원인을 분석해 청크별 헤더를 수정하고 실시간 SSE 엔드포인트를 신설, 데모 페이지와 API 문서까지 제공해 해결</li>
     </ol>
 
     <div class="tech-tags" style="margin-top: 20px;">
