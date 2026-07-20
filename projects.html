@@ -55,7 +55,7 @@ title: Projects
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>시스템 아키텍처:</strong> FastAPI WebSocket/REST 게이트웨이 + vLLM-Omni(Qwen3-TTS) 추론 엔진 + Redis 분산락 & 캐싱 + React 대시보드. 문장 단위 논리 청킹 및 WebSocket 스트리밍으로 TTFB 단축.</p>
     <p><strong>성능 최적화:</strong> H100/L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 활용 개선. Redis 캐싱으로 동일 문장 0ms 응답 구현. 5가지 엔지니어링 문제 해결 (팝 노이즈, GC 누수, 세션 탈취, ITN 토크나이저, CPU 병목).</p>
-    <p><strong>기능 확장:</strong> ICL(In-Context Learning) 기반 음성복제 기능 구현. OpenAI TTS API 호환 인터페이스 및 기존 WebSocket 프로토콜 호환 레이어 개발. Redis 기반 Atomic quota, 분산락, Circuit Breaker 등 장애 대응 로직 개발.</p>
+    <p><strong>기능 확장:</strong> 참조 음성 5초만으로 화자 목소리를 복제하는 ICL(In-Context Learning) 기반 음성복제 기능 구현. OpenAI TTS API 호환 인터페이스와 기존 WebSocket 프로토콜 호환 레이어를 만들어 외부 서비스가 코드 수정 없이 연동되도록 지원. Redis 기반 Atomic quota, 분산락, Circuit Breaker 등 장애 대응 로직 개발.</p>
     <p><strong>모델 및 품질:</strong> TTS 학습 데이터 정제 및 ZipVoice 모델 학습. Whisper 기반 CER/WER 자동 품질 측정 파이프라인 구축, 사내 운영 테스트 및 QA 수행.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과 (KPI)</h4>
@@ -92,11 +92,11 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">핵심 엔지니어링 (5가지 문제 해결)</h4>
     <ol style="list-style-position: inside; line-height: 2;">
-        <li><strong>스트리밍 오디오 팝 노이즈 제거</strong> – Residual Buffer 설계로 PCM 얼라인먼트 해결, Micro-fade 적용</li>
-        <li><strong>스토리지 누수 방지</strong> – Deep GC 추적기 구현으로 MD5 해시 캐시 파일 정리</li>
-        <li><strong>웹소켓 세션 탈취 방어</strong> – password_changed_at 검증으로 제로-트러스트 모델 구현</li>
-        <li><strong>정규식 토크나이저 고도화</strong> – 스마트 ITN 엔진 개발로 URL/이메일 자연스럽게 처리</li>
-        <li><strong>CPU 병목 제거</strong> – ThreadPoolExecutor 오버헤드 제거, O(N²) → O(1) 성능 개선</li>
+        <li><strong>스트리밍 팝 노이즈</strong> — 스트리밍 중 간헐적으로 '틱' 잡음 발생. PCM 청크가 홀수 바이트로 끊겨 와 16bit 샘플 정렬이 깨지는 것이 원인. 잔여 바이트를 다음 청크에 이어 붙이는 Residual Buffer로 정렬을 보장하고, 청크 경계에 Micro-fade를 적용해 해결</li>
+        <li><strong>스토리지 누수</strong> — 보이스를 삭제해도 디스크 사용량이 계속 증가. 원본을 지워도 파생된 MD5 해시 캐시 파일이 남는 구조여서, 파생 파일까지 추적해 함께 지우는 Deep GC를 구현해 차단</li>
+        <li><strong>웹소켓 세션 탈취 방어</strong> — 비밀번호를 바꿔도 이미 발급된 토큰으로 웹소켓 연결이 열리는 허점 발견. 토큰 발급 시점과 password_changed_at을 대조해 변경 이전 토큰을 전부 무효화</li>
+        <li><strong>ITN 정규화</strong> — URL·이메일을 한국어로 부자연스럽게 읽는 문제. 자연스러운 발음으로 변환하는 스마트 ITN 엔진을 직접 개발해 정규화 정확도 50.1% → 70.9%</li>
+        <li><strong>CPU 병목</strong> — 요청마다 ThreadPoolExecutor가 새로 생성되는 오버헤드를 프로파일링으로 발견. 이를 걷어내고 텍스트 처리 로직을 O(N²) → O(1)로 개선</li>
     </ol>
 
     <div class="tech-tags" style="margin-top: 20px;">
@@ -153,8 +153,8 @@ title: Projects
     <p>상담 품질 분석을 위해 발화자 식별 필요. 기존 STT는 음성 인식만 제공하여 상담사/고객 구분 불가.</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>모델 파인튜닝:</strong> Pyannote 사전 학습 모델 파인튜닝 수행 — 데이터 수집, 파라미터 튜닝, 학습 진행.</p>
-    <p><strong>시스템 통합:</strong> 화자 분할과 STT 연동 작업 수행.</p>
+    <p><strong>모델 파인튜닝:</strong> Pyannote 사전 학습 모델을 한국어 상담 데이터로 파인튜닝 — 데이터 수집부터 파라미터 튜닝, 학습까지 수행.</p>
+    <p><strong>시스템 통합:</strong> 화자 분할 결과를 STT와 연동해 상담사/고객이 구분된 전사 결과를 만드는 파이프라인 작업 수행.</p>
 
     <h4 style="margin-top: 20px; color: #555;">수행 내용</h4>
     <ul style="list-style-position: inside; line-height: 2;">
@@ -183,7 +183,8 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>인프라 설계:</strong> MetalLB 로드 밸런싱 + Ingress-nginx 라우팅 + PersistentVolume NFS 스토리지. Harbor 중앙 이미지 관리 + ArgoCD GitOps 선언적 배포.</p>
-    <p><strong>CI/CD 파이프라인:</strong> GitLab → Jenkins → ArgoCD 완전 자동화. Prometheus/Grafana 실시간 모니터링 + Loki/Kibana 로그 자동화.</p>
+    <p><strong>CI/CD 파이프라인:</strong> GitLab에서 Jenkins와 Harbor 레지스트리를 거쳐 ArgoCD로 배포되는 완전 자동화 파이프라인. Prometheus/Grafana 실시간 모니터링 + Loki/Kibana 로그 자동화.</p>
+    <p><strong>운영:</strong> 구축에서 끝나지 않고 클러스터 장애 대응과 리소스 관리까지 담당 — NFS 기반 PV/PVC로 모델·데이터 볼륨을 관리하며 20개 이상의 ML 모델 운영 환경을 유지.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
     <ul style="list-style-position: inside; line-height: 2;">
@@ -413,14 +414,16 @@ title: Projects
     <p><strong>Agent 실행 흐름:</strong> LangGraph StateGraph로 retrieve → grade(검색 품질 자가 평가) → rewrite(질문 재작성) → generate 흐름 설계. 검색 결과가 부족하면 질문을 재작성해 재검색하는 self-corrective 루프 구현.</p>
     <p><strong>RAG 파이프라인:</strong> 문서 청킹 → BGE-M3 임베딩 → <strong>FAISS + BM25 하이브리드 검색 (RRF 직접 구현)</strong>. 문서 근거 기반 답변 + 출처 인용, 근거 없으면 답변 거부(hallucination 억제). FastAPI 서빙 레이어 포함.</p>
     <p><strong>Tool Orchestration:</strong> LLM이 도구(검색/계산/날짜)를 선택 호출하는 multi-step Agent 레이어. 소형 모델의 tool calling 무응답을 감지해 검색을 강제 호출하는 결정적 폴백 설계.</p>
-    <p><strong>Multi-Agent:</strong> 멀티홉 질문을 Planner가 사실 단위 sub-질문으로 분해 → RAG Worker 병렬 처리 → Synthesizer 종합. temperature 고정 후 통제 실험으로 소형 모델의 실패 조건(명사형 질문+엄격 거부 지시)을 격리해 해결.</p>
+    <p><strong>Multi-Agent:</strong> 멀티홉 질문을 Planner가 사실 단위 sub-질문으로 분해 → RAG Worker 병렬 처리 → Synthesizer 종합하는 계층 구조. Planner가 이미 검색용으로 정제한 질문이므로 Worker의 자체 재작성 루프는 비활성화해 검색 교란을 방지.</p>
+    <p><strong>소형 모델 디버깅 (통제 실험):</strong> temperature를 0으로 고정해 실패를 재현 가능하게 만든 뒤 조건을 하나씩 바꿔가며 원인을 격리. 청크 순서 실험으로 3B 모델의 lost-in-the-middle 특성을 확인해 최상위 청크를 질문 바로 앞에 배치했고, "(2025.09~)" 같은 압축 날짜 표기를 읽지 못하는 문제는 표기 규칙 힌트로, "~의 시작 기간" 같은 명사형 질문에서만 답변을 거부하는 조건은 프롬프트 격리 실험으로 찾아 Planner가 의문문을 생성하도록 수정.</p>
 
     <h4 style="margin-top: 20px; color: #555;">평가 루프 및 개선 (실측)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
         <li>10문항 평가셋으로 정답률/재작성률/지연시간 측정 파이프라인 구축</li>
-        <li><strong>평가 지표 이상 신호로 결함 4건 발견·수정</strong> — State 스키마 버그(재작성률 100% 신호), 한국어 판정 파싱, 키워드 질문 검색 실패, RRF 중복 키</li>
+        <li><strong>평가 지표 이상 신호와 통제 실험으로 결함 7건 발견·수정</strong> — State 스키마 버그(재작성률 100% 신호), 한국어 판정 파싱, 키워드 질문 검색 실패, RRF 중복 키, Worker 이중 재작성, 명사형 질문 거부, 압축 날짜 표기 미해석</li>
         <li>고유명사 질문 검색 실패 → BM25+FAISS 하이브리드 도입으로 검색 기인 실패 3건 → 1건</li>
         <li>정답률 50% → 60%, 재작성률 100% → 30% (개선 전 과정 git 히스토리에 기록)</li>
+        <li>멀티홉 3문항 비교 평가에서 Multi-Agent가 사실 수집은 정확했지만 3B 모델의 비교·집계 한계와 키워드 채점의 허위 통과가 남아 있음을 확인 — 잘된 결과만 남기지 않고 한계까지 README에 기록</li>
     </ul>
 
     <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/rag-agent" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소 (코드 및 개선 히스토리)</a></p>
@@ -455,6 +458,7 @@ title: Projects
         <li>FastMCP 기반 stdio 서버, Pydantic 입력 검증, read-only 어노테이션</li>
         <li>확정 사실(profile.json)과 서술형 문서 검색의 이원화 구조</li>
         <li>스모크 테스트 포함 (MCP 클라이언트 세션으로 전체 도구 실호출 검증)</li>
+        <li>Claude Code에 사용자 스코프로 등록해 실제 AI 에이전트 세션에서 도구 호출까지 검증 — 실사용 세션을 재생한 SVG 데모를 README에 수록</li>
         <li>RAG Agent 프로젝트와 동일 지식 베이스 공유 — RAG와 MCP 두 방식의 노출 비교 경험</li>
     </ul>
 
@@ -516,8 +520,9 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">실측 사례</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>로컬 Ollama에서 동시성을 올려도 처리량이 8.1 tokens/s에 고정되고 TTFT만 0.6s→12.4s로 악화되는 병목 포착</li>
-        <li>원인: Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화 — 도구가 큐잉 병목을 수치로 증명</li>
+        <li>로컬 Ollama(CPU) 기준선: 동시성 1에서 TTFT 0.62초, 7.6 tokens/s</li>
+        <li>동시성을 2·4로 올리자 TTFT는 7.9초·12.4초로 악화되는데 처리량은 8.1 tokens/s에 고정 — 스케일이 아니라 큐잉이 일어나고 있음을 수치로 포착</li>
+        <li>원인: Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화 — 벤치마크 도구가 병목의 위치를 증명</li>
     </ul>
 
     <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/llm-bench" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소</a></p>
