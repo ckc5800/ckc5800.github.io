@@ -221,23 +221,24 @@ title: Projects
     <p><strong>Role:</strong> 사내 지식 관리 및 요약 시스템 개발</p>
 
     <h4 style="margin-top: 20px; color: #555;">배경</h4>
-    <p>사내 회의록, 기술 문서, 프로젝트 리포트 등 문서 지속 생성. 핵심 내용 자동 요약 시스템 필요.</p>
+    <p>휴가나 부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 오랜 시간이 걸린다는 문제에서 출발. 사내 메신저에 넣을 한국어 요약 모델 개발이 목표.</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>모델 선택 및 파인튜닝:</strong> BART 기반 대화 요약, T5 기반 문서 요약 모델 학습. 회의록, 기술 문서 등 다양한 도메인 데이터로 파인튜닝. Hugging Face 사전 학습 모델 기반 구축.</p>
-    <p><strong>시스템 구축:</strong> 자동 요약 및 검색 파이프라인 구축.</p>
+    <p><strong>모델 설계:</strong> 대화 요약은 BART, 문서 요약은 T5로 나눠 개발. 대화 요약 파인튜닝에는 사전 학습 표현을 훼손하지 않는 R3F 정규화 기법을 적용.</p>
+    <p><strong>데이터 파이프라인:</strong> 한국어 대화-요약 쌍 데이터 수집과 전처리, 임베딩 모델 선정까지 학습 파이프라인을 직접 구축. ROUGE 점수와 사내 인원 휴먼 평가를 품질 지표로 사용.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>자동 요약 시스템 구축 및 운영</li>
-        <li>BART/T5 모델 파인튜닝 완료</li>
-        <li>완전 자동화 파이프라인 구축</li>
-        <li>사내 자체 개발 메신저에 기능 추가하여 회의록, 문서 요약에 적용</li>
+        <li>사내 메신저에 요약 기능을 붙여 실제 적용</li>
+        <li>긴 사내 공지 문서를 한 줄 요약으로 압축, 실제 업무 대화는 2초대에 요약</li>
+        <li>카카오톡 대화 요약 기능과 나란히 비교해 유사한 품질의 요약을 확인한 데모 수행</li>
+        <li>STT 결과 텍스트를 활용한 자연어 처리 기능 개발과 전처리·평가 환경 구축도 함께 수행</li>
     </ul>
 
     <div class="tech-tags" style="margin-top: 20px;">
         <span class="tech-tag">BART</span>
         <span class="tech-tag">T5</span>
+        <span class="tech-tag">R3F Fine-tuning</span>
         <span class="tech-tag">Hugging Face</span>
         <span class="tech-tag">NLP</span>
         <span class="tech-tag">PyTorch</span>
