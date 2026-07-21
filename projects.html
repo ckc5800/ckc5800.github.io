@@ -526,6 +526,7 @@ title: Projects
         <li>로컬 Ollama(CPU) 기준선: 동시성 1에서 TTFT 0.62초, 7.6 tokens/s</li>
         <li>동시성을 2·4로 올리자 TTFT는 7.9초·12.4초로 악화되는데 처리량은 8.1 tokens/s에 고정 — 스케일이 아니라 큐잉이 일어나고 있음을 수치로 포착</li>
         <li>원인: Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화 — 벤치마크 도구가 병목의 위치를 증명</li>
+        <li>후속 검증: NUM_PARALLEL=4로 서버 설정만 바꿔 같은 스윕을 재실행 — TTFT p50 12.4초 → 0.93초, 합산 처리량 8.1 → 22.9 tokens/s로 스케일. 진단 → 설정 변경 → 재측정으로 루프를 닫음</li>
     </ul>
 
     <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/llm-bench" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소</a></p>
