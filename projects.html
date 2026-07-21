@@ -419,6 +419,7 @@ title: Projects
     <p><strong>Tool Orchestration:</strong> LLM이 도구(검색/계산/날짜)를 선택 호출하는 multi-step Agent 레이어. 소형 모델의 tool calling 무응답을 감지해 검색을 강제 호출하는 결정적 폴백 설계.</p>
     <p><strong>Multi-Agent:</strong> 멀티홉 질문을 Planner가 사실 단위 sub-질문으로 분해 → RAG Worker 병렬 처리 → Synthesizer 종합하는 계층 구조. Planner가 이미 검색용으로 정제한 질문이므로 Worker의 자체 재작성 루프는 비활성화해 검색 교란을 방지.</p>
     <p><strong>소형 모델 디버깅 (통제 실험):</strong> temperature를 0으로 고정해 실패를 재현 가능하게 만든 뒤 조건을 하나씩 바꿔가며 원인을 격리. 청크 순서 실험으로 3B 모델의 lost-in-the-middle 특성을 확인해 최상위 청크를 질문 바로 앞에 배치했고, "(2025.09~)" 같은 압축 날짜 표기를 읽지 못하는 문제는 표기 규칙 힌트로, "~의 시작 기간" 같은 명사형 질문에서만 답변을 거부하는 조건은 프롬프트 격리 실험으로 찾아 Planner가 의문문을 생성하도록 수정.</p>
+    <p><strong>MCP 클라이언트 레이어:</strong> 같은 에이전트 구조에서 도구만 MCP로 바꾼 버전을 추가 — 별도 저장소의 portfolio-mcp 서버를 stdio로 띄우고, 서버가 광고하는 도구 4개를 langchain-mcp-adapters로 변환해 물린다. 3B 모델이 폴백 없이 질문에 맞는 도구를 스스로 골라 정답을 내는 것까지 확인 (MCP 서버와 클라이언트 양쪽 구현).</p>
 
     <h4 style="margin-top: 20px; color: #555;">평가 루프 및 개선 (실측)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
@@ -427,6 +428,8 @@ title: Projects
         <li>고유명사 질문 검색 실패 → BM25+FAISS 하이브리드 도입으로 검색 기인 실패 3건 → 1건</li>
         <li>정답률 50% → 60%, 재작성률 100% → 30% (개선 전 과정 git 히스토리에 기록)</li>
         <li>멀티홉 3문항 비교 평가에서 Multi-Agent가 사실 수집은 정확했지만 3B 모델의 비교·집계 한계와 키워드 채점의 허위 통과가 남아 있음을 확인 — 잘된 결과만 남기지 않고 한계까지 README에 기록</li>
+        <li>평가를 검색/생성으로 분리 — 질문별 gold 청크를 라벨링해 retrieval recall@1 70%·recall@3 90%를 LLM 없이 결정적으로 측정, 유일한 상시 실패("회사 목록" 질문)가 검색 기인임을 처음으로 분리 확인</li>
+        <li>채점을 정규식 패턴+거부 실패 처리로 강화해 재평가 70% — 틀린 3건이 검색 1건, 생성 2건으로 정확히 분해되어 다음 개선 지점(청킹 vs 모델 크기)이 지표에서 바로 읽힘</li>
     </ul>
 
     <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/rag-agent" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소 (코드 및 개선 히스토리)</a></p>
@@ -463,6 +466,7 @@ title: Projects
         <li>스모크 테스트 포함 (MCP 클라이언트 세션으로 전체 도구 실호출 검증)</li>
         <li>Claude Code에 사용자 스코프로 등록해 실제 AI 에이전트 세션에서 도구 호출까지 검증 — 실사용 세션을 재생한 SVG 데모를 README에 수록</li>
         <li>RAG Agent 프로젝트와 동일 지식 베이스 공유 — RAG와 MCP 두 방식의 노출 비교 경험</li>
+        <li>rag-agent의 에이전트가 이 서버를 MCP 클라이언트로 소비 — 서버(제공자)와 클라이언트(소비자)를 양쪽 다 구현</li>
     </ul>
 
     <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/portfolio-mcp" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소</a></p>
