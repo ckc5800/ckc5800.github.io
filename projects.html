@@ -57,6 +57,7 @@ title: Projects
     <p><strong>성능 최적화:</strong> H100/L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 활용 개선. Redis 캐싱으로 동일 문장 0ms 응답 구현. 5가지 엔지니어링 문제 해결 (팝 노이즈, GC 누수, 세션 탈취, ITN 토크나이저, CPU 병목).</p>
     <p><strong>기능 확장:</strong> 참조 음성 5초만으로 화자 목소리를 복제하는 ICL(In-Context Learning) 기반 음성복제 기능 구현. OpenAI TTS API 호환 인터페이스와 기존 WebSocket 프로토콜 호환 레이어를 만들어 외부 서비스가 코드 수정 없이 연동되도록 지원. Redis 기반 Atomic quota, 분산락, Circuit Breaker 등 장애 대응 로직 개발.</p>
     <p><strong>모델 및 품질:</strong> TTS 학습 데이터 정제 및 ZipVoice 모델 학습. Whisper 기반 CER/WER 자동 품질 측정 파이프라인 구축, 사내 운영 테스트 및 QA 수행.</p>
+    <p><strong>운영 고도화:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성, 무중단 롤링 재배포 체계. 온보딩 가이드·운영 런북·장애복구 절차·SLO까지 문서화해 운영 이관이 가능한 수준으로 정비.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과 (KPI)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
@@ -69,6 +70,7 @@ title: Projects
         <li>CER(문자 오류율): 평균 3~5% (Whisper-large-v3 STT 기반 자동 품질 측정)</li>
         <li>32개 언어 지원 단일 플랫폼</li>
         <li>ITN 정규화 정확도 50.1% → 70.9%</li>
+        <li><strong>이후 고도화(vLLM 마이그레이션·FP8): TTFB p50 70ms, 처리량 8.6 rps</strong> — 콜센터 수백 명 동시 사용 규모 (2026.07 실측)</li>
     </ul>
 
     <h4 style="margin-top: 20px; color: #555;">운영 대시보드</h4>
@@ -123,6 +125,7 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>AIG STT 구조 개선:</strong> Triton Inference Server 기반 음성인식 파이프라인을 모듈화하고 로그·Docker 구조를 개선해 코드 재사용성을 확보. 전처리 병렬화로 처리 속도를 높이고, 컨테이너 재시작 모니터링 등 안정성 설정을 보강.</p>
+    <p><strong>엔진 구성:</strong> Triton Python 백엔드로 파일 기반(화자 분리 결합)과 실시간 스트리밍 두 추론 모델을 구성, HTTP와 gRPC 인터페이스를 모두 제공. 화자 분리 결과를 STT에 결합하는 하이브리드 화자 할당 로직을 구현해, 경계가 모호한 발화는 Ambiguous로 분리하고 화자 오할당을 방지.</p>
     <p><strong>사내 회의록 STT:</strong> 회의록 기능에 STT를 탑재 — Whisper 계열 모델별 성능을 조사·정리해 WhisperX 최적 파라미터를 찾고, 파일 기반과 스트리밍 기반 처리를 모두 구현. 엔진-브로커(API-HTTP) 통신 오류 수정과 QA까지 수행.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
@@ -138,8 +141,10 @@ title: Projects
     <div class="tech-tags" style="margin-top: 20px;">
         <span class="tech-tag">Whisper-large-v3</span>
         <span class="tech-tag">WhisperX</span>
-        <span class="tech-tag">Triton</span>
+        <span class="tech-tag">Faster Whisper</span>
+        <span class="tech-tag">Triton (Python Backend)</span>
         <span class="tech-tag">Streaming ASR</span>
+        <span class="tech-tag">gRPC / HTTP</span>
         <span class="tech-tag">Docker</span>
     </div>
 </div>
