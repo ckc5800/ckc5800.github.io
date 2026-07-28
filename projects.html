@@ -422,6 +422,7 @@ title: Projects
     <p><strong>Agent 실행 흐름:</strong> LangGraph StateGraph로 retrieve → grade(검색 품질 자가 평가) → rewrite(질문 재작성) → generate 흐름 설계. 검색 결과가 부족하면 질문을 재작성해 재검색하는 self-corrective 루프 구현.</p>
     <p><strong>RAG 파이프라인:</strong> 문서 청킹 → BGE-M3 임베딩 → <strong>FAISS + BM25 하이브리드 검색 (RRF 직접 구현)</strong>. 문서 근거 기반 답변 + 출처 인용, 근거 없으면 답변 거부(hallucination 억제). FastAPI 서빙 레이어 포함.</p>
     <p><strong>Tool Orchestration:</strong> LLM이 도구(검색/계산/날짜)를 선택 호출하는 multi-step Agent 레이어. 소형 모델의 tool calling 무응답을 감지해 검색을 강제 호출하는 결정적 폴백 설계.</p>
+    <p><strong>도구 체이닝 한계 측정:</strong> "구조가 multi-step을 지원한다"와 "이 모델이 실제로 해낸다"를 분리해 검증 — 필요한 도구 수를 1→2→3단으로 늘려가며 호출된 도구 목록을 기록하는 측정 스크립트 구현(<code>eval/eval_tool_chain.py</code>).</p>
     <p><strong>Multi-Agent:</strong> 멀티홉 질문을 Planner가 사실 단위 sub-질문으로 분해 → RAG Worker 병렬 처리 → Synthesizer 종합하는 계층 구조. Planner가 이미 검색용으로 정제한 질문이므로 Worker의 자체 재작성 루프는 비활성화해 검색 교란을 방지.</p>
     <p><strong>소형 모델 디버깅 (통제 실험):</strong> temperature를 0으로 고정해 실패를 재현 가능하게 만든 뒤 조건을 하나씩 바꿔가며 원인을 격리. 청크 순서 실험으로 3B 모델의 lost-in-the-middle 특성을 확인해 최상위 청크를 질문 바로 앞에 배치했고, "(2025.09~)" 같은 압축 날짜 표기를 읽지 못하는 문제는 표기 규칙 힌트로, "~의 시작 기간" 같은 명사형 질문에서만 답변을 거부하는 조건은 프롬프트 격리 실험으로 찾아 Planner가 의문문을 생성하도록 수정.</p>
     <p><strong>MCP 클라이언트 레이어:</strong> 같은 에이전트 구조에서 도구만 MCP로 바꾼 버전을 추가 — 별도 저장소의 portfolio-mcp 서버를 stdio로 띄우고, 서버가 광고하는 도구 4개를 langchain-mcp-adapters로 변환해 물린다. 3B 모델이 폴백 없이 질문에 맞는 도구를 스스로 골라 정답을 내는 것까지 확인 (MCP 서버와 클라이언트 양쪽 구현).</p>
