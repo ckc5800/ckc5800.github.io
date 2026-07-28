@@ -419,29 +419,16 @@ title: Projects
     <p>LLM Agent 시스템(RAG, tool orchestration, state 관리)의 E2E 구축 역량 확보 목적. 포트폴리오 기술문서를 지식 베이스로 하는 Q&A Agent를 전부 로컬 환경(Ollama)에서 구현.</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>Agent 실행 흐름:</strong> LangGraph StateGraph로 retrieve → grade(검색 품질 자가 평가) → rewrite(질문 재작성) → generate 흐름 설계. 검색 결과가 부족하면 질문을 재작성해 재검색하는 self-corrective 루프 구현.</p>
-    <p><strong>RAG 파이프라인:</strong> 문서 청킹 → BGE-M3 임베딩 → <strong>FAISS + BM25 하이브리드 검색 (RRF 직접 구현)</strong>. 문서 근거 기반 답변 + 출처 인용, 근거 없으면 답변 거부(hallucination 억제). FastAPI 서빙 레이어 포함.</p>
-    <p><strong>Tool Orchestration:</strong> LLM이 도구(검색/계산/날짜)를 선택 호출하는 multi-step Agent 레이어. 소형 모델의 tool calling 무응답을 감지해 검색을 강제 호출하는 결정적 폴백 설계.</p>
-    <p><strong>도구 체이닝 한계 측정:</strong> "구조가 multi-step을 지원한다"와 "이 모델이 실제로 해낸다"를 분리해 검증 — 필요한 도구 수를 1→2→3단으로 늘려가며 호출된 도구 목록을 기록하는 측정 스크립트 구현(<code>eval/eval_tool_chain.py</code>).</p>
-    <p><strong>Multi-Agent:</strong> 멀티홉 질문을 Planner가 사실 단위 sub-질문으로 분해 → RAG Worker 병렬 처리 → Synthesizer 종합하는 계층 구조. Planner가 이미 검색용으로 정제한 질문이므로 Worker의 자체 재작성 루프는 비활성화해 검색 교란을 방지.</p>
-    <p><strong>소형 모델 디버깅 (통제 실험):</strong> temperature를 0으로 고정해 실패를 재현 가능하게 만든 뒤 조건을 하나씩 바꿔가며 원인을 격리. 청크 순서 실험으로 3B 모델의 lost-in-the-middle 특성을 확인해 최상위 청크를 질문 바로 앞에 배치했고, "(2025.09~)" 같은 압축 날짜 표기를 읽지 못하는 문제는 표기 규칙 힌트로, "~의 시작 기간" 같은 명사형 질문에서만 답변을 거부하는 조건은 프롬프트 격리 실험으로 찾아 Planner가 의문문을 생성하도록 수정.</p>
-    <p><strong>MCP 클라이언트 레이어:</strong> 같은 에이전트 구조에서 도구만 MCP로 바꾼 버전을 추가 — 별도 저장소의 portfolio-mcp 서버를 stdio로 띄우고, 서버가 광고하는 도구 4개를 langchain-mcp-adapters로 변환해 물린다. 3B 모델이 폴백 없이 질문에 맞는 도구를 스스로 골라 정답을 내는 것까지 확인 (MCP 서버와 클라이언트 양쪽 구현).</p>
+    <p><strong>RAG 파이프라인:</strong> LangGraph StateGraph로 retrieve → grade(검색 품질 자가 평가) → 부족하면 rewrite 후 재검색 → generate. 검색은 <strong>FAISS(의미) + BM25(키워드)를 RRF로 융합</strong>(직접 구현) — 점수 스케일이 다른 두 검색기를 순위만으로 합치기 위한 선택. 전 구간 로컬(Ollama), FastAPI 서빙 포함.</p>
+    <p><strong>에이전트 레이어 3종:</strong> 도구를 선택 호출하는 ReAct 루프, 멀티홉 질문을 사실 단위로 분해하는 Planner–Worker–Synthesizer, 도구 출처만 MCP로 바꾼 버전(<strong>MCP 서버·클라이언트 양쪽 구현</strong>). Worker의 자체 재작성은 <strong>의도적으로 비활성화</strong> — Planner가 정제한 질문을 다시 고치면 검색이 흐트러졌다.</p>
+    <p><strong>소형 모델 통제 실험:</strong> temperature를 0으로 고정해 실패를 재현 가능하게 만든 뒤 조건을 하나씩 바꿔 원인을 격리. 청크 순서만 바꾸는 실험으로 lost-in-the-middle을 확인해 최상위 청크를 질문 바로 앞에 배치. 도구 체이닝도 <strong>단계 수를 1→2→3으로 늘려가며 각 3회 측정</strong> — 2단(검색→계산)에서 <strong>3B 0/3, 7B 3/3</strong>으로 갈리고 3단은 양쪽 모두 실패. <strong>재현되지 않는 항목은 1회가 아닌 반복 횟수로 집계</strong>.</p>
 
     <h4 style="margin-top: 20px; color: #555;">평가 루프 및 개선 (실측)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
-        <li>10문항 평가셋으로 정답률/재작성률/지연시간 측정 파이프라인 구축</li>
-        <li><strong>평가 지표 이상 신호와 통제 실험으로 결함 7건 발견·수정</strong> — State 스키마 버그(재작성률 100% 신호), 한국어 판정 파싱, 키워드 질문 검색 실패, RRF 중복 키, Worker 이중 재작성, 명사형 질문 거부, 압축 날짜 표기 미해석</li>
-        <li>고유명사 질문 검색 실패 → BM25+FAISS 하이브리드 도입으로 검색 기인 실패 3건 → 1건</li>
-        <li>정답률 50% → 60%, 재작성률 100% → 30% (개선 전 과정 git 히스토리에 기록)</li>
-        <li>멀티홉 3문항 비교 평가에서 Multi-Agent가 사실 수집은 정확했지만 3B 모델의 비교·집계 한계와 키워드 채점의 허위 통과가 남아 있음을 확인 — 잘된 결과만 남기지 않고 한계까지 README에 기록</li>
-        <li>평가를 검색/생성으로 분리 — 질문별 gold 청크를 라벨링해 retrieval recall@k를 LLM 없이 결정적으로 측정, 유일한 상시 실패("회사 목록" 질문)가 검색 기인임을 처음으로 분리 확인</li>
-        <li>채점을 정규식 패턴+거부 실패 처리로 강화해 재평가 70% — 틀린 3건이 검색 1건, 생성 2건으로 정확히 분해되어 다음 개선 지점이 지표에서 바로 읽힘</li>
-        <li>검색 실패 원인 수정 — 노션 내보내기의 LaTeX 장식이 핵심 청크 임베딩을 오염시킨 것과 BM25 공백 토큰화의 한국어 조사 문제를 찾아, 마크다운 정제 + 문자 bigram 토크나이저로 recall@1 70→80%, recall@6 90→100% 개선 (rank 4는 생성기의 top-3 밖이라 남은 한계까지 기록)</li>
-        <li><strong>데이터 품질 검수 자동화</strong> — 인덱싱 대상 텍스트의 길이 분포와 잔여 노이즈 패턴을 스캔하는 검수 단계를 구축해 CI에 연결(<code>--strict</code>, LLM·임베딩 불필요로 수 초 내 실행). 노이즈를 <strong>결함(자동 차단)</strong>과 <strong>판단 필요(보고만)</strong>로 분류 — 다이어그램 문법처럼 노이즈와 키워드가 섞인 경우는 기계가 아닌 사람이 판단하도록 설계</li>
-        <li>검수로 <strong>미탐지 노이즈 추가 발견 및 제거</strong> — 노션 내부 링크(퍼센트 인코딩 경로)가 13청크·4,073자로 <strong>코퍼스의 9.4%</strong>를 점유. 논문·GitHub 등 외부 URL은 보존하고 중첩 링크만 제거하는 두 조건을 단위 테스트로 고정</li>
-        <li><strong>recall@1 80→90%, recall@3 90→100%, MRR 0.875→0.95</strong> — 수치보다 <strong>"회사 목록" 질문이 rank 4→2</strong>로 올라와 생성기의 top-3 안에 진입한 것이 핵심(문턱 통과)</li>
-        <li><strong>전체 평가 70→90%, 검색 기인 실패 1건→0건</strong> — 프로젝트 시작부터 상시 실패하던 질문이 처음 통과. 남은 실패 1건은 gold가 rank 1로 검색됐음에도 생성이 누락한 케이스로, <strong>다음 개선 지점이 검색이 아닌 생성임을 지표가 지목</strong></li>
-        <li>청킹 변경 시 md5 gold 라벨이 무효화되는 구조를 보완 — 이전 청크와 대조해 재부착하는 도구 구현. <strong>자동 매칭이 조용히 틀리면 평가 전체가 거짓</strong>이 되므로 매칭 점수를 출력하고 임계 미만이면 반영을 거부</li>
+        <li><strong>gold 라벨을 어떻게 정할지가 이 평가의 핵심 설계</strong> — 같은 사실이 원본 로그와 이력서 요약에 중복돼 있어, <strong>질문당 정답 청크를 1~4개 두고 "그 중 하나라도 상위에 오면 성공"</strong>으로 정의(단일 정답 가정을 버림). 라벨은 <strong>청크 내용의 md5로 고정</strong>해 청킹을 바꾸면 자동 무효화되도록 하고, gold 전체가 실제 정답 문자열을 포함하는지 역검증</li>
+        <li><strong>지표에 무작위 기준선을 함께 산출</strong> — gold가 여러 개면 우연히 맞을 확률이 오르므로, 무작위 검색기의 기대 recall을 계산해 같이 출력(<strong>recall@1 3% · @3 10% · @6 19%</strong>). <strong>기준선 없는 지표는 성능을 증명하지 못한다</strong>는 전제를 코드에 고정</li>
+        <li><strong>지표 이상 신호와 통제 실험으로 결함 7건 발견·수정</strong> — State 스키마 버그(재작성률 100%가 신호), 한국어 판정 파싱, 고유명사 검색 실패, RRF 중복 키, Worker 이중 재작성, 명사형 질문 거부, 압축 날짜 표기 미해석. 검색 실패의 원인도 <strong>임베딩 오염과 한국어 조사 토큰화로 분리</strong>해 확인하고, 인덱싱 전 <strong>데이터 검수를 CI에 연결</strong>(노션 내부 링크가 코퍼스의 9.4%를 점유하던 것을 발견·제거)</li>
+        <li><strong>결과 — recall@1 90% · recall@3 100% · MRR 0.95 / 정답률 90% · 검색 기인 실패 0건</strong>(기준선 대비). 수치보다 <strong>상시 실패하던 "회사 목록" 질문이 rank 4→2로 생성기의 top-3에 진입해 처음 통과</strong>한 것이 핵심 — 지표가 아니라 <strong>문턱을 넘은 변화</strong></li>
     </ul>
 
     <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/rag-agent" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소 (코드 및 개선 히스토리)</a></p>
