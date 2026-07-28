@@ -419,12 +419,13 @@ title: Projects
     <p>LLM Agent 시스템(RAG, tool orchestration, state 관리)의 E2E 구축 역량 확보 목적. 포트폴리오 기술문서를 지식 베이스로 하는 Q&A Agent를 전부 로컬 환경(Ollama)에서 구현.</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>RAG 파이프라인:</strong> LangGraph StateGraph로 retrieve → grade(검색 품질 자가 평가) → 부족하면 rewrite 후 재검색 → generate. 검색은 <strong>FAISS(의미) + BM25(키워드)를 RRF로 융합</strong>(직접 구현) — 점수 스케일이 다른 두 검색기를 순위만으로 합치기 위한 선택. 전 구간 로컬(Ollama), FastAPI 서빙 포함.</p>
+    <p><strong>RAG 파이프라인:</strong> LangGraph StateGraph로 retrieve → grade(검색 품질 자가 평가) → 부족하면 rewrite 후 재검색 → generate. 검색은 <strong>FAISS(의미) + BM25(키워드)를 RRF로 융합</strong>(직접 구현, 벡터 저장소는 Qdrant로 교체 가능) — 점수 스케일이 다른 두 검색기를 순위만으로 합치기 위한 선택. 전 구간 로컬(Ollama), FastAPI 서빙 포함.</p>
     <p><strong>에이전트 레이어 3종:</strong> 도구를 선택 호출하는 ReAct 루프, 멀티홉 질문을 사실 단위로 분해하는 Planner–Worker–Synthesizer, 도구 출처만 MCP로 바꾼 버전(<strong>MCP 서버·클라이언트 양쪽 구현</strong>). Worker의 자체 재작성은 <strong>의도적으로 비활성화</strong> — Planner가 정제한 질문을 다시 고치면 검색이 흐트러졌다.</p>
     <p><strong>소형 모델 통제 실험:</strong> temperature를 0으로 고정해 실패를 재현 가능하게 만든 뒤 조건을 하나씩 바꿔 원인을 격리. 청크 순서만 바꾸는 실험으로 lost-in-the-middle을 확인해 최상위 청크를 질문 바로 앞에 배치. 도구 체이닝도 <strong>단계 수를 1→2→3으로 늘려가며 각 3회 측정</strong> — 2단(검색→계산)에서 <strong>3B 0/3, 7B 3/3</strong>으로 갈리고 3단은 양쪽 모두 실패. <strong>재현되지 않는 항목은 1회가 아닌 반복 횟수로 집계</strong>.</p>
 
     <h4 style="margin-top: 20px; color: #555;">평가 루프 및 개선 (실측)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
+        <li><strong>벡터 저장소를 교체 가능하게 만들고 FAISS와 Qdrant를 비교</strong> — "왜 FAISS인가"에 답하기 위해 환경변수로 교체되는 레이어를 구현하고 동일 평가를 양쪽에 실행. <strong>검색 결과는 완전히 동일</strong>(recall·MRR·순위 모두). 실제 차이는 <strong>메타데이터 필터</strong>로, FAISS는 사후 필터링이라 조건이 좁을수록 과다 조회가 필요했고(청크 1개 조건에 전체 67개 중 60개 조회) Qdrant는 필터를 검색 단계에 주입해 배수와 무관. <strong>규모와 필터 요구에 따른 선택 기준을 실측으로 확보</strong></li>
         <li><strong>gold 라벨을 어떻게 정할지가 이 평가의 핵심 설계</strong> — 같은 사실이 원본 로그와 이력서 요약에 중복돼 있어, <strong>질문당 정답 청크를 1~4개 두고 "그 중 하나라도 상위에 오면 성공"</strong>으로 정의(단일 정답 가정을 버림). 라벨은 <strong>청크 내용의 md5로 고정</strong>해 청킹을 바꾸면 자동 무효화되도록 하고, gold 전체가 실제 정답 문자열을 포함하는지 역검증</li>
         <li><strong>지표에 무작위 기준선을 함께 산출</strong> — gold가 여러 개면 우연히 맞을 확률이 오르므로, 무작위 검색기의 기대 recall을 계산해 같이 출력(<strong>recall@1 3% · @3 10% · @6 19%</strong>). <strong>기준선 없는 지표는 성능을 증명하지 못한다</strong>는 전제를 코드에 고정</li>
         <li><strong>지표 이상 신호와 통제 실험으로 결함 7건 발견·수정</strong> — State 스키마 버그(재작성률 100%가 신호), 한국어 판정 파싱, 고유명사 검색 실패, RRF 중복 키, Worker 이중 재작성, 명사형 질문 거부, 압축 날짜 표기 미해석. 검색 실패의 원인도 <strong>임베딩 오염과 한국어 조사 토큰화로 분리</strong>해 확인하고, 인덱싱 전 <strong>데이터 검수를 CI에 연결</strong>(노션 내부 링크가 코퍼스의 9.4%를 점유하던 것을 발견·제거)</li>
