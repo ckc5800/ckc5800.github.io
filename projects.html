@@ -9,7 +9,8 @@ title: Projects
     <div>
         <div class="toc-label">MiCo AI</div>
         <div class="toc-links">
-            <a class="toc-link" href="#tts">TTS 프로젝트</a>
+            <a class="toc-link" href="#tts">Qwen3-TTS 플랫폼</a>
+            <a class="toc-link" href="#tts-api">TTS API 리팩토링</a>
             <a class="toc-link" href="#stt">STT 배포</a>
             <a class="toc-link" href="#diarization">Speaker Diarization</a>
         </div>
@@ -45,16 +46,14 @@ title: Projects
 </div>
 
 <div style="margin-bottom: 50px;">
-    <h3 id="tts">TTS 프로젝트</h3>
-    <p><strong>Period:</strong> 2025.09 ~ Present</p>
-    <p><strong>Role:</strong> PM 및 풀스택 개발</p>
+    <h3 id="tts">Qwen3-TTS 플랫폼 구축</h3>
+    <p><strong>Period:</strong> 2025.10 ~ Present</p>
+    <p><strong>Role:</strong> PM 및 풀스택 단독 개발 (Backend/Frontend/Infrastructure)</p>
 
     <h4 style="margin-top: 20px; color: #555;">배경</h4>
-    <p>고객 상담 센터에서 실시간 음성 합성이 필요했고, 기존 시스템의 응답 시간(2.3초) 및 동시 처리 채널(12개) 제약 극복 필요. 음성 품질도 중요.</p>
+    <p>고객 상담 센터용 TTS를 차세대 플랫폼으로 전면 재구축 — 모델 선정(Qwen3-TTS)부터 서빙 아키텍처, 백엔드·프론트엔드, 배포·운영까지 전 구간을 단독으로 수행.</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>1단계 — 기존 TTS(ZipVoice 기반) API 개선:</strong> 기존 담당자에게 인수받은 ZipVoice 기반 서비스의 스트리밍 API를 담당해 리팩토링. 아래 KPI의 TTFB 85% 단축과 동시 채널 2배 확대가 이 단계의 성과.</p>
-    <p><strong>2단계 — Qwen3-TTS 신규 플랫폼 단독 구축:</strong> 이후 신규 플랫폼을 요구사항 정의부터 아키텍처 설계·개발·배포·운영까지 단독으로 수행. 아래 구현 내용 전체가 이 플랫폼 작업.</p>
     <p><strong>시스템 아키텍처:</strong> FastAPI WebSocket/REST 게이트웨이 + vLLM-Omni(Qwen3-TTS) 추론 엔진 + Redis 분산락 & 캐싱 + React 대시보드. 문장 단위 논리 청킹 및 WebSocket 스트리밍으로 TTFB 단축.</p>
     <p><strong>성능 최적화:</strong> L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 활용 개선. Redis 캐싱으로 동일 문장 재요청 시 즉시 스트리밍 개시(캐시 히트 TTFB 50ms 미만). 6가지 엔지니어링 문제 해결 (팝 노이즈, 스토리지 누수, 세션 탈취, ITN 토크나이저, 백색소음 장애, WAV 헤더 정리 — 아래 상세).</p>
     <p><strong>측정 하네스:</strong> 성능 스윕을 도구화하는 과정에서 "0.6B 라벨로 1.7B를 측정"한 오라벨 사고를 겪은 뒤, 측정 자체를 신뢰할 수 있게 만드는 안전장치를 하네스에 내장 — 서빙 중인 모델의 3중 검증(환경변수·엔진 응답·부하기 재검증), 파라미터 반영 확인 실패 시 해당 값 스킵, SLA 판정에 연속성 요구(스파이크 하나로 뚫린 상위 동시성 채택 금지). GPU 상태를 1초마다 폴링하던 nvidia-smi가 GPU를 멈춰 세워 측정을 오염시키던 것까지 찾아 폴링 주기를 늘리고, 동일 문장 반복의 prefix cache 낙관을 가변 문장 모드로 병행 측정해 해소.</p>
@@ -63,12 +62,6 @@ title: Projects
     <p><strong>운영 고도화:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성 — 장애 시 Circuit Breaker가 CPU 엔진으로 자동 폴백. 무중단 롤링 재배포 체계, 온보딩 가이드·운영 런북·장애복구 절차·성능 명세까지 문서화해 운영 이관이 가능한 수준으로 정비.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과 (KPI)</h4>
-    <p style="margin-bottom: 5px;"><strong>기존 TTS(ZipVoice 기반) API 개선</strong></p>
-    <ul style="list-style-position: inside; line-height: 2;">
-        <li><strong>TTFB: 2292ms → 334ms (85% 단축, 6.85배 개선)</strong></li>
-        <li>동시 처리 채널: 12 → 24 (2배)</li>
-    </ul>
-    <p style="margin: 10px 0 5px;"><strong>Qwen3-TTS 신규 플랫폼 (단독 구축)</strong></p>
     <ul style="list-style-position: inside; line-height: 2;">
         <li><strong>Throughput: 0.68 → 1.41 rps (FP8·executor 최적화) → 3.09 rps (vLLM 0.24 마이그레이션, +80%)</strong></li>
         <li><strong>정상 부하 TTFB p50 70ms, GPU 처리량 8.6 rps</strong> — 콜센터 수백 명 동시 사용 규모 (2026.07 실측)</li>
@@ -114,6 +107,27 @@ title: Projects
         <span class="tech-tag">Redis</span>
         <span class="tech-tag">React 18</span>
         <span class="tech-tag">CUDA</span>
+    </div>
+</div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+<div style="margin-bottom: 50px;">
+    <h3 id="tts-api">TTS 스트리밍 API 리팩토링 (ZipVoice 기반)</h3>
+    <p><strong>Period:</strong> 2025.09 ~ 2025.10</p>
+    <p><strong>Role:</strong> 스트리밍 API 담당 (인수인계 받아 진행, 기여도 100%)</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>고객 상담 센터용 기존 TTS(ZipVoice 기반)의 응답 지연(TTFB 2.3초)이 심각해 실시간 상담에 부적합했음. 신규 플랫폼 구축에 앞서 기존 서비스의 응답성부터 개선 필요.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">구현 및 성과</h4>
+    <p>기존 담당자에게 인수받은 서비스의 스트리밍 API를 리팩토링해 <strong>TTFB 2292ms → 334ms (85% 단축, 6.85배 개선)</strong>. 이 경험이 이후 Qwen3-TTS 플랫폼을 저지연 스트리밍 중심으로 설계하는 출발점이 됨.</p>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">FastAPI</span>
+        <span class="tech-tag">Streaming API</span>
+        <span class="tech-tag">ZipVoice</span>
     </div>
 </div>
 
