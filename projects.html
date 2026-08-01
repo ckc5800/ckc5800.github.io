@@ -54,23 +54,19 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>시스템 아키텍처:</strong> FastAPI WebSocket/REST 게이트웨이 + vLLM-Omni(Qwen3-TTS) 추론 엔진 + Redis 분산락 & 캐싱 + React 대시보드. 문장 단위 논리 청킹 및 WebSocket 스트리밍으로 TTFB 단축.</p>
-    <p><strong>성능 최적화:</strong> L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 활용 개선. Redis 캐싱으로 동일 문장 재요청 시 즉시 스트리밍 개시(캐시 히트 TTFB 50ms 미만). 6가지 엔지니어링 문제 해결 (팝 노이즈, GC 누수, 세션 탈취, ITN 토크나이저, CPU 병목, SSE 스트리밍 호환 — 아래 상세).</p>
+    <p><strong>성능 최적화:</strong> L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 활용 개선. Redis 캐싱으로 동일 문장 재요청 시 즉시 스트리밍 개시(캐시 히트 TTFB 50ms 미만). 6가지 엔지니어링 문제 해결 (팝 노이즈, 스토리지 누수, 세션 탈취, ITN 토크나이저, 백색소음 장애, WAV 헤더 정리 — 아래 상세).</p>
     <p><strong>측정 하네스:</strong> 성능 스윕을 도구화하는 과정에서 "0.6B 라벨로 1.7B를 측정"한 오라벨 사고를 겪은 뒤, 측정 자체를 신뢰할 수 있게 만드는 안전장치를 하네스에 내장 — 서빙 중인 모델의 3중 검증(환경변수·엔진 응답·부하기 재검증), 파라미터 반영 확인 실패 시 해당 값 스킵, SLA 판정에 연속성 요구(스파이크 하나로 뚫린 상위 동시성 채택 금지). GPU 상태를 1초마다 폴링하던 nvidia-smi가 GPU를 멈춰 세워 측정을 오염시키던 것까지 찾아 폴링 주기를 늘리고, 동일 문장 반복의 prefix cache 낙관을 가변 문장 모드로 병행 측정해 해소.</p>
     <p><strong>기능 확장:</strong> 참조 음성 5초만으로 화자 목소리를 복제하는 ICL(In-Context Learning) 기반 음성복제 기능 구현. OpenAI TTS API 호환 인터페이스와 기존 WebSocket 프로토콜 호환 레이어를 만들어 외부 서비스가 코드 수정 없이 연동되도록 지원. Redis 기반 Atomic quota, 분산락, Circuit Breaker 등 장애 대응 로직 개발.</p>
     <p><strong>모델 및 품질:</strong> TTS 학습 데이터 정제 및 ZipVoice 모델 학습. Whisper 기반 CER/WER 자동 품질 측정 파이프라인 구축, 사내 운영 테스트 및 QA 수행.</p>
-    <p><strong>운영 고도화:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성, 무중단 롤링 재배포 체계. 온보딩 가이드·운영 런북·장애복구 절차·SLO까지 문서화해 운영 이관이 가능한 수준으로 정비.</p>
+    <p><strong>운영 고도화:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성 — 장애 시 Circuit Breaker가 CPU 엔진으로 자동 폴백. 무중단 롤링 재배포 체계, 온보딩 가이드·운영 런북·장애복구 절차·성능 명세까지 문서화해 운영 이관이 가능한 수준으로 정비.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과 (KPI)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
         <li><strong>TTFB: 2292ms → 334ms (85% 단축, 6.85배 개선)</strong></li>
-        <li><strong>Throughput: 0.68 → 1.41 rps (2배)</strong></li>
-        <li><strong>최적화 후: ~1.7 rps (2.5배 향상)</strong></li>
+        <li><strong>Throughput: 0.68 → 1.41 rps (FP8·executor 최적화) → 3.09 rps (vLLM 0.24 마이그레이션, +80%)</strong></li>
         <li>동시 처리 채널: 12 → 24 (2배)</li>
-        <li>단건 지연시간 15% 감소</li>
-        <li>RTF (Real-Time Factor): 0.1 이하</li>
-        <li>CER(문자 오류율): 평균 3~5% (Whisper-large-v3 STT 기반 자동 품질 측정)</li>
-        <li>32개 언어 지원 단일 플랫폼</li>
-        <li>ITN 정규화 정확도 50.1% → 70.9%</li>
+        <li>32개 언어 지원 단일 플랫폼 (vLLM 10개 + Supertonic 22개)</li>
+        <li>ITN 정규화 정확도 50.1% → 70.9% (검증셋 기준)</li>
         <li><strong>이후 고도화(vLLM 마이그레이션·FP8): TTFB p50 70ms, 처리량 8.6 rps</strong> — 콜센터 수백 명 동시 사용 규모 (2026.07 실측)</li>
         <li><strong>모델 경량화 전환(1.7B→0.6B) 후 엔진 재튜닝: burst p95 TTFB 0.5초(동시 15)·1초(동시 30), 동시 스트림 수용 한계 36 실측</strong> — 첫 청크 프레임 수·코덱 좌측 컨텍스트를 미세그리드 스윕으로 확정 (2026.07 말)</li>
     </ul>
@@ -100,8 +96,8 @@ title: Projects
         <li><strong>스토리지 누수</strong> — 보이스를 삭제해도 디스크 사용량이 계속 증가. 원본을 지워도 파생된 MD5 해시 캐시 파일이 남는 구조여서, 파생 파일까지 추적해 함께 지우는 Deep GC를 구현해 차단</li>
         <li><strong>웹소켓 세션 탈취 방어</strong> — 비밀번호를 바꿔도 이미 발급된 토큰으로 웹소켓 연결이 열리는 허점 발견. 토큰 발급 시점과 password_changed_at을 대조해 변경 이전 토큰을 전부 무효화</li>
         <li><strong>ITN 정규화</strong> — URL·이메일을 한국어로 부자연스럽게 읽는 문제. 자연스러운 발음으로 변환하는 스마트 ITN 엔진을 직접 개발해 정규화 정확도 50.1% → 70.9%</li>
-        <li><strong>CPU 병목</strong> — 요청마다 ThreadPoolExecutor가 새로 생성되는 오버헤드를 프로파일링으로 발견. 이를 걷어내고 텍스트 처리 로직을 O(N²) → O(1)로 개선</li>
-        <li><strong>SSE 스트리밍 호환</strong> — ZipVoice 엔진이 첫 청크에만 WAV 헤더를 포함해 브라우저 decodeAudioData()가 두 번째 청크부터 실패. 원인을 분석해 청크별 헤더를 수정하고 실시간 SSE 엔드포인트를 신설, 데모 페이지와 API 문서까지 제공해 해결</li>
+        <li><strong>전면 백색소음 장애</strong> — vLLM 0.24 전환 직후 모든 합성이 백색소음으로 재생되는 문제를 추적해, 엔진의 SSE(JSON) 응답이 그대로 PCM으로 재생된 것이 원인임을 확인. 응답 포맷을 오디오로 강제해 해결</li>
+        <li><strong>스트리밍 WAV 헤더 정리</strong> — 엔진이 문장마다 RIFF 헤더를 붙여 보내 클라이언트 디코딩이 어긋나는 문제. 문장별 헤더를 걷어내고 세션 전체에 스트리밍 WAV 헤더를 한 번만 내보내는 구조로 정리해 해결</li>
     </ol>
 
     <div class="tech-tags" style="margin-top: 20px;">
@@ -126,8 +122,8 @@ title: Projects
     <p>AIG 상담센터의 대량 상담 전화 실시간 처리 필요. 기존 STT 시스템 병목으로 인한 채널 부족 및 추론 지연 불안정.</p>
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <p><strong>AIG STT 구조 개선:</strong> Triton Inference Server 기반 음성인식 파이프라인을 모듈화하고 로그·Docker 구조를 개선해 코드 재사용성을 확보. 전처리 병렬화로 처리 속도를 높이고, 컨테이너 재시작 모니터링 등 안정성 설정을 보강.</p>
-    <p><strong>엔진 구성:</strong> Triton Python 백엔드로 파일 기반(화자 분리 결합)과 실시간 스트리밍 두 추론 모델을 구성, HTTP와 gRPC 인터페이스를 모두 제공. 화자 분리 결과를 STT에 결합하는 하이브리드 화자 할당 로직을 구현해, 경계가 모호한 발화는 Ambiguous로 분리하고 화자 오할당을 방지.</p>
+    <p><strong>AIG STT 구조 개선:</strong> Triton Inference Server 기반 음성인식 파이프라인을 전처리·후처리·서비스 계층으로 모듈화해 파일/스트리밍 공통 로직을 통합. YAML 기반 로그 로테이션·아카이빙 체계와 Docker 구성을 정비하고, 컨테이너 자동 재시작 정책으로 안정성을 보강.</p>
+    <p><strong>엔진 구성:</strong> Triton Python 백엔드로 파일 기반(화자 분리 결합)과 실시간 스트리밍 두 추론 모델을 구성, HTTP와 gRPC 인터페이스를 모두 제공. 화자 분리 결과를 STT에 결합해 화자별 전사를 생성 — 화자 구간을 추론 파라미터(clip timestamps)로 전달해 화자마다 정확한 전사를 얻는 구조를 구현.</p>
     <p><strong>사내 회의록 STT:</strong> 회의록 기능에 STT를 탑재 — Whisper 계열 모델별 성능을 조사·정리해 WhisperX 최적 파라미터를 찾고, 파일 기반과 스트리밍 기반 처리를 모두 구현. 엔진-브로커(API-HTTP) 통신 오류 수정과 QA까지 수행.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과</h4>
@@ -136,7 +132,7 @@ title: Projects
         <li>Triton Inference Server 기반 배포 - 고성능 음성인식 파이프라인</li>
         <li>Docker 컨테이너화로 배포 자동화 및 안정성 강화</li>
         <li>배치 처리와 스트리밍 처리 모두 지원</li>
-        <li>전처리/병렬 코드로 처리 속도 향상</li>
+        <li>전처리·후처리·서비스 계층 분리로 코드 재사용성 확보</li>
         <li>사내 회의록 기능에 STT 탑재 (파일/스트리밍 처리, STT-화자분리 연동)</li>
     </ul>
 
