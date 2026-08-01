@@ -57,7 +57,7 @@ title: Projects
     <p><strong>성능 최적화:</strong> L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 활용 개선. Redis 캐싱으로 동일 문장 재요청 시 즉시 스트리밍 개시(캐시 히트 TTFB 50ms 미만). 6가지 엔지니어링 문제 해결 (팝 노이즈, 스토리지 누수, 세션 탈취, ITN 토크나이저, 백색소음 장애, WAV 헤더 정리 — 아래 상세).</p>
     <p><strong>측정 하네스:</strong> 성능 스윕을 도구화하는 과정에서 "0.6B 라벨로 1.7B를 측정"한 오라벨 사고를 겪은 뒤, 측정 자체를 신뢰할 수 있게 만드는 안전장치를 하네스에 내장 — 서빙 중인 모델의 3중 검증(환경변수·엔진 응답·부하기 재검증), 파라미터 반영 확인 실패 시 해당 값 스킵, SLA 판정에 연속성 요구(스파이크 하나로 뚫린 상위 동시성 채택 금지). GPU 상태를 1초마다 폴링하던 nvidia-smi가 GPU를 멈춰 세워 측정을 오염시키던 것까지 찾아 폴링 주기를 늘리고, 동일 문장 반복의 prefix cache 낙관을 가변 문장 모드로 병행 측정해 해소.</p>
     <p><strong>기능 확장:</strong> 참조 음성 5초만으로 화자 목소리를 복제하는 ICL(In-Context Learning) 기반 음성복제 기능 구현. OpenAI TTS API 호환 인터페이스와 기존 WebSocket 프로토콜 호환 레이어를 만들어 외부 서비스가 코드 수정 없이 연동되도록 지원. Redis 기반 Atomic quota, 분산락, Circuit Breaker 등 장애 대응 로직 개발.</p>
-    <p><strong>모델 및 품질:</strong> TTS 학습 데이터 정제 및 ZipVoice 모델 학습. Whisper 기반 CER/WER 자동 품질 측정 파이프라인 구축, 사내 운영 테스트 및 QA 수행.</p>
+    <p><strong>모델 및 품질:</strong> 기존 ZipVoice 기반 시스템은 인수받아 API 수정 수준으로 유지하고, 신규 플랫폼은 Qwen3-TTS 기반으로 직접 구축. Whisper 기반 CER/WER 자동 품질 측정 파이프라인 구축, 사내 운영 테스트 및 QA 수행.</p>
     <p><strong>운영 고도화:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성 — 장애 시 Circuit Breaker가 CPU 엔진으로 자동 폴백. 무중단 롤링 재배포 체계, 온보딩 가이드·운영 런북·장애복구 절차·성능 명세까지 문서화해 운영 이관이 가능한 수준으로 정비.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과 (KPI)</h4>
