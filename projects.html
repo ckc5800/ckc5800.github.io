@@ -127,6 +127,13 @@ title: Projects
     <p><strong>정비:</strong> API v2 경로 표준화(v1은 deprecated로 하위 호환 유지), Swagger 문서 정비(파라미터·응답 예시·에러 케이스), 구/신 버전 TTFB를 직접 비교할 수 있는 데모 페이지 제공. 원인 분석부터 조치·검증·안내까지 고객 보고로 마무리.</p>
     <p>이 경험이 이후 Qwen3-TTS 플랫폼을 저지연 스트리밍 중심으로 설계하는 출발점이 됨.</p>
 
+    <h4 style="margin-top: 20px; color: #555;">데모 페이지</h4>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
+        <img src="/assets/images/zipvoice-demo-compare.png" alt="구버전 vs 신버전 TTFB 직접 비교 데모" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
+        <img src="/assets/images/zipvoice-demo-form.png" alt="TTS API 샘플 데모 폼" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
+    </div>
+    <p style="font-size: 13px; color: #888;">고객 안내용으로 제공한 데모 페이지 — 동일 텍스트로 구버전(/sse)과 신버전(/sse-realtime)의 TTFB를 직접 비교 체험할 수 있게 구성 (스크린샷의 예시 런: 1943ms → 985ms, 내부 서버 주소는 가림 처리)</p>
+
     <div class="tech-tags" style="margin-top: 20px;">
         <span class="tech-tag">Python</span>
         <span class="tech-tag">FastAPI</span>
