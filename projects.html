@@ -35,6 +35,7 @@ title: Projects
     <div>
         <div class="toc-label">개인 · 팀 · 대회</div>
         <div class="toc-links">
+            <a class="toc-link" href="#visual">멀티모달 상품 검색</a>
             <a class="toc-link" href="#rag">RAG Agent</a>
             <a class="toc-link" href="#mcp">MCP Server</a>
             <a class="toc-link" href="#pdm">예지보전</a>
@@ -434,6 +435,47 @@ title: Projects
         <span class="tech-tag">Pandas / NumPy</span>
         <span class="tech-tag">SQL</span>
         <span class="tech-tag">Data Engineering</span>
+    </div>
+</div>
+
+<hr style="margin: 50px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+<div>
+    <h3 id="visual">한국어 멀티모달 상품 검색 (visual-search) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
+    <p><strong>Period:</strong> 2026.08</p>
+    <p><strong>Role:</strong> 커머스 비주얼 검색 E2E 구축 — 임베딩 인덱스·평가셋·하이브리드 검색·웹 데모</p>
+
+    <h4 style="margin-top: 20px; color: #555;">배경</h4>
+    <p>rag-agent에서 구축한 검색 평가 방법론(gold 라벨, 실패 원인 분해, 미채택 실험 기록)을 멀티모달로 확장. 패션 상품 44,072개(공개 데이터셋)를 한국어 문장형 질의("체크무늬 네이비 남성 셔츠")로 검색하는 시스템을 CLIP 임베딩 인덱스부터 평가셋·대화형 데모까지 구축.</p>
+
+    <h4 style="margin-top: 20px; color: #555;">핵심 성과</h4>
+    <ul style="list-style-position: inside; line-height: 2;">
+        <li><strong>hit@10 90% → 98% (한국어 50문항 × 44K)</strong> — 질의에서 색·성별·용도를 추출해 메타 필터로 결합(하이브리드). 임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 precision@10 0.10)한 뒤 필터 결합으로 해소(0.53)</li>
+        <li><strong>다국어 검색 전략 5종 실측 비교</strong> — 같은 이미지 인덱스에서 텍스트 경로만 교체: 다국어 정렬(m-clip) hit@10 48% &lt; 소형 MT 번역 86% &lt; <strong>LLM(3B)+커머스 용어집 번역 92%</strong>(한국어 특화 ko-clip 단독 90% 추월). 전 모델이 실패한 외래어 질의("쿠르타")를 용어집 주입으로 유일하게 1위 적중 — 병목이 모델이 아니라 표기 변환임을 규명</li>
+        <li><strong>번역기 크기 ≠ 품질 실측</strong> — NLLB 600M(76%)이 8배 작은 opus(86%)보다 열위. 짧은 명사구 환각·콩글리시 직역("원피스→one-piece")을 번역문 전수 기록으로 원인 귀속 — 학습 분포와 질의 스타일의 매치가 크기보다 중요</li>
+        <li><strong>RRF 앙상블로 중위 지표 최고치</strong>(hit@3 0.92 · MRR 0.859) — 단 hit@1/10 동률·precision 하락·실패 문항 맞교환까지 기록하고 "후보 생성 단계에 적합" 결론</li>
+        <li><strong>hit@k 인플레이션 통제</strong> — gold가 넓은 질의는 hit이 자동으로 나오는 문제를 gold 크기 구간별 분해·precision@10 병기로 해소, 결과마다 재현 메타(모델 id·시각·top-10 id) 기록</li>
+    </ul>
+
+    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <ul style="list-style-position: inside; line-height: 2;">
+        <li>이미지+텍스트 복합 질의 — "이 상품이랑 비슷한데 검정색으로": 스타일은 임베딩 가중 합성, 속성은 메타 필터가 담당</li>
+        <li>대화형 정교화 — 후속 발화("네이비 말고 검정색으로")를 조건 병합, 부정어(말고/빼고) 처리, 대화 경로 UI. 서버는 무상태(클라이언트가 병합 상태 보유)</li>
+        <li>FastAPI + 바닐라 JS 데모 — 검색 응답 ~80ms, 질의 임베딩 LRU 캐시(반복 질의 165→0ms), 스켈레톤 로딩, 단계별(임베딩/랭킹) 타이밍 노출</li>
+        <li>44K 규모라 정확 탐색(numpy 내적) 채택 — ANN 도입 시점을 규모 기준으로 명시, 인제스트는 배치 스트리밍(상수 메모리)</li>
+        <li>메타데이터 gold의 함정 실측 — Sweaters의 season 라벨 87%가 Fall이라 "겨울 스웨터" gold가 13개뿐이던 사례를 발견, 문항 교체·사유 주석으로 기록</li>
+    </ul>
+
+    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/visual-search" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소 (데모 GIF·평가 리포트·번역문 전수 기록)</a></p>
+
+    <div class="tech-tags" style="margin-top: 20px;">
+        <span class="tech-tag">CLIP</span>
+        <span class="tech-tag">Multimodal Retrieval</span>
+        <span class="tech-tag">Hybrid Search</span>
+        <span class="tech-tag">MT / LLM Translation</span>
+        <span class="tech-tag">RRF Ensemble</span>
+        <span class="tech-tag">FastAPI</span>
+        <span class="tech-tag">Evaluation</span>
     </div>
 </div>
 
