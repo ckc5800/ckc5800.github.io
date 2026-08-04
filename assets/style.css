@@ -681,6 +681,45 @@ h2[id] {
     font-weight: 500;
 }
 
+/* 섹션 제목 옆 부연 — "논문 7편 (전편 제1저자)" 의 괄호 부분 */
+.count-note {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-left: 8px;
+    vertical-align: 2px;
+}
+
+.award-badge {
+    display: inline-block;
+    background-color: #ffd60a;
+    color: #1d1d1f;
+    padding: 2px 9px;
+    border-radius: 980px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 6px;
+    vertical-align: 1px;
+}
+
+.pub-links {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+
+.pub-links a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.pub-links a:hover {
+    color: var(--accent);
+}
+
 /* ===== Footer ===== */
 .footer {
     background-color: transparent;
