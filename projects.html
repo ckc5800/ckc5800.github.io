@@ -95,11 +95,15 @@ title: Projects
 <section class="group">
 <h2 class="group-title" id="g-voice">음성 AI 서빙<span class="group-count">4</span></h2>
 <div class="project">
-    <h3 id="tts">Qwen3-TTS 플랫폼 구축 <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">MiCo AI</span></h3>
-    <p><strong>Period:</strong> 2026.03 ~ Present</p>
-    <p><strong>Role:</strong> PM 및 풀스택 단독 개발 (Backend/Frontend/Infrastructure)</p>
-    <p style="margin-top: 12px;">vLLM(GPU)·Supertonic(CPU) 듀얼 엔진 TTS 플랫폼을 모델 선정부터 운영까지 단독 구축. 병목을 계측으로 특정해 같은 GPU에서 burst p95 TTFB 1,008 → 652ms, 처리량 0.68 → 3.09 rps.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="tts">Qwen3-TTS 플랫폼 구축 <span class="badge">MiCo AI</span></h3>
+    <p class="project-meta">2026.03 ~ 현재 · PM · 풀스택 단독 개발 (백엔드 · 프론트 · 인프라)</p>
+    <p class="project-summary">고객 상담 센터용 TTS를 차세대 플랫폼으로 전면 재구축. vLLM(GPU)·Supertonic(CPU) 듀얼 엔진을 모델 선정부터 서빙·배포·운영까지 단독으로 맡았고, 지연은 추측 대신 구간 계측으로 병목을 특정해 줄였다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">1,008 → 652ms</span><span class="metric-label">burst p95 TTFB</span></div>
+        <div class="metric"><span class="metric-value">0.68 → 3.09 rps</span><span class="metric-label">엔진 처리량</span></div>
+        <div class="metric"><span class="metric-value">36</span><span class="metric-label">동시 스트림 수용</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">Python 3.12</span>
         <span class="tech-tag">FastAPI</span>
         <span class="tech-tag">WebSocket</span>
@@ -108,8 +112,8 @@ title: Projects
         <span class="tech-tag">React 18</span>
         <span class="tech-tag">CUDA</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>고객 상담 센터용 TTS를 차세대 플랫폼으로 전면 재구축 — 모델 선정(Qwen3-TTS)부터 서빙 아키텍처, 백엔드·프론트엔드, 배포·운영까지 전 구간을 단독으로 수행.</p>
@@ -207,18 +211,21 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="tts-api">TTS 스트리밍 API 리팩토링 (ZipVoice 기반) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">MiCo AI</span></h3>
-    <p><strong>Period:</strong> 2025.09 ~ 2025.10</p>
-    <p><strong>Role:</strong> 스트리밍 API 담당 (인수인계 받아 진행, 기여도 100%)</p>
-    <p style="margin-top: 12px;">레거시 TTS 스트리밍 API를 문장 단위 즉시 전송 구조로 전환해 TTFB 2,292 → 334ms(85.4% 단축). 원인 분석부터 조치·검증·고객 보고까지 단독 수행.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="tts-api">TTS 스트리밍 API 리팩토링 (ZipVoice 기반) <span class="badge">MiCo AI</span></h3>
+    <p class="project-meta">2025.09 ~ 2025.10 · 스트리밍 API 담당 (인수인계, 기여도 100%)</p>
+    <p class="project-summary">실시간 상담에 쓰기 어려울 만큼 느리던 레거시 TTS 스트리밍 API를 문장 단위 합성 → 즉시 전송 구조로 전환. 원인 분석부터 조치·검증·고객 보고까지 단독 수행했다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">2,292 → 334ms</span><span class="metric-label">TTFB (85.4% 단축)</span></div>
+        <div class="metric"><span class="metric-value">6.85배</span><span class="metric-label">응답 개선</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">Python</span>
         <span class="tech-tag">FastAPI</span>
         <span class="tech-tag">Streaming API</span>
         <span class="tech-tag">ZipVoice</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>고객 상담 센터용 기존 TTS(ZipVoice 기반)의 응답 지연(TTFB 2.3초)이 심각해 실시간 상담에 부적합했음. 신규 플랫폼 구축에 앞서 기존 서비스의 응답성부터 개선 필요.</p>
@@ -252,11 +259,14 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="stt">STT 배포 <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">MiCo AI</span></h3>
-    <p><strong>Period:</strong> 2025.07 ~ 2025.09</p>
-    <p><strong>Role:</strong> STT 배포 및 서빙 담당 (팀 협업)</p>
-    <p style="margin-top: 12px;">Triton 기반 음성인식 파이프라인을 전처리·후처리·서비스 계층으로 재구성하고 파일·스트리밍 두 경로와 화자 분리 결합 전사를 제공. 고객사 요구사항 4건 해결.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="stt">STT 배포 <span class="badge">MiCo AI</span></h3>
+    <p class="project-meta">2025.07 ~ 2025.09 · STT 배포 · 서빙 담당 (팀 협업)</p>
+    <p class="project-summary">상담 전화를 실시간 처리하던 기존 STT의 채널 부족과 지연을 풀기 위해, Triton 기반 파이프라인을 전처리·후처리·서비스 계층으로 재구성하고 화자 분리를 결합한 전사를 붙였다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">4건</span><span class="metric-label">고객사 요구사항 해결</span></div>
+        <div class="metric"><span class="metric-value">파일 · 스트리밍</span><span class="metric-label">2개 경로 서빙</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">Whisper-large-v3</span>
         <span class="tech-tag">WhisperX</span>
         <span class="tech-tag">Faster Whisper</span>
@@ -265,8 +275,8 @@ title: Projects
         <span class="tech-tag">gRPC / HTTP</span>
         <span class="tech-tag">Docker</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>AIG 상담센터의 대량 상담 전화 실시간 처리 필요. 기존 STT 시스템 병목으로 인한 채널 부족 및 추론 지연 불안정.</p>
@@ -292,19 +302,18 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="diarization">Speaker Diarization with Pyannote <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">MiCo AI</span></h3>
-    <p><strong>Period:</strong> 2025.04 ~ 2025.07</p>
-    <p><strong>Role:</strong> 화자 분할 모델 파인튜닝 및 STT 통합</p>
-    <p style="margin-top: 12px;">Pyannote 화자 분할 모델을 파인튜닝(DER 검증)하고 STT와 연동해 상담사·고객이 구분된 전사 파이프라인을 구성.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="diarization">Speaker Diarization with Pyannote <span class="badge">MiCo AI</span></h3>
+    <p class="project-meta">2025.04 ~ 2025.07 · 화자 분할 모델 파인튜닝 · STT 통합</p>
+    <p class="project-summary">Pyannote 화자 분할 모델을 파인튜닝(DER 검증)하고 STT와 연동해 상담사·고객이 구분된 전사 파이프라인을 구성.</p>
+    <div class="tech-tags">
         <span class="tech-tag">Pyannote</span>
         <span class="tech-tag">Speaker Diarization</span>
         <span class="tech-tag">Fine-tuning</span>
         <span class="tech-tag">PyTorch</span>
         <span class="tech-tag">Audio Processing</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>상담 품질 분석을 위해 발화자 식별 필요. 기존 STT는 음성 인식만 제공하여 상담사/고객 구분 불가.</p>
@@ -326,11 +335,15 @@ title: Projects
 <section class="group">
 <h2 class="group-title" id="g-llm">LLM · 검색 시스템<span class="group-count">5</span></h2>
 <div class="project">
-    <h3 id="visual">한국어 멀티모달 상품 검색 (visual-search) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
-    <p><strong>Period:</strong> 2026.08</p>
-    <p><strong>Role:</strong> 커머스 비주얼 검색 E2E 구축 — 임베딩 인덱스·평가셋·하이브리드 검색·웹 데모</p>
-    <p style="margin-top: 12px;">패션 상품 44K를 한국어 문장형 질의로 검색. 임베딩 단독의 세부 조건 약점을 구간 분해로 규명하고 메타 필터를 결합해 hit@10 90 → 98%, 다국어 검색 전략 6종을 같은 인덱스에서 실측 비교.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="visual">한국어 멀티모달 상품 검색 (visual-search) <span class="badge">개인 프로젝트</span></h3>
+    <p class="project-meta">2026.08 · 커머스 비주얼 검색 E2E 단독 구축</p>
+    <p class="project-summary">패션 상품 카탈로그를 한국어 문장형 질의로 검색하는 시스템을, 임베딩 인덱스부터 평가셋·하이브리드 검색·웹 데모까지 구축. 임베딩 단독의 세부 조건 약점을 구간 분해로 규명한 뒤 메타 필터를 결합해 해소했다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">90 → 98%</span><span class="metric-label">hit@10 (한국어 50문항)</span></div>
+        <div class="metric"><span class="metric-value">6종</span><span class="metric-label">다국어 전략 실측 비교</span></div>
+        <div class="metric"><span class="metric-value">44K</span><span class="metric-label">상품 인덱스</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">CLIP</span>
         <span class="tech-tag">Multimodal Retrieval</span>
         <span class="tech-tag">Hybrid Search</span>
@@ -339,8 +352,8 @@ title: Projects
         <span class="tech-tag">FastAPI</span>
         <span class="tech-tag">Evaluation</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>rag-agent에서 구축한 검색 평가 방법론(gold 라벨, 실패 원인 분해, 미채택 실험 기록)을 멀티모달로 확장. 패션 상품 44,072개(공개 데이터셋)를 한국어 문장형 질의("체크무늬 네이비 남성 셔츠")로 검색하는 시스템을 CLIP 임베딩 인덱스부터 평가셋·대화형 데모까지 구축.</p>
@@ -369,11 +382,15 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="rag">LangGraph 기반 Corrective-RAG Agent <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
-    <p><strong>Period:</strong> 2026.07</p>
-    <p><strong>Role:</strong> LLM Agent 시스템 학습 목적의 개인 구축 프로젝트</p>
-    <p style="margin-top: 12px;">LangGraph 기반 Corrective-RAG를 전 구간 로컬(Ollama)로 구축. 실패를 검색·청킹·생성 층으로 분해해 정답률 68 → 75%, 지표를 쓰기 전에 채점기 자체 결함 6%p를 찾아 정정.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="rag">LangGraph 기반 Corrective-RAG Agent <span class="badge">개인 프로젝트</span></h3>
+    <p class="project-meta">2026.07 · LLM Agent 시스템 설계 · 구현</p>
+    <p class="project-summary">LangGraph 기반 Corrective-RAG를 전 구간 로컬(Ollama)로 구축. 실패를 검색·청킹·생성 층으로 분해해 병목을 정량 규명했고, 지표를 쓰기 전에 채점기부터 검증했다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">68 → 75%</span><span class="metric-label">정답률 (51문항)</span></div>
+        <div class="metric"><span class="metric-value">90% · 0.95</span><span class="metric-label">검색 recall@1 · MRR</span></div>
+        <div class="metric"><span class="metric-value">6%p</span><span class="metric-label">채점기 자체 결함 정정</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">LangGraph</span>
         <span class="tech-tag">RAG</span>
         <span class="tech-tag">Tool Calling</span>
@@ -382,8 +399,8 @@ title: Projects
         <span class="tech-tag">FastAPI</span>
         <span class="tech-tag">Evaluation</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>LLM Agent 시스템(RAG, tool orchestration, state 관리)의 E2E 구축 역량 확보 목적. 포트폴리오 기술문서를 지식 베이스로 하는 Q&A Agent를 전부 로컬 환경(Ollama)에서 구현.</p>
@@ -427,19 +444,23 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="pdm">예지보전 Agent (pdm-agent) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
-    <p><strong>Period:</strong> 2026.07</p>
-    <p><strong>Role:</strong> 센서 이상 탐지 + LLM 진단 파이프라인 설계·구현</p>
-    <p style="margin-top: 12px;">탐지는 결정적 신호처리, 해석만 LLM에 맡긴 예지보전 파이프라인. NASA C-MAPSS 4개 셋 전체로 검증해 RUL MAE 28.5 → 12.9 사이클, 융합이 깨지는 지점까지 기록.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="pdm">예지보전 Agent (pdm-agent) <span class="badge">개인 프로젝트</span></h3>
+    <p class="project-meta">2026.07 · 센서 이상 탐지 + LLM 진단 파이프라인 설계 · 구현</p>
+    <p class="project-summary">회전기계 센서에서 이상을 탐지하고 LLM이 정비 진단 리포트를 쓰는 예지보전 파이프라인. 탐지는 결정적 신호처리가 맡고 LLM은 해석만 하도록 역할을 갈랐다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">15/15</span><span class="metric-label">주입 결함 탐지 (오탐 0)</span></div>
+        <div class="metric"><span class="metric-value">28.5 → 12.9</span><span class="metric-label">RUL MAE (사이클)</span></div>
+        <div class="metric"><span class="metric-value">4개 셋</span><span class="metric-label">NASA C-MAPSS 전체</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">Time Series</span>
         <span class="tech-tag">Anomaly Detection</span>
         <span class="tech-tag">Signal Processing</span>
         <span class="tech-tag">Predictive Maintenance</span>
         <span class="tech-tag">LLM</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>음성 AI에서 실시간 신호를 다뤄온 경험을 산업 설비 시계열로 확장. 회전기계 센서(진동·온도·전류)에서 이상을 탐지하고 LLM이 정비 진단 리포트를 작성하는 예지보전 데모.</p>
@@ -471,19 +492,22 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="mcp">Portfolio MCP Server <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
-    <p><strong>Period:</strong> 2026.07</p>
-    <p><strong>Role:</strong> MCP(Model Context Protocol) 서버 설계 및 구현</p>
-    <p style="margin-top: 12px;">포트폴리오를 MCP 도구로 노출하는 read-only 서버. 의존성 2개로 clone 후 30초 내 동작하며, RAG Agent가 이 서버를 클라이언트로 소비 — 제공자·소비자 양쪽을 구현.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="mcp">Portfolio MCP Server <span class="badge">개인 프로젝트</span></h3>
+    <p class="project-meta">2026.07 · MCP 서버 설계 · 구현</p>
+    <p class="project-summary">포트폴리오를 MCP 도구로 노출해 AI 도구 생태계에 연결한 read-only 서버. 추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지했으며, RAG Agent가 이 서버를 클라이언트로 소비한다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">의존성 2개</span><span class="metric-label">clone 후 30초 내 동작</span></div>
+        <div class="metric"><span class="metric-value">18% 감소</span><span class="metric-label">BM25 토큰 정제</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">MCP</span>
         <span class="tech-tag">FastMCP</span>
         <span class="tech-tag">BM25</span>
         <span class="tech-tag">Pydantic</span>
         <span class="tech-tag">Python</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>포트폴리오를 AI 도구 생태계에 연결 — Claude Desktop/Claude Code 등 MCP 클라이언트가 경력·프로젝트·논문 정보를 도구로 조회할 수 있도록 표준 프로토콜 서버 구현.</p>
@@ -514,11 +538,14 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="nlp">NLP Text Summarization System <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">인피닉</span></h3>
-    <p><strong>Period:</strong> 2024.01 ~ 2024.07</p>
-    <p><strong>Role:</strong> 사내 지식 관리 및 요약 시스템 개발</p>
-    <p style="margin-top: 12px;">사내 메신저용 한국어 요약 모델(대화 BART·문서 T5, R3F 정규화). 실제 메신저에 탑재해 업무 대화를 2초대에 요약.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="nlp">NLP Text Summarization System <span class="badge">인피닉</span></h3>
+    <p class="project-meta">2024.01 ~ 2024.07 · 사내 지식 관리 · 요약 시스템 개발</p>
+    <p class="project-summary">휴가 후 복귀한 직원이 쌓인 업무 대화를 따라잡기 어렵다는 문제에서 출발해, 사내 메신저에 넣을 한국어 요약 모델(대화 BART·문서 T5, R3F 정규화)을 개발했다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">2초대</span><span class="metric-label">업무 대화 요약</span></div>
+        <div class="metric"><span class="metric-value">사내 메신저</span><span class="metric-label">실서비스 탑재</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">BART</span>
         <span class="tech-tag">T5</span>
         <span class="tech-tag">R3F Fine-tuning</span>
@@ -526,8 +553,8 @@ title: Projects
         <span class="tech-tag">NLP</span>
         <span class="tech-tag">PyTorch</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>휴가나 부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 오랜 시간이 걸린다는 문제에서 출발. 사내 메신저에 넣을 한국어 요약 모델 개발이 목표.</p>
@@ -551,11 +578,14 @@ title: Projects
 <section class="group">
 <h2 class="group-title" id="g-mlops">MLOps · 성능 엔지니어링<span class="group-count">2</span></h2>
 <div class="project">
-    <h3 id="k8s">Kubernetes-based AI Infrastructure <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">인피닉</span></h3>
-    <p><strong>Period:</strong> 2024.03 ~ 2025.04</p>
-    <p><strong>Role:</strong> 회사 최초 K8s 기반 AI 플랫폼 설계 및 구축</p>
-    <p style="margin-top: 12px;">온프레미스에 회사 최초 Kubernetes AI 플랫폼을 설계·구축. MetalLB·Ingress·NFS PV부터 GitLab → Jenkins → ArgoCD GitOps까지 자동화해 20개 이상 ML 모델 운영 환경을 조성.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="k8s">Kubernetes-based AI Infrastructure <span class="badge">인피닉</span></h3>
+    <p class="project-meta">2024.03 ~ 2025.04 · 회사 최초 K8s 기반 AI 플랫폼 설계 · 구축</p>
+    <p class="project-summary">20개가 넘는 AI 서비스를 수동 배포하던 온프레미스 환경에, 회사 최초의 Kubernetes 기반 AI 플랫폼을 설계·구축하고 장애 대응·리소스 관리까지 운영을 담당했다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">20개 이상</span><span class="metric-label">운영 ML 모델</span></div>
+        <div class="metric"><span class="metric-value">수시간 → 자동화</span><span class="metric-label">배포 소요</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">Kubernetes</span>
         <span class="tech-tag">Docker</span>
         <span class="tech-tag">Helm</span>
@@ -565,8 +595,8 @@ title: Projects
         <span class="tech-tag">Prometheus</span>
         <span class="tech-tag">Grafana</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>20개 이상의 AI 서비스/API 운영 중 수동 배포로 배포 시간 수시간 소요. 자동화, 스케일링, 리소스 효율 개선 필요.</p>
@@ -606,19 +636,22 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="llmbench">llm-bench <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
-    <p><strong>Period:</strong> 2026.07</p>
-    <p><strong>Role:</strong> LLM 추론 벤치마크 CLI 설계·구현</p>
-    <p style="margin-top: 12px;">OpenAI 호환 엔드포인트에 동시 부하를 걸어 TTFT·지연 percentile·처리량을 재는 CLI. 큐잉 병목을 수치로 포착하고 설정 변경 후 재측정까지 루프를 닫음.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="llmbench">llm-bench <span class="badge">개인 프로젝트</span></h3>
+    <p class="project-meta">2026.07 · LLM 추론 벤치마크 CLI 설계 · 구현</p>
+    <p class="project-summary">TTS 게이트웨이를 튜닝하며 손으로 하던 측정을 도구화. OpenAI 호환 엔드포인트에 동시 부하를 걸어 TTFT·지연 percentile·처리량을 재고, 병목이 어디인지 수치로 증명한다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">12.4 → 0.93초</span><span class="metric-label">TTFT p50</span></div>
+        <div class="metric"><span class="metric-value">8.1 → 22.9</span><span class="metric-label">처리량 (tokens/s)</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">Benchmark</span>
         <span class="tech-tag">asyncio</span>
         <span class="tech-tag">TTFT / Latency</span>
         <span class="tech-tag">Observability</span>
         <span class="tech-tag">Python</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>TTS 게이트웨이 TTFB를 2292ms에서 334ms로 줄이며 손으로 하던 측정을 도구화. OpenAI 호환 엔드포인트(Ollama, vLLM 등)에 동시 부하를 걸어 TTFT·지연 percentile·처리량을 측정하는 CLI.</p>
@@ -643,11 +676,14 @@ title: Projects
 <section class="group">
 <h2 class="group-title" id="g-vision">비전 · 생성모델<span class="group-count">5</span></h2>
 <div class="project">
-    <h3 id="seg3d">3D Semantic Segmentation Research <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">인피닉</span></h3>
-    <p><strong>Period:</strong> 2022.08 ~ 2022.12</p>
-    <p><strong>Role:</strong> 센서 퓨전 기반 자율주행 연구 및 모델 개발</p>
-    <p style="margin-top: 12px;">LiDAR 포인트 클라우드와 카메라 이미지를 융합하는 Trans-Unet 설계. 논문 2편 제1저자 게재, 특허 2건 제1발명자 등록.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="seg3d">3D Semantic Segmentation Research <span class="badge">인피닉</span></h3>
+    <p class="project-meta">2022.08 ~ 2022.12 · 센서 퓨전 기반 자율주행 연구 · 모델 개발</p>
+    <p class="project-summary">자율주행 환경 인식에 필요한 3D 거리·높이 정보를 얻기 위해, LiDAR 포인트 클라우드와 카메라 이미지를 융합하는 Trans-Unet을 설계했다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">2편</span><span class="metric-label">논문 (제1저자)</span></div>
+        <div class="metric"><span class="metric-value">2건</span><span class="metric-label">특허 (제1발명자)</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">Trans-Unet</span>
         <span class="tech-tag">Sensor Fusion</span>
         <span class="tech-tag">PyTorch</span>
@@ -655,8 +691,8 @@ title: Projects
         <span class="tech-tag">Computer Vision</span>
         <span class="tech-tag">Autonomous Driving</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>자율주행 환경 인식에 3D 거리/높이 정보 필수. 기존 2D 세그멘테이션의 한계로 인한 센서 퓨전 필요.</p>
@@ -677,19 +713,22 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="latent">Synthetic Data Generation with Latent Diffusion <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">인피닉</span></h3>
-    <p><strong>Period:</strong> 2023.01 ~ 2023.12</p>
-    <p><strong>Role:</strong> 생성 모델을 활용한 국방 데이터 확보 연구 및 구현</p>
-    <p style="margin-top: 12px;">국방 도메인의 학습 데이터 부족을 Latent Diffusion 합성 데이터로 해결하고 실제 모델 학습으로 유효성 검증. 우수 논문상 수상.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="latent">Synthetic Data Generation with Latent Diffusion <span class="badge">인피닉</span></h3>
+    <p class="project-meta">2023.01 ~ 2023.12 · 생성 모델 기반 국방 데이터 확보 연구</p>
+    <p class="project-summary">보안 제약으로 수집이 어려운 국방 도메인의 학습 데이터 부족을 Latent Diffusion 합성 데이터로 메우고, 실제 모델 학습에 투입해 유효성을 검증했다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">우수 논문상</span><span class="metric-label">한국국방기술학회 2023</span></div>
+        <div class="metric"><span class="metric-value">2편</span><span class="metric-label">관련 논문</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">Latent Diffusion</span>
         <span class="tech-tag">Generative Model</span>
         <span class="tech-tag">PyTorch</span>
         <span class="tech-tag">LoRA Fine-tuning</span>
         <span class="tech-tag">Data Augmentation</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>국방 도메인 AI 모델 개발의 학습 데이터 부족 (보안 제약으로 수집 어려움). GAN 모드 붕괴 문제 및 범용 생성 모델의 도메인 불일치.</p>
@@ -719,18 +758,17 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="tank">Tank Object Detection Model <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">인피닉</span></h3>
-    <p><strong>Period:</strong> 2023.01 ~ 2023.08</p>
-    <p><strong>Role:</strong> 전차 탐지 모델 개발</p>
-    <p style="margin-top: 12px;">정찰·드론 영상용 YOLO 기반 전차 탐지 모델. 조도·각도·배경이 바뀌어도 유지되는 탐지 강건성 확보.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="tank">Tank Object Detection Model <span class="badge">인피닉</span></h3>
+    <p class="project-meta">2023.01 ~ 2023.08 · 전차 탐지 모델 개발</p>
+    <p class="project-summary">정찰·드론 영상용 YOLO 기반 전차 탐지 모델. 조도·각도·배경이 바뀌어도 유지되는 탐지 강건성 확보.</p>
+    <div class="tech-tags">
         <span class="tech-tag">YOLO</span>
         <span class="tech-tag">Object Detection</span>
         <span class="tech-tag">PyTorch</span>
         <span class="tech-tag">Defense Domain</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>정찰/드론 영상에서 전차 자동 탐지 필요. 기존 수동 분석의 시간 및 비용 문제.</p>
@@ -751,19 +789,18 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="ecg">심전도 부정맥 진단 AI <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">대회 참가</span></h3>
-    <p><strong>Period:</strong> 2021 (Heart Disease AI Datathon 2021)</p>
-    <p><strong>Role:</strong> 심전도 부정맥 진단 트랙 참가 — 모델·전처리 개발</p>
-    <p style="margin-top: 12px;">과기정통부·NIA 주최 의료 AI 데이터톤 참가. 기저선 변동·노이즈 제거 전처리 후 1D-CNN으로 부정맥을 이진 분류.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="ecg">심전도 부정맥 진단 AI <span class="badge">대회 참가</span></h3>
+    <p class="project-meta">2021 · Heart Disease AI Datathon · 부정맥 진단 트랙 참가 — 모델 · 전처리 개발</p>
+    <p class="project-summary">과기정통부·NIA 주최 의료 AI 데이터톤 참가. 기저선 변동·노이즈 제거 전처리 후 1D-CNN으로 부정맥을 이진 분류.</p>
+    <div class="tech-tags">
         <span class="tech-tag">1D-CNN</span>
         <span class="tech-tag">ECG / Bio-signal</span>
         <span class="tech-tag">Signal Processing</span>
         <span class="tech-tag">Time Series</span>
         <span class="tech-tag">PyTorch</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>과기정통부·NIA 주최, 연세대·서울대병원 주관 의료 AI 데이터톤. 심전도(ECG) 데이터셋으로 부정맥 여부를 진단하는 AI 모델 개발 트랙에 참가.</p>
@@ -782,18 +819,17 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="deid">AI Face De-ID (얼굴 정보 자동 비식별화) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">팀 프로젝트</span></h3>
-    <p><strong>Period:</strong> 2021</p>
-    <p><strong>Role:</strong> 4인 팀 프로젝트 (데이터 어드벤처 팀)</p>
-    <p style="margin-top: 12px;">모자이크의 정보 손실 문제를 생성 얼굴 대체로 푸는 비식별화 파이프라인. 얼굴 검출·랜드마크 검출부터 합성까지 구성한 4인 팀 프로젝트.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="deid">AI Face De-ID (얼굴 정보 자동 비식별화) <span class="badge">팀 프로젝트</span></h3>
+    <p class="project-meta">2021 · 4인 팀 프로젝트 (데이터 어드벤처 팀)</p>
+    <p class="project-summary">모자이크의 정보 손실 문제를 생성 얼굴 대체로 푸는 비식별화 파이프라인. 얼굴 검출·랜드마크 검출부터 합성까지 구성한 4인 팀 프로젝트.</p>
+    <div class="tech-tags">
         <span class="tech-tag">Computer Vision</span>
         <span class="tech-tag">Face Detection</span>
         <span class="tech-tag">Generative Model</span>
         <span class="tech-tag">Privacy / De-ID</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>공공 데이터 비식별화에 쓰이는 모자이크 처리는 원본 데이터의 정보 손실을 일으켜, Re-ID·행동 인식 등 얼굴 데이터가 필요한 후속 태스크에 활용하기 어려움. 이를 해결하기 위해 <strong>AI로 생성한 가짜 얼굴로 원본 얼굴을 대체</strong>하는 비식별화 기법을 제안.</p>
@@ -813,19 +849,22 @@ title: Projects
 <section class="group">
 <h2 class="group-title" id="g-data">데이터 파이프라인 · 도구<span class="group-count">2</span></h2>
 <div class="project">
-    <h3 id="ocr">OCR Dataset Annotation Tool <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">이든티앤에스</span></h3>
-    <p><strong>Period:</strong> 2022.04 ~ 2022.08</p>
-    <p><strong>Role:</strong> 독립 개발 (Full-Stack) - GUI 도구 설계 및 구현</p>
-    <p style="margin-top: 12px;">PyQt 기반 OCR 어노테이션 도구를 단독 설계·개발하고 표 영역 탐지·셀 텍스트 추출 모델까지 구현. 프로젝트 성공 성과금 수령.</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="ocr">OCR Dataset Annotation Tool <span class="badge">이든티앤에스</span></h3>
+    <p class="project-meta">2022.04 ~ 2022.08 · 단독 개발 (Full-Stack) — GUI 도구 설계 · 구현</p>
+    <p class="project-summary">PDF·이미지 문서의 표 영역을 추출할 OCR 학습 데이터가 필요해, PyQt 기반 어노테이션 도구를 단독 설계·개발하고 표 탐지·셀 텍스트 추출 모델까지 구현했다.</p>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">단독 개발</span><span class="metric-label">설계부터 구현까지</span></div>
+        <div class="metric"><span class="metric-value">성과금 수령</span><span class="metric-label">프로젝트 성공</span></div>
+    </div>
+    <div class="tech-tags">
         <span class="tech-tag">PyQt</span>
         <span class="tech-tag">OCR (Tesseract)</span>
         <span class="tech-tag">OpenCV</span>
         <span class="tech-tag">Vision Transformer</span>
         <span class="tech-tag">Python</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>PDF/이미지 문서에서 표 영역 추출을 위한 OCR 학습 데이터 필요. 수동 주석 작업의 병목 해결 필요.</p>
@@ -848,18 +887,17 @@ title: Projects
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="quhedge">Data Collection & Preprocessing <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">큐헷지</span></h3>
-    <p><strong>Period:</strong> 2020.09 ~ 2021.09</p>
-    <p><strong>Role:</strong> 인턴 - 데이터 수집 및 전처리 파이프라인 구축</p>
-    <p style="margin-top: 12px;">금융 데이터 수집 → 정제 → 검증 → 저장을 자동화한 파이프라인 구축(인턴).</p>
-    <div class="tech-tags" style="margin-top: 20px;">
+    <h3 id="quhedge">Data Collection & Preprocessing <span class="badge">큐헷지</span></h3>
+    <p class="project-meta">2020.09 ~ 2021.09 · 인턴 — 데이터 수집 · 전처리 파이프라인 구축</p>
+    <p class="project-summary">금융 데이터 수집 → 정제 → 검증 → 저장을 자동화한 파이프라인 구축(인턴).</p>
+    <div class="tech-tags">
         <span class="tech-tag">Python</span>
         <span class="tech-tag">Pandas / NumPy</span>
         <span class="tech-tag">SQL</span>
         <span class="tech-tag">Data Engineering</span>
     </div>
-    <details style="margin-top: 16px;">
-        <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
+    <details>
+        <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
     <p>금융 데이터 분석을 위한 고품질 데이터 필수. 다중 소스 수집 데이터의 수동 정제 및 통합으로 인한 비효율.</p>
