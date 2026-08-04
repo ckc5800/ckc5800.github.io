@@ -383,12 +383,12 @@ h2[id] {
 }
 
 .project .tech-tags {
-    margin-top: 18px;
+    margin-top: 20px;
 }
 
-/* 상세 펼치기 — 버튼처럼 보이게 */
+/* 상세 펼치기 — 정보(태그)가 아니라 동작이라 한 칸 더 띄운다 */
 .project details {
-    margin-top: 18px;
+    margin-top: 26px;
 }
 
 .project summary {
