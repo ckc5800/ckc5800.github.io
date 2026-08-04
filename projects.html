@@ -5,6 +5,42 @@ title: Projects
 
 <h2>Projects</h2>
 
+<nav class="side-nav" aria-label="프로젝트 목차">
+    <div class="side-nav-group">
+        <div class="side-nav-label">음성 AI 서빙</div>
+        <a href="#tts">Qwen3-TTS 플랫폼</a>
+        <a href="#tts-api">TTS API 리팩토링</a>
+        <a href="#stt">STT 배포</a>
+        <a href="#diarization">Speaker Diarization</a>
+    </div>
+    <div class="side-nav-group">
+        <div class="side-nav-label">LLM · 검색</div>
+        <a href="#visual">멀티모달 상품 검색</a>
+        <a href="#rag">RAG Agent</a>
+        <a href="#pdm">예지보전 Agent</a>
+        <a href="#mcp">MCP Server</a>
+        <a href="#nlp">NLP 요약</a>
+    </div>
+    <div class="side-nav-group">
+        <div class="side-nav-label">MLOps · 성능</div>
+        <a href="#k8s">Kubernetes 인프라</a>
+        <a href="#llmbench">llm-bench</a>
+    </div>
+    <div class="side-nav-group">
+        <div class="side-nav-label">비전 · 생성모델</div>
+        <a href="#seg3d">3D Segmentation</a>
+        <a href="#latent">생성모델 연구</a>
+        <a href="#tank">전차 탐지</a>
+        <a href="#ecg">심전도 진단</a>
+        <a href="#deid">Face De-ID</a>
+    </div>
+    <div class="side-nav-group">
+        <div class="side-nav-label">데이터 · 도구</div>
+        <a href="#ocr">OCR Annotation Tool</a>
+        <a href="#quhedge">금융 데이터 파이프라인</a>
+    </div>
+</nav>
+
 <div class="toc">
     <div>
         <div class="toc-label">음성 AI 서빙</div>
@@ -807,3 +843,41 @@ title: Projects
         <li><strong>욕설 탐지 모델</strong> — 한국어 텍스트 분류 (NLP)</li>
     </ul>
 </div>
+
+<script>
+// 좌측 목차: 현재 보고 있는 프로젝트를 표시
+(function () {
+    var items = [].slice.call(document.querySelectorAll('.side-nav a'))
+        .map(function (a) {
+            return { link: a, target: document.getElementById(a.hash.slice(1)) };
+        })
+        .filter(function (i) { return i.target; });
+    if (!items.length) return;
+
+    var current = null, ticking = false;
+
+    function update() {
+        ticking = false;
+        var active = items[0];
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].target.getBoundingClientRect().top <= 140) active = items[i];
+            else break;
+        }
+        if (active.link === current) return;
+        if (current) current.classList.remove('is-active');
+        active.link.classList.add('is-active');
+        current = active.link;
+    }
+
+    function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    document.addEventListener('toggle', onScroll, true);   // 상세 펼침/접힘
+    update();
+})();
+</script>
