@@ -155,6 +155,19 @@ main.container {
     box-shadow: none;
 }
 
+/* 보조 행동 — 주된 버튼(프로젝트 보기)과 무게를 구분 */
+.cta-button.secondary {
+    background-color: transparent;
+    color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--separator);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cta-button.secondary:hover {
+    background-color: rgba(0, 113, 227, 0.08);
+    box-shadow: inset 0 0 0 1px var(--accent);
+}
+
 /* ===== Headings ===== */
 h2 {
     font-size: 40px;
