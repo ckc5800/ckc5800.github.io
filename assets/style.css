@@ -283,6 +283,42 @@ h2[id] {
     scroll-margin-top: 90px;
 }
 
+/* ===== 프로젝트 그룹 (task 단위) ===== */
+/* 페이지 제목(40px) > 그룹 제목(29px) > 프로젝트 제목(22px) 3단 위계 */
+.group-title {
+    font-size: 29px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    margin: 96px 0 0;
+    padding-top: 24px;
+    border-top: 2px solid var(--text);
+}
+
+.toc + .group-title {
+    margin-top: 52px;
+}
+
+.group-count {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-left: 8px;
+    vertical-align: 5px;
+}
+
+.group-desc {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin: 10px 0 42px;
+}
+
+/* 그룹 안에서 프로젝트끼리는 훨씬 옅은 선으로만 구분 */
+.rule-sub {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+    margin: 34px 0;
+}
+
 /* ===== 좌측 고정 목차 (여백이 충분한 화면에서만 노출) ===== */
 .side-nav {
     display: none;
