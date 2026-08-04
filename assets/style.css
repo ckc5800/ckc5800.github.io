@@ -282,6 +282,19 @@ a.project-card:focus-visible {
     font-weight: 500;
 }
 
+/* 주력 기술 — 별점·퍼센트 대신 '현재 쓰는 것'만 진하게 */
+.tech-tag.primary {
+    background-color: var(--text);
+    color: var(--surface);
+    font-weight: 600;
+}
+
+.stack-note {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    margin: -22px 0 26px;
+}
+
 /* ===== Project TOC ===== */
 .toc {
     display: grid;
