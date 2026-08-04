@@ -345,6 +345,11 @@ h2[id] {
 }
 
 @media (min-width: 1500px) {
+    /* 좌측 목차가 보이는 폭에서는 상단 목차 박스를 접는다 (projects 페이지 한정) */
+    .toc-projects {
+        display: none;
+    }
+
     .side-nav {
         display: block;
         position: fixed;
