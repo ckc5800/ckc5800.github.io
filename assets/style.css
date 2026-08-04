@@ -181,8 +181,8 @@ main.container {
     margin-top: 4px;
 }
 
-/* 폭이 줄면 한 줄에 안 들어가므로, 강제 줄바꿈을 풀고 자연스럽게 흐르게 둔다 */
-@media (max-width: 900px) {
+/* 가장 긴 문장이 816px 라, 본문이 그보다 좁아지면 강제 줄바꿈을 풀고 자연스럽게 흐르게 둔다 */
+@media (max-width: 1060px) {
     .intro {
         font-size: 16px;
         text-align: left;
