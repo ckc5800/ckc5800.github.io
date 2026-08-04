@@ -362,27 +362,35 @@ h2[id] {
     }
 
     .side-nav-group + .side-nav-group {
-        margin-top: 18px;
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(0, 0, 0, 0.09);
     }
 
+    /* 그룹 이름: 진하게·왼쪽 끝에 붙임 */
     .side-nav-label {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1.1px;
-        color: var(--text-secondary);
-        margin-bottom: 6px;
-        padding-left: 11px;
+        font-size: 12.5px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        color: var(--text);
+        margin-bottom: 8px;
+        opacity: 0.5;
+        transition: opacity 0.18s ease;
     }
 
+    .side-nav-group.is-current .side-nav-label {
+        opacity: 1;
+    }
+
+    /* 프로젝트: 한 단 들여쓰기 */
     .side-nav a {
         display: block;
-        padding: 4px 10px;
-        border-left: 2px solid transparent;
+        padding: 4px 8px 4px 13px;
+        border-left: 2px solid rgba(0, 0, 0, 0.08);
         border-radius: 0 6px 6px 0;
         color: var(--text-secondary);
-        font-size: 13px;
-        line-height: 1.5;
+        font-size: 12.5px;
+        line-height: 1.55;
         text-decoration: none;
         transition: color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
     }

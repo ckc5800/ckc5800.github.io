@@ -874,8 +874,12 @@ title: Projects
             else break;
         }
         if (active.link === current) return;
-        if (current) current.classList.remove('is-active');
+        if (current) {
+            current.classList.remove('is-active');
+            current.closest('.side-nav-group').classList.remove('is-current');
+        }
         active.link.classList.add('is-active');
+        active.link.closest('.side-nav-group').classList.add('is-current');
         current = active.link;
     }
 
