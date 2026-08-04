@@ -168,6 +168,18 @@ main.container {
     box-shadow: inset 0 0 0 1px var(--accent);
 }
 
+/* 홈 소개문 — 한 줄에 한 구절씩 끊어 읽히게 */
+.intro {
+    font-size: 17px;
+    line-height: 1.9;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.intro .sentence + .sentence {
+    margin-top: 2px;
+}
+
 /* ===== Headings ===== */
 h2 {
     font-size: 40px;
@@ -833,4 +845,159 @@ mark.search-hit.is-current {
 /* ===== 검색 필터로 숨겨진 요소 (마지막에 두어 다른 display 규칙보다 우선) ===== */
 .is-filtered-out {
     display: none;
+}
+
+/* ===== 인쇄 · PDF 저장 =====
+   제출용 문서로 바로 쓸 수 있게: 화면 전용 요소는 빼고, 접힌 상세는 펼친 상태로 */
+.print-head {
+    display: none;
+}
+
+@media print {
+    @page {
+        margin: 14mm 12mm;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    body {
+        background: #ffffff;
+        font-size: 10.5pt;
+        line-height: 1.6;
+    }
+
+    /* 화면 전용 요소 */
+    .navbar,
+    .footer,
+    .side-nav,
+    .toc-projects,
+    .project summary,
+    .cta-button {
+        display: none !important;
+    }
+
+    /* 흰 시트·그림자·라운드는 종이에서 의미 없음 */
+    main.container {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    .print-head {
+        display: block;
+        margin-bottom: 18px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #999;
+        font-size: 10pt;
+    }
+
+    .print-head span {
+        display: block;
+        margin-top: 3px;
+        color: #555;
+    }
+
+    /* 그룹 패널 배경은 잉크만 먹으므로 선으로 대체 */
+    .group {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 22px;
+    }
+
+    .group-title {
+        font-size: 15pt;
+        margin: 0 0 14px;
+        padding-top: 10px;
+        border-top: 2px solid #1d1d1f;
+        break-after: avoid;
+        break-before: page;
+    }
+
+    .group:first-of-type .group-title {
+        break-before: auto;
+    }
+
+    h2 {
+        font-size: 18pt;
+        margin-bottom: 16px;
+    }
+
+    h3 {
+        font-size: 12.5pt;
+        break-after: avoid;
+    }
+
+    .detail-head {
+        font-size: 10.5pt;
+        margin: 14px 0 6px;
+        break-after: avoid;
+    }
+
+    /* 접힌 상세를 펼친 상태로 (JS 가 막힌 환경 대비) */
+    details > div {
+        display: block !important;
+    }
+
+    /* 배경색 대신 테두리로 — 배경 그래픽 옵션을 꺼도 형태가 남는다 */
+    .metric,
+    .badge,
+    .tech-tag,
+    .award-badge {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: 1px solid #bbb;
+        color: #1d1d1f !important;
+    }
+
+    .metric-value {
+        font-size: 10.5pt;
+    }
+
+    .metric-label,
+    .project-meta,
+    .publication-item .meta {
+        color: #555 !important;
+    }
+
+    .publication-item {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 16px;
+        border-left: 2px solid #ddd;
+        padding-left: 12px;
+    }
+
+    /* 조각나면 안 되는 단위 */
+    .project,
+    .publication-item,
+    .metrics,
+    .metric,
+    li,
+    img,
+    .tech-tags {
+        break-inside: avoid;
+    }
+
+    /* 링크는 종이에서 누를 수 없으니 주소를 함께 */
+    .pub-links a[href^="http"]::after,
+    .project a[href^="http"]::after {
+        content: " (" attr(href) ")";
+        font-size: 8.5pt;
+        color: #666;
+        word-break: break-all;
+    }
+
+    a {
+        color: #1d1d1f !important;
+        text-decoration: none;
+    }
+
+    mark.search-hit {
+        background: transparent !important;
+    }
 }

@@ -22,8 +22,39 @@
     </nav>
 
     <main class="container">
+        <!-- 인쇄(PDF 저장) 시에만 나오는 머리글 — 출력물만 봐도 누구 것인지 알 수 있게 -->
+        <div class="print-head">
+            <strong>이윤선</strong> · 6년차 AI 엔지니어
+            <span>yoon7829@gmail.com · github.com/ckc5800 · ckc5800.github.io</span>
+        </div>
         {{ content }}
     </main>
+
+    <script>
+    // 인쇄 직전에 접힌 상세를 모두 펼치고, 끝나면 원래대로 되돌린다
+    (function () {
+        function openAll() {
+            document.querySelectorAll('details:not([open])').forEach(function (d) {
+                d.dataset.printOpened = '1';
+                d.open = true;
+            });
+        }
+        function restore() {
+            document.querySelectorAll('details[data-print-opened]').forEach(function (d) {
+                d.open = false;
+                delete d.dataset.printOpened;
+            });
+        }
+        window.addEventListener('beforeprint', openAll);
+        window.addEventListener('afterprint', restore);
+        if (window.matchMedia) {
+            var mq = window.matchMedia('print');
+            if (mq.addEventListener) {
+                mq.addEventListener('change', function (e) { e.matches ? openAll() : restore(); });
+            }
+        }
+    })();
+    </script>
 
     <footer class="footer">
         <div class="container">
