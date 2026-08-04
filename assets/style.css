@@ -285,17 +285,26 @@ h2[id] {
 
 /* ===== 프로젝트 그룹 (task 단위) ===== */
 /* 페이지 제목(40px) > 그룹 제목(29px) > 프로젝트 제목(22px) 3단 위계 */
+.group {
+    background-color: var(--bg);
+    border-radius: 22px;
+    padding: 32px 34px 34px;
+    margin-bottom: 40px;
+}
+
 .group-title {
     font-size: 29px;
     font-weight: 700;
     letter-spacing: -0.6px;
-    margin: 96px 0 0;
-    padding-top: 24px;
-    border-top: 2px solid var(--text);
+    margin: 0;
 }
 
-.toc + .group-title {
-    margin-top: 52px;
+.project {
+    margin-bottom: 46px;
+}
+
+.group > .project:last-child {
+    margin-bottom: 0;
 }
 
 .group-count {
@@ -312,11 +321,22 @@ h2[id] {
     margin: 10px 0 42px;
 }
 
-/* 그룹 안에서 프로젝트끼리는 훨씬 옅은 선으로만 구분 */
+/* 그룹 안에서 프로젝트끼리는 옅은 선으로만 구분 (묶음은 패널이 담당) */
 .rule-sub {
     border: none;
-    border-top: 1px solid rgba(0, 0, 0, 0.07);
-    margin: 34px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.09);
+    margin: 32px 0;
+}
+
+@media (max-width: 768px) {
+    .group {
+        padding: 24px 20px 26px;
+        border-radius: 18px;
+    }
+
+    .group-title {
+        font-size: 24px;
+    }
 }
 
 /* ===== 좌측 고정 목차 (여백이 충분한 화면에서만 노출) ===== */
