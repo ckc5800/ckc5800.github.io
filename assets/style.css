@@ -466,7 +466,16 @@ h2[id] {
 }
 
 .detail-list li + li {
-    margin-top: 9px;
+    margin-top: 14px;
+}
+
+/* 한 줄에 한 문장 — 마침표마다 줄이 바뀌어 눈이 문장 단위로 끊어 읽는다 */
+.sentence {
+    display: block;
+}
+
+.sentence + .sentence {
+    margin-top: 5px;
 }
 
 .project code {
