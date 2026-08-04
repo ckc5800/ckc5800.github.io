@@ -201,6 +201,19 @@ p {
     transform: translateY(-4px);
 }
 
+/* 카드 전체를 클릭 대상으로 (홈 → 해당 프로젝트) */
+a.project-card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+a.project-card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
 .project-card h3 {
     color: var(--text);
     margin-top: 0;
