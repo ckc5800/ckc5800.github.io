@@ -146,8 +146,12 @@ title: Projects
         <li>파라미터 반영 확인 실패 시 해당 값 스킵, SLA 판정에 연속성 요구(스파이크 하나로 뚫린 상위 동시성 채택 금지)</li>
         <li>측정 오염 제거 — 1초마다 폴링하던 nvidia-smi가 GPU를 멈춰 세우던 것을 찾아 주기 조정, 동일 문장 반복의 prefix cache 낙관은 가변 문장 모드 병행 측정으로 해소</li>
     </ul>
-    <p><strong>기능 확장:</strong> 참조 음성 5초만으로 화자 목소리를 복제하는 ICL(In-Context Learning) 기반 음성복제 기능 구현. OpenAI TTS API 호환 인터페이스와 기존 WebSocket 프로토콜 호환 레이어를 만들어 외부 서비스가 코드 수정 없이 연동되도록 지원. Redis 기반 Atomic quota, 분산락, Circuit Breaker 등 장애 대응 로직 개발.</p>
-    <p><strong>모델 및 품질:</strong> Whisper 기반 CER/WER 자동 품질 측정 파이프라인 구축.</p>
+    <p><strong>기능 확장:</strong> 참조 음성 5초만으로 화자 목소리를 복제하는 ICL 기반 음성복제 기능 구현.</p>
+    <ul class="detail-list">
+        <li>OpenAI TTS API 호환 인터페이스 + 기존 WebSocket 프로토콜 호환 레이어 — 외부 서비스가 코드 수정 없이 연동</li>
+        <li>Redis 기반 Atomic quota·분산락·Circuit Breaker 등 장애 대응 로직</li>
+        <li>Whisper 기반 CER/WER 자동 품질 측정 파이프라인</li>
+    </ul>
     <p><strong>운영 고도화:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성 — 장애 시 Circuit Breaker가 CPU 엔진으로 자동 폴백.</p>
     <ul class="detail-list">
         <li>무중단 롤링 재배포 체계 + 온보딩 가이드·운영 런북·장애복구 절차·성능 명세 문서화로 운영 이관 가능한 수준까지 정비</li>
@@ -161,8 +165,8 @@ title: Projects
         <li><strong>정상 부하 TTFB p50 70ms, GPU 처리량 8.6 rps</strong> — 콜센터 수백 명 동시 사용 규모 (2026.07 실측)</li>
         <li>32개 언어 지원 단일 플랫폼 (vLLM 10개 + Supertonic 22개)</li>
         <li>ITN 정규화 정확도 50.1% → 70.9% (검증셋 기준)</li>
-        <li><strong>모델 경량화 전환(1.7B→0.6B) 후 엔진 재튜닝 — 동일 GPU에서 burst p95 TTFB 1,008ms → 652ms(동시 20 기준), ≤500ms는 달성 불가에서 동시 15, ≤1000ms는 동시 20~25에서 30, 동시 스트림 수용 한계 36 실측</strong> — 첫 청크 프레임 수·코덱 좌측 컨텍스트를 미세그리드 스윕으로 확정. 저부하 엔진 첫 청크 약 180ms → 107ms (2026.07 말)</li>
-        <li>핫 패스 정리: TTFB 경로의 순차 Redis 왕복 16 → 13회(서킷·긴급정지·인증 캐시 중복 조회 제거), 문장 캐시 일괄 조회로 N왕복 → 1왕복, 정규식 인터셉터 fast-path로 요청당 이벤트 루프 블로킹 대폭 감소</li>
+        <li><strong>동일 GPU에서 burst p95 TTFB 1,008ms → 652ms</strong> (동시 20 기준) — ≤500ms는 달성 불가에서 동시 15, ≤1000ms는 20~25에서 30으로. 동시 스트림 수용 한계 36 실측 (2026.07 말)</li>
+        <li>핫 패스 정리 — TTFB 경로의 순차 Redis 왕복 16 → 13회, 문장 캐시 일괄 조회로 N왕복 → 1왕복</li>
     </ul>
 
     <h4 class="detail-head">운영 대시보드</h4>
@@ -193,8 +197,8 @@ title: Projects
         <li><strong>CPU 스파이크 (ReDoS 가드 오버헤드)</strong> — 정규식 치환의 ReDoS 방어용 ThreadPoolExecutor(max_workers=1) 가드가 치환마다 새로 인스턴스화되어 다수 합성 시 CPU 스파이크와 지연을 유발. 오버엔지니어링된 가드를 철거하고 네이티브 C 구현체(re.sub) 동기 호출로 교체해 핫 패스 병목 제거</li>
         <li><strong>전면 백색소음 장애</strong> — vLLM 0.24 전환 직후 모든 합성이 백색소음으로 재생되는 문제를 추적해, 엔진의 SSE(JSON) 응답이 그대로 PCM으로 재생된 것이 원인임을 확인. 응답 포맷을 오디오로 강제해 해결</li>
         <li><strong>스트리밍 WAV 헤더 정리</strong> — 엔진이 문장마다 RIFF 헤더를 붙여 보내 클라이언트 디코딩이 어긋나는 문제. 문장별 헤더를 걷어내고 세션 전체에 스트리밍 WAV 헤더를 한 번만 내보내는 구조로 정리해 해결</li>
-        <li><strong>크래시로 오진할 뻔한 스트림 집단 절단</strong> — 고부하 burst 도중 스트림이 무더기로 끊기고 수 분간 무응답. 엔진 크래시로 보고 GPU 메모리와 CUDA graph 설정을 의심했으나, 컨테이너 재시작 횟수가 0인 것을 확인하고 가설을 폐기. 실체는 오픈소스 추론 엔진(vLLM-Omni) 자체의 텐서 결합 오류가 집단 발생하자 API 서킷 브레이커가 열려 빈 응답을 반환한 연쇄였음. 원인을 바로잡아 무고하게 보류돼 있던 튜닝 값의 채택을 재개하고, 동시 한도를 실측 실링(40)보다 한 티어 낮춰(36) 과부하 진입 자체를 완화</li>
-        <li><strong>HTTP 스트림 tail 지연</strong> — 저지연을 표방하는 HTTP 스트림이 실제로는 문장별 tail 버퍼를 문장 끝까지 붙들어, 약 615ms 분량이 모일 때까지 한 바이트도 내보내지 않던 구조. WebSocket 경로에만 있던 무음 감지 기반 조기 flush(연속 무음 150ms)를 동일 trim·fade 파라미터로 HTTP 경로에 이식해 단문 TTFB와 다문장 경계 끊김을 함께 해소</li>
+        <li><strong>크래시로 오진할 뻔한 스트림 집단 절단</strong> — 고부하 burst 중 스트림이 무더기로 끊기고 수 분간 무응답. 엔진 크래시로 보였으나 컨테이너 재시작 횟수가 0인 것을 확인하고 가설을 폐기했다. 실체는 추론 엔진의 텐서 결합 오류가 집단 발생하자 API 서킷 브레이커가 열려 빈 응답을 반환한 연쇄. 동시 한도를 실링(40)보다 한 티어 낮춰(36) 과부하 진입 자체를 완화</li>
+        <li><strong>HTTP 스트림 tail 지연</strong> — 저지연을 표방하면서 실제로는 tail 버퍼를 문장 끝까지 붙들어, 약 615ms 분량이 모일 때까지 한 바이트도 내보내지 않던 구조. WebSocket 경로에만 있던 무음 감지 기반 조기 flush를 HTTP에 이식해 단문 TTFB와 문장 경계 끊김을 함께 해소</li>
     </ol>
         </div>
     </details>
@@ -219,11 +223,21 @@ title: Projects
 <h4 class="detail-head">배경</h4>
     <p>고객 상담 센터용 기존 TTS(ZipVoice 기반)의 응답 지연(TTFB 2.3초)이 심각해 실시간 상담에 부적합했음. 신규 플랫폼 구축에 앞서 기존 서비스의 응답성부터 개선 필요.</p>
 
-    <h4 class="detail-head">구현 및 성과</h4>
-    <p><strong>SSE 청크 디코딩 실패 해결:</strong> 브라우저 decodeAudioData()가 두 번째 청크부터 실패한다는 고객 이슈를 추적 — 엔진이 첫 청크에만 RIFF WAV 헤더를 포함하고 이후는 raw PCM만 반환하는 것이 원인. 모든 SSE 청크에 독립 WAV 헤더를 생성·부착해(첫 청크 헤더에서 샘플레이트·채널 파라미터 파싱 후 재생성) 청크 단위 독립 디코딩이 가능하게 수정.</p>
-    <p><strong>실시간 스트리밍 엔드포인트 신설:</strong> 수정 후에도 기존 /sse는 전체 텍스트 합성이 끝난 뒤 WAV를 분할 전송하는 구조라 긴 텍스트일수록 TTFB가 비례 증가하는 한계를 확인. 엔진의 gRPC server streaming을 활용한 /sse-realtime을 신설해 <strong>문장 단위 합성 → 즉시 전송</strong> 구조로 전환 — <strong>TTFB 2292ms → 334ms (85.4% 단축, 6.85배 개선, 측정 로그 기록)</strong>.</p>
-    <p><strong>정비:</strong> API v2 경로 표준화(v1은 deprecated로 하위 호환 유지), Swagger 문서 정비(파라미터·응답 예시·에러 케이스), 구/신 버전 TTFB를 직접 비교할 수 있는 데모 페이지 제공. 원인 분석부터 조치·검증·안내까지 고객 보고로 마무리.</p>
-    <p>이 경험이 이후 Qwen3-TTS 플랫폼을 저지연 스트리밍 중심으로 설계하는 출발점이 됨.</p>
+    <h4 class="detail-head">구현</h4>
+    <p><strong>SSE 청크 디코딩 실패 해결:</strong> 브라우저 <code>decodeAudioData()</code>가 두 번째 청크부터 실패한다는 고객 이슈를 추적했다.</p>
+    <ul class="detail-list">
+        <li>원인 — 엔진이 첫 청크에만 RIFF WAV 헤더를 붙이고 이후는 raw PCM만 반환</li>
+        <li>조치 — 첫 청크 헤더에서 샘플레이트·채널을 파싱해 모든 SSE 청크에 독립 헤더를 재생성, 청크 단위 독립 디코딩 가능하게</li>
+    </ul>
+    <p><strong>실시간 스트리밍 엔드포인트 신설:</strong> 수정 후에도 기존 <code>/sse</code>는 전체 합성이 끝난 뒤 WAV를 분할 전송하는 구조라, 텍스트가 길수록 TTFB가 비례해 늘어났다. 엔진의 gRPC server streaming을 활용한 <code>/sse-realtime</code>을 신설해 <strong>문장 단위 합성 → 즉시 전송</strong> 구조로 전환.</p>
+    <p><strong>정비:</strong> API v2 경로 표준화(v1은 deprecated로 하위 호환 유지), Swagger 문서 정비, 구·신 버전 TTFB를 직접 비교하는 데모 페이지 제공.</p>
+
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
+        <li><strong>TTFB 2,292ms → 334ms</strong> — 85.4% 단축, 6.85배 개선 (측정 로그 기록)</li>
+        <li>원인 분석부터 조치·검증·고객 보고까지 단독 수행</li>
+        <li>이 경험이 이후 Qwen3-TTS 플랫폼을 저지연 스트리밍 중심으로 설계하는 출발점이 됨</li>
+    </ul>
 
     <h4 class="detail-head">데모 페이지</h4>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
@@ -299,10 +313,10 @@ title: Projects
     <p><strong>모델 파인튜닝:</strong> Pyannote 사전 학습 모델을 공개 화자분할 데이터로 파인튜닝 — 파라미터 튜닝과 학습을 수행하고 DER로 검증.</p>
     <p><strong>시스템 통합:</strong> 화자 분할 결과를 STT와 연동해 상담사/고객이 구분된 전사 결과를 만드는 파이프라인 작업 수행.</p>
 
-    <h4 class="detail-head">수행 내용</h4>
+    <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li>화자 분할 모델 파인튜닝 (데이터 수집 → 파라미터 튜닝 → 학습)</li>
-        <li>화자 분할 - STT 연동 파이프라인 작업</li>
+        <li>공개 화자분할 데이터로 파인튜닝한 모델을 DER 로 검증 (데이터 수집 → 파라미터 튜닝 → 학습)</li>
+        <li>화자 분할 결과를 STT 에 연동해 상담사·고객이 구분된 전사 파이프라인 완성</li>
     </ul>
         </div>
     </details>
@@ -333,21 +347,18 @@ title: Projects
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li><strong>hit@10 90% → 98% (한국어 50문항 × 44K)</strong> — 질의에서 색·성별·용도를 추출해 메타 필터로 결합(하이브리드). 임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 precision@10 0.10)한 뒤 필터 결합으로 해소(0.53)</li>
-        <li><strong>다국어 검색 전략 6종 실측 비교</strong> — 같은 이미지 인덱스에서 텍스트 경로만 교체: 다국어 정렬(m-clip) hit@10 48% &lt; 소형 MT 번역 86% &lt; <strong>LLM(3B)+커머스 용어집 번역 92%</strong>(한국어 특화 ko-clip 단독 90% 추월). 외래어 질의("쿠르타") 실패의 병목이 모델이 아니라 표기 변환임을 규명</li>
-        <li><strong>대형 멀티링구얼(jina-v2 865M)과의 공정 비교로 상보성 발견</strong> — 10% 계통 서브셋에서 jina-v2가 1위(하이브리드 hit@1 82% · MRR 0.883)지만 임베딩 비용이 CPU 기준 ko-clip의 ~130배. 실패 문항이 정확히 상보적: 외래어("쿠르타")는 멀티링구얼이, 콩글리시("원피스")는 한국어 특화가 강함 — 언어 현상별 모델 선택 기준 도출</li>
-        <li><strong>번역기 크기 ≠ 품질 실측</strong> — NLLB 600M(76%)이 8배 작은 opus(86%)보다 열위. 짧은 명사구 환각·콩글리시 직역("원피스→one-piece")을 번역문 전수 기록으로 원인 귀속 — 학습 분포와 질의 스타일의 매치가 크기보다 중요</li>
-        <li><strong>RRF 앙상블로 중위 지표 최고치</strong>(hit@3 0.92 · MRR 0.859) — 단 hit@1/10 동률·precision 하락·실패 문항 맞교환까지 기록하고 "후보 생성 단계에 적합" 결론</li>
-        <li><strong>hit@k 인플레이션 통제</strong> — gold가 넓은 질의는 hit이 자동으로 나오는 문제를 gold 크기 구간별 분해·precision@10 병기로 해소, 결과마다 재현 메타(모델 id·시각·top-10 id) 기록</li>
+        <li><strong>hit@10 90% → 98%</strong> (한국어 50문항 × 44K) — 임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 precision@10 0.10)한 뒤, 질의에서 색·성별·용도를 뽑아 메타 필터로 결합해 해소(0.53)</li>
+        <li><strong>다국어 검색 전략 6종 실측 비교</strong> — 같은 이미지 인덱스에서 텍스트 경로만 교체. m-clip 48% &lt; 소형 MT 86% &lt; <strong>LLM(3B)+커머스 용어집 92%</strong>. 번역기는 크기순이 아니었다(NLLB 600M 76% &lt; 8배 작은 opus 86%)</li>
+        <li><strong>대형 멀티링구얼(jina-v2 865M)과 상보 관계 발견</strong> — 지표는 jina-v2 우위지만 임베딩 비용이 ko-clip의 약 130배. 실패 문항이 정확히 갈렸다 — 외래어는 멀티링구얼이, 콩글리시는 한국어 특화가 강함</li>
+        <li><strong>hit@k 인플레이션 통제</strong> — gold가 넓은 질의는 hit이 자동으로 나오는 문제를 구간별 분해·precision@10 병기로 해소. 결과마다 재현 메타(모델 id·시각·top-10 id) 기록</li>
     </ul>
 
     <h4 class="detail-head">구현</h4>
     <ul class="detail-list">
         <li>이미지+텍스트 복합 질의 — "이 상품이랑 비슷한데 검정색으로": 스타일은 임베딩 가중 합성, 속성은 메타 필터가 담당</li>
-        <li>대화형 정교화 — 후속 발화("네이비 말고 검정색으로")를 조건 병합, 부정어(말고/빼고) 처리, 대화 경로 UI. 서버는 무상태(클라이언트가 병합 상태 보유)</li>
-        <li>FastAPI + 바닐라 JS 데모 — 검색 응답 ~80ms, 질의 임베딩 LRU 캐시(반복 질의 165→0ms), 스켈레톤 로딩, 단계별(임베딩/랭킹) 타이밍 노출</li>
-        <li>44K 규모라 정확 탐색(numpy 내적) 채택 — ANN 도입 시점을 규모 기준으로 명시, 인제스트는 배치 스트리밍(상수 메모리)</li>
-        <li>메타데이터 gold의 함정 실측 — Sweaters의 season 라벨 87%가 Fall이라 "겨울 스웨터" gold가 13개뿐이던 사례를 발견, 문항 교체·사유 주석으로 기록</li>
+        <li>대화형 정교화 — 후속 발화를 조건 병합, 부정어(말고·빼고) 처리, 대화 경로 UI. 서버는 무상태</li>
+        <li>FastAPI + 바닐라 JS 데모 — 검색 응답 약 80ms, 질의 임베딩 LRU 캐시(반복 질의 165 → 0ms), 단계별 타이밍 노출</li>
+        <li>44K 규모라 정확 탐색(numpy 내적) 채택 — ANN 도입 시점을 규모 기준으로 명시</li>
     </ul>
 
     <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/visual-search" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소 (데모 GIF·평가 리포트·번역문 전수 기록)</a></p>
@@ -382,16 +393,14 @@ title: Projects
         <li><strong>정답률 68% → 75% (51문항)</strong> — 실패를 검색/청킹/생성 층으로 분해해 병목(생성)을 정량 규명, 컨텍스트 수 튜닝으로 개선</li>
         <li><strong>검색 recall@1 90% · MRR 0.95</strong> (무작위 기준선 3% 병기) — 하이브리드 검색 결함 7건 발견·수정</li>
         <li><strong>채점기 자체 결함 6%p 발견·정정</strong> — 동의 표기를 오답 집계하던 문제 (지표를 쓰기 전에 지표부터 검증)</li>
-        <li><strong>판정기(grade) 정확도 87% 실측</strong> (기준선 43.5%) — 구성 요소별 단독 측정 체계 구축</li>
-        <li><strong>환각 측정 지표 신설</strong> — 코퍼스에 답 없는 거부 문항 10개 도입, 컨텍스트 확장 시 환각 증가 트레이드오프 실측</li>
+        <li><strong>환각 측정 지표 신설</strong> — 코퍼스에 답 없는 거부 문항 10개를 넣어, 컨텍스트를 넓힐수록 환각이 느는 트레이드오프를 실측</li>
     </ul>
 
     <h4 class="detail-head">구현</h4>
     <ul class="detail-list">
         <li>LangGraph StateGraph 기반 Corrective-RAG — retrieve → grade(자가 평가) → 판정 부족 시 rewrite 재검색 → generate</li>
-        <li>FAISS(의미) + BM25(키워드) RRF 융합 직접 구현 — 벡터 저장소는 환경변수로 Qdrant 교체 가능, 동일 평가로 비교해 선택 기준 실측(검색 결과 동일, 차이는 메타데이터 필터 방식)</li>
-        <li>에이전트 레이어 3종 — ReAct 도구 호출, Planner–Worker–Synthesizer 멀티홉 분해, MCP 클라이언트 (MCP 서버·클라이언트 양쪽 구현)</li>
-        <li>FastAPI 서빙 + SSE 토큰 스트리밍, 응답 캐시·질의 트레이스 — 전 구간 로컬(Ollama)</li>
+        <li>FAISS(의미) + BM25(키워드) RRF 융합 직접 구현 — 벡터 저장소는 환경변수로 Qdrant 교체 가능, 동일 평가로 비교해 선택 기준 실측</li>
+        <li>에이전트 레이어 3종 — ReAct 도구 호출, Planner–Worker–Synthesizer 멀티홉 분해, MCP 클라이언트</li>
         <li>인덱싱 전 데이터 검수 CI 연결 — 노션 내부 링크가 코퍼스의 9.4%를 차지하던 오염 발견·제거</li>
     </ul>
 
@@ -400,13 +409,12 @@ title: Projects
         <li>검색/생성 분리 평가 — recall@k(LLM 불필요)와 E2E 정답률을 분리해 실패 원인 귀속</li>
         <li>gold 라벨을 청크 md5·앵커 문자열로 고정 — 재청킹 시 자동 무효화, 전 지표에 무작위 기준선 병기</li>
         <li>3B 모델의 런 간 편차 ±6%p 실측 — 모든 A/B는 반복 측정, 1~2문항 차이로 결론 내지 않는 원칙</li>
-        <li>통제 실험으로 원인 격리 — lost-in-the-middle 확인·배치 조정, 도구 체이닝 단계별 3회 측정(2단에서 3B 0/3 vs 7B 3/3)</li>
-        <li>RAGAS 도입 검토 후 보류 — 로컬 3B 심판의 일치율 45~50%로 정보량 없음을 실측, 재도입 조건(7B 이상·일치율 90%)을 코드에 명시</li>
+        <li>RAGAS 도입 검토 후 보류 — 로컬 3B 심판의 일치율 45~50%로 정보량이 없음을 실측하고, 재도입 조건(7B 이상·일치율 90%)을 코드에 명시</li>
     </ul>
 
     <h4 class="detail-head">실험 기록 (미채택 포함)</h4>
     <ul class="detail-list">
-        <li>Parent-Child 청킹 — 초기엔 유일하게 풀던 집계 질문 실패를 base의 top-N 확장이 함께 해결, child recall@1도 base 대비 열위(78% vs 89%)로 미채택. 판단 근거를 코드 주석에 기록</li>
+        <li>Parent-Child 청킹 — 초기엔 유일하게 풀던 집계 질문을 base의 top-N 확장이 함께 해결했고 child recall@1도 열위(78% vs 89%)라 미채택. 판단 근거를 코드 주석에 기록</li>
         <li>시맨틱 청킹(임베딩 유사도 breakpoint, 직접 구현) — 동일 조건 비교에서 base가 전 지표 우위로 미채택</li>
         <li>격리 단일 호출의 판단이 전체 파이프라인 반복 측정에서 뒤집힌 사례 확보 — n=1 실험의 함정을 실측으로 문서화</li>
     </ul>
@@ -447,14 +455,12 @@ title: Projects
         <li>LLM 진단이 탐지 근거만으로 베어링 마모/윤활 불량 원인 후보 도출</li>
     </ul>
 
-    <h4 class="detail-head">실데이터 검증 — NASA C-MAPSS (FD001~FD004 전체)</h4>
+    <h4 class="detail-head">실데이터 검증 (NASA C-MAPSS)</h4>
     <ul class="detail-list">
         <li>같은 탐지기를 터보팬 엔진 100대의 run-to-failure 벤치마크에 적용 — 합성에서 튜닝한 4σ 한계는 63/100으로 보수적, 3σ 완화 시 <strong>고장 전 경보 94/100, 조기 경보 0건</strong> (관리한계 트레이드오프를 표로 공개)</li>
         <li>RUL은 보정(엔진 1~50)과 평가(51~100)를 분리해 라벨 누수 차단 — 선형 외삽 MAE 28.5사이클을 지수 열화 모델로 <strong>12.9사이클</strong>까지 절반 이하로 개선 (추정 보류 트레이드오프까지 기록)</li>
-        <li>운전 조건 6개인 FD002(260대)로 확장 — 정규화 없이는 경보 0/130(조건 혼합이 기준선 σ를 오염)임을 실측하고, 조건별 z-정규화로 104/130 회복. 정규화 통계와 한계치 모두 보정/평가 엔진 분리로 누수 차단</li>
-        <li>FD003/FD004까지 <strong>4개 셋 전부로 확장</strong>(통합 CLI) — 경보 96/100·101/125. "결함 모드가 2개면 더 어려울 것"이라는 예상과 달리, 난이도를 지배한 건 결함 모드 수가 아니라 <strong>운전 조건 수</strong>임을 실측</li>
-        <li>센서 10개를 하나의 health index로 <strong>융합</strong> — 노이즈가 1/√10로 줄어 단일 결함 모드 셋은 대폭 개선(FD001 경보 94→<strong>100/100</strong>·MAE 10.9, FD002 104→<strong>130/130</strong>·MAE 11.5), 결함 모드 2개인 FD003/FD004는 경보가 절반 수준으로 악화 — 평균 융합의 전제("모든 센서가 같은 열화를 본다")가 깨지는 지점까지 그대로 기록</li>
-        <li><strong>공식 test 셋 + RUL 라벨로 문헌과 같은 조건 평가</strong> — 열화 미관측 시 추정을 보류하는 설계라 응답률이 24~61%에 그침을 명시하고, 응답 엔진 한정 FD001 RMSE 20.9(문헌 보고 범위: 고전 ML 20~40, 딥러닝 12~16). PHM08 원점수가 과대추정 1건에 지배되는 현상과 125사이클 캡 적용 결과를 함께 기록</li>
+        <li><strong>4개 셋 전부로 확장</strong>(통합 CLI) — 운전 조건이 6개인 FD002는 정규화 없이 경보 0/130이었고, 조건별 z-정규화로 104/130 회복. 난이도를 지배한 건 결함 모드 수가 아니라 <strong>운전 조건 수</strong>였다</li>
+        <li>센서 10개를 하나의 health index로 <strong>융합</strong> — 단일 결함 모드 셋은 대폭 개선(FD001 94→<strong>100/100</strong>, FD002 104→<strong>130/130</strong>), 결함 모드가 2개인 셋은 오히려 악화. 평균 융합의 전제가 깨지는 지점까지 그대로 기록</li>
     </ul>
 
     <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/pdm-agent" target="_blank" style="color: #1a1a1a; font-weight: 600;">GitHub 저장소</a></p>
@@ -486,19 +492,17 @@ title: Projects
     <p><strong>도구 설계:</strong> read-only 도구 4개 — 구조화 조회(프로필/프로젝트/논문·특허) + BM25 문서 검색. 검색 실패 시 다음 행동을 안내하는 actionable 오류 응답 설계.</p>
     <p><strong>경량 아키텍처:</strong> 의존성 2개(MCP SDK + rank_bm25)만으로 구성 — 임베딩 서버·외부 API·GPU 불필요, clone 후 30초 내 동작. 추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지.</p>
 
-    <h4 class="detail-head">발견한 문제와 개선</h4>
-    <ul class="detail-list">
-        <li><strong>BM25 랭킹 왜곡 제거</strong> — 노션 export의 퍼센트 인코딩 경로가 무의미 토큰으로 쪼개져 길이 정규화 페널티를 유발하던 문제를 원문 정제로 해결 (토큰 7,653 → 6,310개, 18% 감소 · 외부 URL 보존)</li>
-        <li><strong>검증 기준 강화</strong> — 응답 존재 여부만 보던 스모크 테스트를 내용 단언(프로젝트 수·특허 건수)으로 전환, 과정에서 구 사명 미인식 버그 발견·별칭 매칭 추가</li>
-    </ul>
-
-    <h4 class="detail-head">특징</h4>
     <ul class="detail-list">
         <li>FastMCP 기반 stdio 서버, Pydantic 입력 검증, read-only 어노테이션</li>
         <li>확정 사실(profile.json)과 서술형 문서 검색을 이원화한 구조</li>
-        <li>MCP 클라이언트 세션으로 전체 도구를 실호출하는 스모크 테스트 포함</li>
         <li>Claude Code에 사용자 스코프로 등록해 실제 에이전트 세션에서 도구 호출을 검증 — 세션을 재생한 SVG 데모를 README에 수록</li>
         <li>RAG Agent와 동일 지식 베이스 공유 — RAG·MCP 두 노출 방식 비교 경험</li>
+    </ul>
+
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
+        <li><strong>BM25 랭킹 왜곡 제거</strong> — 노션 export의 퍼센트 인코딩 경로가 무의미 토큰으로 쪼개져 길이 정규화 페널티를 유발하던 문제를 원문 정제로 해결 (토큰 7,653 → 6,310개, 18% 감소)</li>
+        <li><strong>검증 기준 강화</strong> — 응답 존재 여부만 보던 스모크 테스트를 내용 단언(프로젝트 수·특허 건수)으로 전환, 과정에서 구 사명 미인식 버그 발견·별칭 매칭 추가</li>
         <li>rag-agent의 에이전트가 이 서버를 MCP 클라이언트로 소비 — 서버(제공자)·클라이언트(소비자) 양쪽 구현</li>
     </ul>
 
@@ -568,8 +572,17 @@ title: Projects
     <p>20개 이상의 AI 서비스/API 운영 중 수동 배포로 배포 시간 수시간 소요. 자동화, 스케일링, 리소스 효율 개선 필요.</p>
 
     <h4 class="detail-head">구현</h4>
-    <p><strong>인프라 설계:</strong> 온프레미스 클러스터라 클라우드식 로드밸런서가 없어 MetalLB로 LoadBalancer를 직접 구성, Ingress-nginx로 외부 요청 라우팅과 서비스 노출 구조를 설계. 서비스는 Docker로 컨테이너화해 Deployment/StatefulSet으로 배포하고, 영속 데이터는 NFS 기반 PV/PVC로 관리. Harbor 중앙 이미지 관리 + ArgoCD GitOps 선언적 배포.</p>
-    <p><strong>CI/CD 파이프라인:</strong> GitLab에 소스가 올라오면 Jenkins와 Argo Workflow가 이미지를 빌드해 Harbor 레지스트리에 올리고 ArgoCD가 클러스터에 배포하는 완전 자동화 파이프라인. Prometheus/Grafana 실시간 모니터링과 AlertManager 경보를 구축하고, 로그는 클러스터에 Elasticsearch(ELK 스택)와 Loki를 직접 설치해 수집·조회 환경을 구성.</p>
+    <p><strong>인프라 설계:</strong> 온프레미스라 클라우드식 로드밸런서가 없는 조건에서 출발했다.</p>
+    <ul class="detail-list">
+        <li>MetalLB로 LoadBalancer를 직접 구성하고, Ingress-nginx로 외부 요청 라우팅·서비스 노출 구조 설계</li>
+        <li>서비스는 Docker로 컨테이너화해 Deployment/StatefulSet으로 배포, 영속 데이터는 NFS 기반 PV/PVC로 관리</li>
+        <li>Harbor 중앙 이미지 관리 + ArgoCD GitOps 선언적 배포</li>
+    </ul>
+    <p><strong>CI/CD 파이프라인:</strong> GitLab에 소스가 올라오면 Jenkins·Argo Workflow가 이미지를 빌드해 Harbor에 올리고 ArgoCD가 클러스터에 배포하는 완전 자동화.</p>
+    <ul class="detail-list">
+        <li>Prometheus/Grafana 실시간 모니터링 + AlertManager 경보</li>
+        <li>로그는 클러스터에 Elasticsearch(ELK)와 Loki를 직접 설치해 수집·조회 환경 구성</li>
+    </ul>
     <p><strong>운영:</strong> 구축에서 끝나지 않고 클러스터 장애 대응과 리소스 관리까지 담당 — NFS 기반 PV/PVC로 모델·데이터 볼륨을 관리하며 20개 이상의 ML 모델 운영 환경을 유지.</p>
 
     <h4 class="detail-head">성과</h4>

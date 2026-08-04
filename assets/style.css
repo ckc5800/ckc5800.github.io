@@ -352,6 +352,14 @@ h2[id] {
     margin-top: 9px;
 }
 
+.project code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.9em;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 1px 5px;
+    border-radius: 5px;
+}
+
 /* 그룹 안에서 프로젝트끼리는 옅은 선으로만 구분 (묶음은 패널이 담당) */
 .rule-sub {
     border: none;
