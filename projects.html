@@ -111,10 +111,10 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>고객 상담 센터용 TTS를 차세대 플랫폼으로 전면 재구축 — 모델 선정(Qwen3-TTS)부터 서빙 아키텍처, 백엔드·프론트엔드, 배포·운영까지 전 구간을 단독으로 수행.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">시스템 구조</h4>
+    <h4 class="detail-head">시스템 구조</h4>
     <div style="overflow-x: auto; margin: 20px 0;">
         <img src="/assets/images/tts-physical-architecture.svg" alt="Qwen3-TTS 물리 구조도 — 클라이언트/SDK에서 tts-api를 거쳐 vLLM(GPU)과 Supertonic(CPU) 엔진으로 분기하는 컨테이너 구성" style="background: #ffffff; width: 100%; min-width: 760px; border-radius: 8px; border: 1px solid #ddd;">
     </div>
@@ -125,17 +125,38 @@ title: Projects
     </div>
     <p style="font-size: 13px; color: #888;">논리 구조 — 요청이 내려가는 계층. 텍스트 파이프라인(정규화·ITN·발음교정·문장분할)과 엔진 선택(voice_id 접두사 기반 라우팅)을 분리해, 엔진을 추가해도 상위 계층이 바뀌지 않도록 구성.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>시스템 아키텍처:</strong> FastAPI WebSocket/REST 게이트웨이 + vLLM-Omni(Qwen3-TTS) 추론 엔진 + Redis 분산락 & 캐싱 + React 대시보드. 문장 단위 논리 청킹 및 WebSocket 스트리밍으로 TTFB 단축.</p>
-    <p><strong>성능 최적화:</strong> L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 활용 개선. Redis 캐싱으로 동일 문장 재요청 시 즉시 스트리밍 개시(캐시 히트 TTFB 50ms 미만). 9가지 엔지니어링 문제 해결 (팝 노이즈, 스토리지 누수, 세션 탈취, ITN 토크나이저, CPU 스파이크, 백색소음 장애, WAV 헤더 정리, 스트림 집단 절단 오진, HTTP 스트림 tail 지연 — 아래 상세).</p>
-    <p><strong>지연 구조 분해:</strong> 튜닝에 앞서 TTFB가 어느 구간에서 나오는지부터 계측 — 엔진 패치에 전처리(prep)와 엔진 첫 청크(큐+prefill+보코더) 지표를 심어 분해한 결과, 전처리 3~6ms·API 약 100ms는 고정이고 <strong>동시 요청 수에 선형 비례하는 구간은 엔진 디코드 루프</strong>(동시 +1당 약 +20ms)임을 확인. 스트림 세마포어를 32→40으로 여는 통상적 처방은 대조 실험 결과 대기 위치가 엔진 안으로 옮겨갈 뿐 SLA는 오히려 악화 — 세마포어를 병목이 아니라 보호막으로 재정의. 실효 레버를 코덱 좌측 컨텍스트(72→25, CUDA graph capture 목록 정합 수정 동반)와 첫 청크 프레임 수(4→2) 둘로 좁혀 확정하고, 청크 경계 불연속을 z-검정으로 자동 판정하는 품질 게이트를 통과시킨 뒤 채택.</p>
-    <p><strong>측정 하네스:</strong> 성능 스윕을 도구화하는 과정에서 "0.6B 라벨로 1.7B를 측정"한 오라벨 사고를 겪은 뒤, 측정 자체를 신뢰할 수 있게 만드는 안전장치를 하네스에 내장 — 서빙 중인 모델의 3중 검증(환경변수·엔진 응답·부하기 재검증), 파라미터 반영 확인 실패 시 해당 값 스킵, SLA 판정에 연속성 요구(스파이크 하나로 뚫린 상위 동시성 채택 금지). GPU 상태를 1초마다 폴링하던 nvidia-smi가 GPU를 멈춰 세워 측정을 오염시키던 것까지 찾아 폴링 주기를 늘리고, 동일 문장 반복의 prefix cache 낙관을 가변 문장 모드로 병행 측정해 해소.</p>
+    <p><strong>성능 최적화:</strong> L40S 단일 GPU 환경에서 처리량과 지연을 함께 끌어올림.</p>
+    <ul class="detail-list">
+        <li>FP8 양자화 · executor backend 최적화 · 동시성 튜닝으로 추론 처리량 개선</li>
+        <li>Pre-Normalization · CUDA Graph Warmup · 세마포어 동시성 제어로 GPU 메모리 활용 개선</li>
+        <li>Redis 캐싱으로 동일 문장 재요청 시 즉시 스트리밍 개시 (캐시 히트 TTFB 50ms 미만)</li>
+    </ul>
+    <p><strong>지연 구조 분해:</strong> 튜닝에 앞서 TTFB가 어느 구간에서 나오는지부터 계측. 엔진 패치에 전처리(prep)와 엔진 첫 청크(큐+prefill+보코더) 지표를 심어 분해했다.</p>
+    <ul class="detail-list">
+        <li>전처리 3~6ms·API 약 100ms는 고정이고, <strong>동시 요청 수에 선형 비례하는 구간은 엔진 디코드 루프</strong>(동시 +1당 약 +20ms)임을 확인</li>
+        <li>스트림 세마포어를 32→40으로 여는 통상적 처방은 대조 실험 결과 대기 위치만 엔진 안으로 옮길 뿐 SLA는 오히려 악화 — 세마포어를 병목이 아니라 보호막으로 재정의</li>
+        <li>실효 레버를 코덱 좌측 컨텍스트(72→25, CUDA graph capture 목록 정합 수정 동반)와 첫 청크 프레임 수(4→2) 둘로 좁혀 확정</li>
+        <li>청크 경계 불연속을 z-검정으로 자동 판정하는 품질 게이트를 통과시킨 뒤 채택</li>
+    </ul>
+    <p><strong>측정 하네스:</strong> 성능 스윕을 도구화하던 중 "0.6B 라벨로 1.7B를 측정"한 오라벨 사고를 겪고, 측정 자체를 믿을 수 있게 만드는 안전장치를 하네스에 내장했다.</p>
+    <ul class="detail-list">
+        <li>서빙 중인 모델 3중 검증 — 환경변수·엔진 응답·부하기 재검증. 불일치 시 스윕 시작 불가</li>
+        <li>파라미터 반영 확인 실패 시 해당 값 스킵, SLA 판정에 연속성 요구(스파이크 하나로 뚫린 상위 동시성 채택 금지)</li>
+        <li>측정 오염 제거 — 1초마다 폴링하던 nvidia-smi가 GPU를 멈춰 세우던 것을 찾아 주기 조정, 동일 문장 반복의 prefix cache 낙관은 가변 문장 모드 병행 측정으로 해소</li>
+    </ul>
     <p><strong>기능 확장:</strong> 참조 음성 5초만으로 화자 목소리를 복제하는 ICL(In-Context Learning) 기반 음성복제 기능 구현. OpenAI TTS API 호환 인터페이스와 기존 WebSocket 프로토콜 호환 레이어를 만들어 외부 서비스가 코드 수정 없이 연동되도록 지원. Redis 기반 Atomic quota, 분산락, Circuit Breaker 등 장애 대응 로직 개발.</p>
     <p><strong>모델 및 품질:</strong> Whisper 기반 CER/WER 자동 품질 측정 파이프라인 구축.</p>
-    <p><strong>운영 고도화:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성 — 장애 시 Circuit Breaker가 CPU 엔진으로 자동 폴백. 무중단 롤링 재배포 체계, 온보딩 가이드·운영 런북·장애복구 절차·성능 명세까지 문서화해 운영 이관이 가능한 수준으로 정비. 배포 직후에는 활성 음성별 prefill 워밍과 정형 인사말 프리캐시를 자동 실행해 첫 사용자가 콜드 경로를 밟지 않게 했고, 합성 결과의 길이-비율 이상(잘림·반복)을 자동 감지해 해당 캐시를 배제하는 자가 치유 장치로 품질 사고가 캐시에 굳는 것을 차단.</p>
+    <p><strong>운영 고도화:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성 — 장애 시 Circuit Breaker가 CPU 엔진으로 자동 폴백.</p>
+    <ul class="detail-list">
+        <li>무중단 롤링 재배포 체계 + 온보딩 가이드·운영 런북·장애복구 절차·성능 명세 문서화로 운영 이관 가능한 수준까지 정비</li>
+        <li>배포 직후 활성 음성별 prefill 워밍과 정형 인사말 프리캐시를 자동 실행 — 첫 사용자가 콜드 경로를 밟지 않게</li>
+        <li>합성 결과의 길이-비율 이상(잘림·반복)을 자동 감지해 해당 캐시를 배제하는 자가 치유 — 품질 사고가 캐시에 굳는 것을 차단</li>
+    </ul>
 
-    <h4 style="margin-top: 20px; color: #555;">성과 (KPI)</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li><strong>Throughput: 0.68 → 1.41 rps (FP8·executor 최적화) → 3.09 rps (vLLM 0.24 마이그레이션, +80%)</strong></li>
         <li><strong>정상 부하 TTFB p50 70ms, GPU 처리량 8.6 rps</strong> — 콜센터 수백 명 동시 사용 규모 (2026.07 실측)</li>
         <li>32개 언어 지원 단일 플랫폼 (vLLM 10개 + Supertonic 22개)</li>
@@ -144,14 +165,14 @@ title: Projects
         <li>핫 패스 정리: TTFB 경로의 순차 Redis 왕복 16 → 13회(서킷·긴급정지·인증 캐시 중복 조회 제거), 문장 캐시 일괄 조회로 N왕복 → 1왕복, 정규식 인터셉터 fast-path로 요청당 이벤트 루프 블로킹 대폭 감소</li>
     </ul>
 
-    <h4 style="margin-top: 20px; color: #555;">운영 대시보드</h4>
+    <h4 class="detail-head">운영 대시보드</h4>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
         <img src="/assets/images/image 1.png" alt="TTS Dashboard 1" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
         <img src="/assets/images/image 2.png" alt="TTS Dashboard 2" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
         <img src="/assets/images/image 3.png" alt="TTS Dashboard 3" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
     </div>
 
-    <h4 style="margin-top: 20px; color: #555;">데모 영상</h4>
+    <h4 class="detail-head">데모 영상</h4>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
         <div style="text-align: center; padding: 20px; background-color: #f5f5f5; border-radius: 8px;">
             <p style="margin: 0 0 10px 0; font-weight: 600;">TTS Full Synthesis</p>
@@ -163,8 +184,8 @@ title: Projects
         </div>
     </div>
 
-    <h4 style="margin-top: 20px; color: #555;">핵심 엔지니어링 (9가지 문제 해결)</h4>
-    <ol style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">핵심 엔지니어링 (9가지 문제 해결)</h4>
+    <ol class="detail-list">
         <li><strong>스트리밍 팝 노이즈</strong> — 스트리밍 중 간헐적으로 '틱' 잡음 발생. PCM 청크가 홀수 바이트로 끊겨 와 16bit 샘플 정렬이 깨지는 것이 원인. 잔여 바이트를 다음 청크에 이어 붙이는 Residual Buffer로 정렬을 보장하고, 청크 경계에 Micro-fade를 적용해 해결</li>
         <li><strong>스토리지 누수</strong> — 보이스를 삭제해도 디스크 사용량이 계속 증가. 원본을 지워도 파생된 MD5 해시 캐시 파일이 남는 구조여서, 파생 파일까지 추적해 함께 지우는 Deep GC를 구현해 차단</li>
         <li><strong>웹소켓 세션 탈취 방어</strong> — 비밀번호를 바꿔도 이미 발급된 토큰으로 웹소켓 연결이 열리는 허점 발견. 토큰 발급 시점과 password_changed_at을 대조해 변경 이전 토큰을 전부 무효화</li>
@@ -195,16 +216,16 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>고객 상담 센터용 기존 TTS(ZipVoice 기반)의 응답 지연(TTFB 2.3초)이 심각해 실시간 상담에 부적합했음. 신규 플랫폼 구축에 앞서 기존 서비스의 응답성부터 개선 필요.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현 및 성과</h4>
+    <h4 class="detail-head">구현 및 성과</h4>
     <p><strong>SSE 청크 디코딩 실패 해결:</strong> 브라우저 decodeAudioData()가 두 번째 청크부터 실패한다는 고객 이슈를 추적 — 엔진이 첫 청크에만 RIFF WAV 헤더를 포함하고 이후는 raw PCM만 반환하는 것이 원인. 모든 SSE 청크에 독립 WAV 헤더를 생성·부착해(첫 청크 헤더에서 샘플레이트·채널 파라미터 파싱 후 재생성) 청크 단위 독립 디코딩이 가능하게 수정.</p>
     <p><strong>실시간 스트리밍 엔드포인트 신설:</strong> 수정 후에도 기존 /sse는 전체 텍스트 합성이 끝난 뒤 WAV를 분할 전송하는 구조라 긴 텍스트일수록 TTFB가 비례 증가하는 한계를 확인. 엔진의 gRPC server streaming을 활용한 /sse-realtime을 신설해 <strong>문장 단위 합성 → 즉시 전송</strong> 구조로 전환 — <strong>TTFB 2292ms → 334ms (85.4% 단축, 6.85배 개선, 측정 로그 기록)</strong>.</p>
     <p><strong>정비:</strong> API v2 경로 표준화(v1은 deprecated로 하위 호환 유지), Swagger 문서 정비(파라미터·응답 예시·에러 케이스), 구/신 버전 TTFB를 직접 비교할 수 있는 데모 페이지 제공. 원인 분석부터 조치·검증·안내까지 고객 보고로 마무리.</p>
     <p>이 경험이 이후 Qwen3-TTS 플랫폼을 저지연 스트리밍 중심으로 설계하는 출발점이 됨.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">데모 페이지</h4>
+    <h4 class="detail-head">데모 페이지</h4>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
         <img src="/assets/images/zipvoice-demo-compare.png" alt="구버전 vs 신버전 TTFB 직접 비교 데모" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
         <img src="/assets/images/zipvoice-demo-form.png" alt="TTS API 샘플 데모 폼" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
@@ -233,16 +254,16 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>AIG 상담센터의 대량 상담 전화 실시간 처리 필요. 기존 STT 시스템 병목으로 인한 채널 부족 및 추론 지연 불안정.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>AIG STT 구조 개선:</strong> Triton Inference Server 기반 음성인식 파이프라인을 전처리·후처리·서비스 계층으로 모듈화해 파일/스트리밍 공통 로직을 통합. YAML 기반 로그 로테이션·아카이빙 체계와 Docker 구성을 정비하고, 컨테이너 자동 재시작 정책으로 안정성을 보강.</p>
     <p><strong>엔진 구성:</strong> Triton Python 백엔드로 파일 기반(화자 분리 결합)과 실시간 스트리밍 두 추론 모델을 구성, HTTP와 gRPC 인터페이스를 모두 제공. 화자 분리 결과를 STT에 결합해 화자별 전사를 생성 — 화자 구간을 추론 파라미터(clip timestamps)로 전달해 화자마다 정확한 전사를 얻는 구조를 구현.</p>
     <p><strong>사내 회의록 STT:</strong> 회의록 기능에 STT를 탑재 — Whisper 계열 모델별 성능을 조사·정리해 WhisperX 최적 파라미터를 찾고, 파일 기반과 스트리밍 기반 처리를 모두 구현. 엔진-브로커(API-HTTP) 통신 오류 수정과 QA까지 수행.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li><strong>AIG 요구사항 해결 4건</strong></li>
         <li>Triton Inference Server 기반 배포 - 고성능 음성인식 파이프라인</li>
         <li>Docker 컨테이너화로 배포 자동화 및 안정성 강화</li>
@@ -271,15 +292,15 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>상담 품질 분석을 위해 발화자 식별 필요. 기존 STT는 음성 인식만 제공하여 상담사/고객 구분 불가.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>모델 파인튜닝:</strong> Pyannote 사전 학습 모델을 공개 화자분할 데이터로 파인튜닝 — 파라미터 튜닝과 학습을 수행하고 DER로 검증.</p>
     <p><strong>시스템 통합:</strong> 화자 분할 결과를 STT와 연동해 상담사/고객이 구분된 전사 결과를 만드는 파이프라인 작업 수행.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">수행 내용</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">수행 내용</h4>
+    <ul class="detail-list">
         <li>화자 분할 모델 파인튜닝 (데이터 수집 → 파라미터 튜닝 → 학습)</li>
         <li>화자 분할 - STT 연동 파이프라인 작업</li>
     </ul>
@@ -307,11 +328,11 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>rag-agent에서 구축한 검색 평가 방법론(gold 라벨, 실패 원인 분해, 미채택 실험 기록)을 멀티모달로 확장. 패션 상품 44,072개(공개 데이터셋)를 한국어 문장형 질의("체크무늬 네이비 남성 셔츠")로 검색하는 시스템을 CLIP 임베딩 인덱스부터 평가셋·대화형 데모까지 구축.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">핵심 성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li><strong>hit@10 90% → 98% (한국어 50문항 × 44K)</strong> — 질의에서 색·성별·용도를 추출해 메타 필터로 결합(하이브리드). 임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 precision@10 0.10)한 뒤 필터 결합으로 해소(0.53)</li>
         <li><strong>다국어 검색 전략 6종 실측 비교</strong> — 같은 이미지 인덱스에서 텍스트 경로만 교체: 다국어 정렬(m-clip) hit@10 48% &lt; 소형 MT 번역 86% &lt; <strong>LLM(3B)+커머스 용어집 번역 92%</strong>(한국어 특화 ko-clip 단독 90% 추월). 외래어 질의("쿠르타") 실패의 병목이 모델이 아니라 표기 변환임을 규명</li>
         <li><strong>대형 멀티링구얼(jina-v2 865M)과의 공정 비교로 상보성 발견</strong> — 10% 계통 서브셋에서 jina-v2가 1위(하이브리드 hit@1 82% · MRR 0.883)지만 임베딩 비용이 CPU 기준 ko-clip의 ~130배. 실패 문항이 정확히 상보적: 외래어("쿠르타")는 멀티링구얼이, 콩글리시("원피스")는 한국어 특화가 강함 — 언어 현상별 모델 선택 기준 도출</li>
@@ -320,8 +341,8 @@ title: Projects
         <li><strong>hit@k 인플레이션 통제</strong> — gold가 넓은 질의는 hit이 자동으로 나오는 문제를 gold 크기 구간별 분해·precision@10 병기로 해소, 결과마다 재현 메타(모델 id·시각·top-10 id) 기록</li>
     </ul>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">구현</h4>
+    <ul class="detail-list">
         <li>이미지+텍스트 복합 질의 — "이 상품이랑 비슷한데 검정색으로": 스타일은 임베딩 가중 합성, 속성은 메타 필터가 담당</li>
         <li>대화형 정교화 — 후속 발화("네이비 말고 검정색으로")를 조건 병합, 부정어(말고/빼고) 처리, 대화 경로 UI. 서버는 무상태(클라이언트가 병합 상태 보유)</li>
         <li>FastAPI + 바닐라 JS 데모 — 검색 응답 ~80ms, 질의 임베딩 LRU 캐시(반복 질의 165→0ms), 스켈레톤 로딩, 단계별(임베딩/랭킹) 타이밍 노출</li>
@@ -353,11 +374,11 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>LLM Agent 시스템(RAG, tool orchestration, state 관리)의 E2E 구축 역량 확보 목적. 포트폴리오 기술문서를 지식 베이스로 하는 Q&A Agent를 전부 로컬 환경(Ollama)에서 구현.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">핵심 성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li><strong>정답률 68% → 75% (51문항)</strong> — 실패를 검색/청킹/생성 층으로 분해해 병목(생성)을 정량 규명, 컨텍스트 수 튜닝으로 개선</li>
         <li><strong>검색 recall@1 90% · MRR 0.95</strong> (무작위 기준선 3% 병기) — 하이브리드 검색 결함 7건 발견·수정</li>
         <li><strong>채점기 자체 결함 6%p 발견·정정</strong> — 동의 표기를 오답 집계하던 문제 (지표를 쓰기 전에 지표부터 검증)</li>
@@ -365,8 +386,8 @@ title: Projects
         <li><strong>환각 측정 지표 신설</strong> — 코퍼스에 답 없는 거부 문항 10개 도입, 컨텍스트 확장 시 환각 증가 트레이드오프 실측</li>
     </ul>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">구현</h4>
+    <ul class="detail-list">
         <li>LangGraph StateGraph 기반 Corrective-RAG — retrieve → grade(자가 평가) → 판정 부족 시 rewrite 재검색 → generate</li>
         <li>FAISS(의미) + BM25(키워드) RRF 융합 직접 구현 — 벡터 저장소는 환경변수로 Qdrant 교체 가능, 동일 평가로 비교해 선택 기준 실측(검색 결과 동일, 차이는 메타데이터 필터 방식)</li>
         <li>에이전트 레이어 3종 — ReAct 도구 호출, Planner–Worker–Synthesizer 멀티홉 분해, MCP 클라이언트 (MCP 서버·클라이언트 양쪽 구현)</li>
@@ -374,8 +395,8 @@ title: Projects
         <li>인덱싱 전 데이터 검수 CI 연결 — 노션 내부 링크가 코퍼스의 9.4%를 차지하던 오염 발견·제거</li>
     </ul>
 
-    <h4 style="margin-top: 20px; color: #555;">평가 방법론</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">평가 방법론</h4>
+    <ul class="detail-list">
         <li>검색/생성 분리 평가 — recall@k(LLM 불필요)와 E2E 정답률을 분리해 실패 원인 귀속</li>
         <li>gold 라벨을 청크 md5·앵커 문자열로 고정 — 재청킹 시 자동 무효화, 전 지표에 무작위 기준선 병기</li>
         <li>3B 모델의 런 간 편차 ±6%p 실측 — 모든 A/B는 반복 측정, 1~2문항 차이로 결론 내지 않는 원칙</li>
@@ -383,8 +404,8 @@ title: Projects
         <li>RAGAS 도입 검토 후 보류 — 로컬 3B 심판의 일치율 45~50%로 정보량 없음을 실측, 재도입 조건(7B 이상·일치율 90%)을 코드에 명시</li>
     </ul>
 
-    <h4 style="margin-top: 20px; color: #555;">실험 기록 (미채택 포함)</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">실험 기록 (미채택 포함)</h4>
+    <ul class="detail-list">
         <li>Parent-Child 청킹 — 초기엔 유일하게 풀던 집계 질문 실패를 base의 top-N 확장이 함께 해결, child recall@1도 base 대비 열위(78% vs 89%)로 미채택. 판단 근거를 코드 주석에 기록</li>
         <li>시맨틱 청킹(임베딩 유사도 breakpoint, 직접 구현) — 동일 조건 비교에서 base가 전 지표 우위로 미채택</li>
         <li>격리 단일 호출의 판단이 전체 파이프라인 반복 측정에서 뒤집힌 사례 확보 — n=1 실험의 함정을 실측으로 문서화</li>
@@ -412,22 +433,22 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>음성 AI에서 실시간 신호를 다뤄온 경험을 산업 설비 시계열로 확장. 회전기계 센서(진동·온도·전류)에서 이상을 탐지하고 LLM이 정비 진단 리포트를 작성하는 예지보전 데모.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>설계 원칙 — "탐지는 결정적 알고리즘, LLM은 해석만":</strong> 이상 탐지는 z-score(순간 충격)·EWMA 관리한계(과열)·추세 회귀+간이 RUL 추정(베어링 마모)의 신호처리 알고리즘이 담당. LLM은 탐지 근거를 종합해 원인 추정·권고 조치를 작성하되, 근거 밖 수치 생성을 프롬프트로 차단.</p>
     <p><strong>시뮬레이터:</strong> 부하 변동을 포함한 회전기계 모델에 결함 3종 주입 — 주입 시점이 ground truth로 남아 탐지기를 정량 평가.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">평가 (실측)</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li>5개 시나리오에서 주입 결함 15건 전부 탐지 — 재현율 100%, 오탐 0건 (통제 실험 기준임을 명시)</li>
         <li>추세 탐지기가 "한계치 도달까지 약 29시간" RUL 추정 산출</li>
         <li>LLM 진단이 탐지 근거만으로 베어링 마모/윤활 불량 원인 후보 도출</li>
     </ul>
 
-    <h4 style="margin-top: 20px; color: #555;">실데이터 검증 — NASA C-MAPSS (FD001~FD004 전체)</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">실데이터 검증 — NASA C-MAPSS (FD001~FD004 전체)</h4>
+    <ul class="detail-list">
         <li>같은 탐지기를 터보팬 엔진 100대의 run-to-failure 벤치마크에 적용 — 합성에서 튜닝한 4σ 한계는 63/100으로 보수적, 3σ 완화 시 <strong>고장 전 경보 94/100, 조기 경보 0건</strong> (관리한계 트레이드오프를 표로 공개)</li>
         <li>RUL은 보정(엔진 1~50)과 평가(51~100)를 분리해 라벨 누수 차단 — 선형 외삽 MAE 28.5사이클을 지수 열화 모델로 <strong>12.9사이클</strong>까지 절반 이하로 개선 (추정 보류 트레이드오프까지 기록)</li>
         <li>운전 조건 6개인 FD002(260대)로 확장 — 정규화 없이는 경보 0/130(조건 혼합이 기준선 σ를 오염)임을 실측하고, 조건별 z-정규화로 104/130 회복. 정규화 통계와 한계치 모두 보정/평가 엔진 분리로 누수 차단</li>
@@ -458,21 +479,21 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>포트폴리오를 AI 도구 생태계에 연결 — Claude Desktop/Claude Code 등 MCP 클라이언트가 경력·프로젝트·논문 정보를 도구로 조회할 수 있도록 표준 프로토콜 서버 구현.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>도구 설계:</strong> read-only 도구 4개 — 구조화 조회(프로필/프로젝트/논문·특허) + BM25 문서 검색. 검색 실패 시 다음 행동을 안내하는 actionable 오류 응답 설계.</p>
     <p><strong>경량 아키텍처:</strong> 의존성 2개(MCP SDK + rank_bm25)만으로 구성 — 임베딩 서버·외부 API·GPU 불필요, clone 후 30초 내 동작. 추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">발견한 문제와 개선</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">발견한 문제와 개선</h4>
+    <ul class="detail-list">
         <li><strong>BM25 랭킹 왜곡 제거</strong> — 노션 export의 퍼센트 인코딩 경로가 무의미 토큰으로 쪼개져 길이 정규화 페널티를 유발하던 문제를 원문 정제로 해결 (토큰 7,653 → 6,310개, 18% 감소 · 외부 URL 보존)</li>
         <li><strong>검증 기준 강화</strong> — 응답 존재 여부만 보던 스모크 테스트를 내용 단언(프로젝트 수·특허 건수)으로 전환, 과정에서 구 사명 미인식 버그 발견·별칭 매칭 추가</li>
     </ul>
 
-    <h4 style="margin-top: 20px; color: #555;">특징</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">특징</h4>
+    <ul class="detail-list">
         <li>FastMCP 기반 stdio 서버, Pydantic 입력 검증, read-only 어노테이션</li>
         <li>확정 사실(profile.json)과 서술형 문서 검색을 이원화한 구조</li>
         <li>MCP 클라이언트 세션으로 전체 도구를 실호출하는 스모크 테스트 포함</li>
@@ -504,15 +525,15 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>휴가나 부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 오랜 시간이 걸린다는 문제에서 출발. 사내 메신저에 넣을 한국어 요약 모델 개발이 목표.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>모델 설계:</strong> 대화 요약은 BART, 문서 요약은 T5로 나눠 개발. 대화 요약 파인튜닝에는 사전 학습 표현을 훼손하지 않는 R3F 정규화 기법을 적용.</p>
     <p><strong>데이터 파이프라인:</strong> 한국어 대화-요약 쌍 데이터 수집과 전처리, 임베딩 모델 선정까지 학습 파이프라인을 직접 구축. ROUGE 점수와 사내 인원 휴먼 평가를 품질 지표로 사용.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li>사내 메신저에 요약 기능을 붙여 실제 적용</li>
         <li>긴 사내 공지 문서를 한 줄 요약으로 압축, 실제 업무 대화는 2초대에 요약</li>
         <li>카카오톡 대화 요약 기능과 나란히 비교해 유사한 품질의 요약을 확인한 데모 수행</li>
@@ -543,16 +564,16 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>20개 이상의 AI 서비스/API 운영 중 수동 배포로 배포 시간 수시간 소요. 자동화, 스케일링, 리소스 효율 개선 필요.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>인프라 설계:</strong> 온프레미스 클러스터라 클라우드식 로드밸런서가 없어 MetalLB로 LoadBalancer를 직접 구성, Ingress-nginx로 외부 요청 라우팅과 서비스 노출 구조를 설계. 서비스는 Docker로 컨테이너화해 Deployment/StatefulSet으로 배포하고, 영속 데이터는 NFS 기반 PV/PVC로 관리. Harbor 중앙 이미지 관리 + ArgoCD GitOps 선언적 배포.</p>
     <p><strong>CI/CD 파이프라인:</strong> GitLab에 소스가 올라오면 Jenkins와 Argo Workflow가 이미지를 빌드해 Harbor 레지스트리에 올리고 ArgoCD가 클러스터에 배포하는 완전 자동화 파이프라인. Prometheus/Grafana 실시간 모니터링과 AlertManager 경보를 구축하고, 로그는 클러스터에 Elasticsearch(ELK 스택)와 Loki를 직접 설치해 수집·조회 환경을 구성.</p>
     <p><strong>운영:</strong> 구축에서 끝나지 않고 클러스터 장애 대응과 리소스 관리까지 담당 — NFS 기반 PV/PVC로 모델·데이터 볼륨을 관리하며 20개 이상의 ML 모델 운영 환경을 유지.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li><strong>회사 최초 Kubernetes 기반 AI 플랫폼 설계 및 구축</strong></li>
         <li>MetalLB 로드 밸런싱, Ingress-nginx 라우팅, PersistentVolume 스토리지 통합</li>
         <li>GitLab → Jenkins → ArgoCD 완전 자동화 CI/CD 파이프라인 (GitOps 기반)</li>
@@ -561,7 +582,7 @@ title: Projects
         <li>20개 이상의 ML 모델 운영 환경 조성 및 확장성 확보</li>
     </ul>
 
-    <h4 style="margin-top: 20px; color: #555;">시스템 아키텍처</h4>
+    <h4 class="detail-head">시스템 아키텍처</h4>
     <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin: 20px 0;">
         <img src="/assets/images/kubernetes-architecture.png" alt="Kubernetes Infrastructure Architecture" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
     </div>
@@ -586,14 +607,14 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>TTS 게이트웨이 TTFB를 2292ms에서 334ms로 줄이며 손으로 하던 측정을 도구화. OpenAI 호환 엔드포인트(Ollama, vLLM 등)에 동시 부하를 걸어 TTFT·지연 percentile·처리량을 측정하는 CLI.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>측정 설계:</strong> asyncio + httpx로 동시성 수준별 스윕. 스트리밍 청크 단위로 TTFT(첫 토큰까지 시간)와 tokens/s를 요청별 기록, p50/p95 집계. 예열 요청으로 모델 로드 시간을 측정에서 분리. 의존성은 httpx 하나, 차트는 SVG 직접 생성.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">실측 사례</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li>로컬 Ollama(CPU) 기준선: 동시성 1에서 TTFT 0.62초, 7.6 tokens/s</li>
         <li>동시성을 2·4로 올리자 TTFT는 7.9초·12.4초로 악화되는데 처리량은 8.1 tokens/s에 고정 — 스케일이 아니라 큐잉이 일어나고 있음을 수치로 포착</li>
         <li>원인: Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화 — 벤치마크 도구가 병목의 위치를 증명</li>
@@ -624,15 +645,15 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>자율주행 환경 인식에 3D 거리/높이 정보 필수. 기존 2D 세그멘테이션의 한계로 인한 센서 퓨전 필요.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>모델 아키텍처:</strong> Trans-Unet (Transformer + U-Net 하이브리드) 설계로 LiDAR 포인트 클라우드 + 카메라 이미지 효과적 퓨전. Transformer 장거리 의존성 + U-Net 다중 스케일 피처 추출 결합.</p>
     <p><strong>연구 기여:</strong> 논문 2편 제1저자 게재 (한국자동차공학회 2022.11, 2023.04) 및 특허 2건 등록 (제1발명자).</p>
 
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li>논문 2편 게재 (제1저자, 한국자동차공학회 2022.11, 2023.04)</li>
         <li>특허 2건 등록 (제1발명자, 등록번호: 1025382250000, 1025382310000)</li>
     </ul>
@@ -657,21 +678,21 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>국방 도메인 AI 모델 개발의 학습 데이터 부족 (보안 제약으로 수집 어려움). GAN 모드 붕괴 문제 및 범용 생성 모델의 도메인 불일치.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>모델 개발:</strong> Latent Diffusion 노이즈 스케줄 + 조건부 생성 + LoRA 파인튜닝. 국방 이미지의 스타일, 배경, 객체 특성 학습으로 현실성 높은 합성 데이터 생성.</p>
     <p><strong>검증 및 평가:</strong> 합성 데이터를 실제 모델 학습에 적용하여 유효성 검증.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li><strong>우수 논문상 수상:</strong> "국방 데이터 확보를 위한 생성모델 Latent Diffusion 실험" (한국국방기술학회 2023.11)</li>
         <li>합성 데이터 생성 자동화 파이프라인 구축</li>
         <li>추가 논문: "GAN을 활용한 데이터 생성 연구 동향" (한국항공우주학회 2023)</li>
     </ul>
 
-    <h4 style="margin-top: 20px; color: #555;">생성 결과</h4>
+    <h4 class="detail-head">생성 결과</h4>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
         <img src="/assets/images/image 47.png" alt="Synthetic Data 1" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
         <img src="/assets/images/image 48.png" alt="Synthetic Data 2" style="width: 100%; border-radius: 8px; border: 1px solid #ddd;">
@@ -698,15 +719,15 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>정찰/드론 영상에서 전차 자동 탐지 필요. 기존 수동 분석의 시간 및 비용 문제.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>모델 개발:</strong> YOLOv5/v8 기반 전차 탐지 모델. 다양한 조도, 각도, 배경 시나리오 강건성 확보를 위한 데이터 증강 및 하이퍼파라미터 튜닝.</p>
     <p><strong>모델 학습 및 검증:</strong> 국방 도메인 데이터 기반 학습 및 성능 검증. 다양한 환경 시나리오에서의 탐지 강건성 확보.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li>YOLO 기반 전차 탐지 모델 개발 완료</li>
         <li>데이터 증강 및 하이퍼파라미터 튜닝으로 탐지 강건성 확보</li>
     </ul>
@@ -731,10 +752,10 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>과기정통부·NIA 주최, 연세대·서울대병원 주관 의료 AI 데이터톤. 심전도(ECG) 데이터셋으로 부정맥 여부를 진단하는 AI 모델 개발 트랙에 참가.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>신호 전처리:</strong> 기저선 변동(Baseline Wandering) 제거 — 침식·팽창 연산 및 spline 보간, 주파수 노이즈 제거, 근전도 노이즈는 moving average로 평활화.</p>
     <p><strong>모델:</strong> 8개 lead 중 심전도 관찰에 유리한 lead I의 5,000차원 신호를 입력으로, 1-D Convolution Layer(filter 32, kernel 5)를 계층적으로 연결한 1D-CNN으로 주기적 feature를 추출해 정상/부정맥 이진 분류.</p>
 
@@ -761,10 +782,10 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>공공 데이터 비식별화에 쓰이는 모자이크 처리는 원본 데이터의 정보 손실을 일으켜, Re-ID·행동 인식 등 얼굴 데이터가 필요한 후속 태스크에 활용하기 어려움. 이를 해결하기 위해 <strong>AI로 생성한 가짜 얼굴로 원본 얼굴을 대체</strong>하는 비식별화 기법을 제안.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p>거리 영상에서 보행자 얼굴 영역 검출 및 랜드마크 검출 → 생성 모델 기반 가짜 얼굴 합성으로 정보 손실을 최소화하면서 개인정보를 보호하는 라벨링 파이프라인.</p>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
@@ -793,15 +814,15 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>PDF/이미지 문서에서 표 영역 추출을 위한 OCR 학습 데이터 필요. 수동 주석 작업의 병목 해결 필요.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>시스템 아키텍처:</strong> PyQt GUI 기반 Annotation Tool 설계 및 단독 개발. 이미지 로딩, 라벨링, 데이터 저장 기능 구현.</p>
     <p><strong>AI 모델 개발:</strong> Tesseract 및 ViT 기반 표 영역 탐지, RNN 기반 테이블 셀 내 텍스트 추출 모델 개발. OCR 학습 데이터 생성 프로세스 자동화.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li>Annotation Tool 설계 및 단독 개발 (상용 서비스 투입 전 단계까지 참여)</li>
         <li>OCR 학습 데이터 생성 프로세스 자동화</li>
         <li>OCR 문서 인식 성능 개선</li>
@@ -827,15 +848,15 @@ title: Projects
     <details style="margin-top: 16px;">
         <summary style="cursor: pointer; font-weight: 500; color: #0071e3;">상세 보기</summary>
         <div style="margin-top: 16px;">
-<h4 style="margin-top: 20px; color: #555;">배경</h4>
+<h4 class="detail-head">배경</h4>
     <p>금융 데이터 분석을 위한 고품질 데이터 필수. 다중 소스 수집 데이터의 수동 정제 및 통합으로 인한 비효율.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">구현</h4>
+    <h4 class="detail-head">구현</h4>
     <p><strong>데이터 수집 & 정제:</strong> 금융 데이터 크롤링 및 수집. Pandas/NumPy 기반 결측값 처리, 이상치 제거, 형식 정규화.</p>
     <p><strong>자동화 파이프라인:</strong> 수집 → 정제 → 검증 → 저장 자동화. SQL 기반 데이터 관리.</p>
 
-    <h4 style="margin-top: 20px; color: #555;">성과</h4>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
         <li>금융 데이터 자동 수집 파이프라인 구축</li>
         <li>데이터 품질 검증 도구 개발</li>
         <li>데이터 엔지니어링 역량 확보</li>
@@ -849,7 +870,7 @@ title: Projects
 
 <div class="misc">
     <h3>그 외 프로젝트 (2021)</h3>
-    <ul style="list-style-position: inside; line-height: 2;">
+    <ul class="detail-list">
         <li><strong>욕설 탐지 모델</strong> — 한국어 텍스트 분류 (NLP)</li>
     </ul>
 </div>
