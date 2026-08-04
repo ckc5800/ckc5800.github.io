@@ -98,7 +98,7 @@ title: 프로젝트
 <div class="project">
     <h3 id="tts">Qwen3-TTS 플랫폼 구축 <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2026.03 ~ 현재 · PM · 풀스택 단독 개발 (백엔드 · 프론트 · 인프라)</p>
-    <p class="project-summary"><span class="sentence">고객 상담 센터용 TTS를 차세대 플랫폼으로 전면 재구축.</span><span class="sentence">vLLM(GPU)·Supertonic(CPU) 듀얼 엔진을 모델 선정부터 서빙·배포·운영까지 단독 수행.</span><span class="sentence">지연은 추측이 아니라 구간 계측으로 병목을 특정해 단축.</span></p>
+    <p class="project-summary"><span class="sentence">상담 센터에서 쓰던 기존 TTS를 Qwen3-TTS 기반으로 새로 구축.</span><span class="sentence">vLLM(GPU)·Supertonic(CPU) 듀얼 엔진을 모델 선정부터 서빙·배포·운영까지 단독 수행.</span><span class="sentence">지연은 추측이 아니라 구간 계측으로 병목을 특정해 단축.</span></p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">1,008 → 652ms</span><span class="metric-label">burst p95 TTFB</span></div>
         <div class="metric"><span class="metric-value">0.68 → 3.09 rps</span><span class="metric-label">엔진 처리량</span></div>
@@ -117,7 +117,7 @@ title: 프로젝트
         <summary>상세 보기</summary>
         <div style="margin-top: 16px;">
 <h4 class="detail-head">배경</h4>
-    <p>고객 상담 센터용 TTS를 차세대 플랫폼으로 전면 재구축 — 모델 선정(Qwen3-TTS)부터 서빙 아키텍처, 백엔드·프론트엔드, 배포·운영까지 전 구간을 단독으로 수행.</p>
+    <p><span class="sentence">상담 센터에서 쓰던 기존 TTS는 응답이 느리고 음성 선택지도 좁아 실시간 상담에 쓰기 어려웠음.</span><span class="sentence">모델 선정부터 서빙 아키텍처, 백엔드·프론트엔드, 배포·운영까지 전 구간을 단독으로 맡아 교체.</span></p>
 
     <h4 class="detail-head">핵심 성과 3가지</h4>
     <p><strong>① 스트리밍 품질 자동 감지 · 자가 치유</strong> — 서빙이 아니라 프로덕트 품질 문제를 직접 정의하고 메커니즘을 설계한 부분.</p>
@@ -180,7 +180,7 @@ title: 프로젝트
         <li>Redis 기반 Atomic quota·분산락·Circuit Breaker 등 장애 대응 로직</li>
         <li>Whisper 기반 CER/WER 자동 품질 측정 파이프라인</li>
     </ul>
-    <p><strong>운영 고도화:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성 — 장애 시 Circuit Breaker가 CPU 엔진으로 자동 폴백.</p>
+    <p><strong>운영:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성 — 장애 시 Circuit Breaker가 CPU 엔진으로 자동 폴백.</p>
     <ul class="detail-list">
         <li>무중단 롤링 재배포 체계 + 온보딩 가이드·운영 런북·장애복구 절차·성능 명세 문서화로 운영 이관 가능한 수준까지 정비</li>
         <li>배포 직후 활성 음성별 prefill 워밍과 정형 인사말 프리캐시를 자동 실행 — 첫 사용자가 콜드 경로를 밟지 않게</li>
