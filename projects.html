@@ -8,7 +8,8 @@ title: Projects
 <nav class="side-nav" aria-label="프로젝트 목차">
     <div class="side-nav-search">
         <input type="search" id="project-filter" placeholder="프로젝트 검색"
-               aria-label="프로젝트 검색" autocomplete="off">
+               aria-label="프로젝트 검색" autocomplete="off"
+               title="Enter: 첫 결과로 이동 · Esc: 초기화">
         <div class="side-nav-count" id="filter-count" role="status" aria-live="polite"></div>
     </div>
     <div class="side-nav-group">
@@ -1004,15 +1005,76 @@ title: Projects
 
     function hide(el, on) { el.classList.toggle('is-filtered-out', on); }
 
+    // 검색으로 펼친 상세만 기억했다가, 검색을 지우면 원래대로 되돌린다
+    var openedByFilter = [];
+
+    function clearMarks(root) {
+        var marks = root.querySelectorAll('mark.search-hit');
+        for (var i = 0; i < marks.length; i++) {
+            var m = marks[i], parent = m.parentNode;
+            parent.replaceChild(document.createTextNode(m.textContent), m);
+            parent.normalize();
+        }
+    }
+
+    // 텍스트 노드만 훑어 일치 구간을 <mark> 로 감싼다 (태그 구조는 건드리지 않음)
+    function markMatches(root, q) {
+        var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode: function (node) {
+                var p = node.parentNode;
+                if (!p || p.nodeType !== 1) return NodeFilter.FILTER_REJECT;
+                var tag = p.tagName;
+                if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'SUMMARY') return NodeFilter.FILTER_REJECT;
+                return node.nodeValue.toLowerCase().indexOf(q) === -1
+                    ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+            }
+        });
+        var targets = [], node;
+        while ((node = walker.nextNode())) targets.push(node);
+
+        var hits = 0;
+        targets.forEach(function (n) {
+            var text = n.nodeValue, lower = text.toLowerCase();
+            var frag = document.createDocumentFragment(), i = 0, at;
+            while ((at = lower.indexOf(q, i)) !== -1) {
+                if (at > i) frag.appendChild(document.createTextNode(text.slice(i, at)));
+                var mk = document.createElement('mark');
+                mk.className = 'search-hit';
+                mk.textContent = text.slice(at, at + q.length);
+                frag.appendChild(mk);
+                i = at + q.length;
+                hits++;
+            }
+            if (i < text.length) frag.appendChild(document.createTextNode(text.slice(i)));
+            n.parentNode.replaceChild(frag, n);
+        });
+        return hits;
+    }
+
     function apply() {
         var q = input.value.trim().toLowerCase();
-        var shown = 0;
+        var shown = 0, hits = 0;
+
+        // 이전 검색의 강조·펼침 상태를 먼저 되돌린다
+        openedByFilter.forEach(function (d) { d.open = false; });
+        openedByFilter = [];
 
         entries.forEach(function (e) {
+            clearMarks(e.card);
             var hit = !q || e.text.indexOf(q) !== -1;
             hide(e.card, !hit);
             hide(e.link, !hit);
-            if (hit) shown++;
+            if (!hit) return;
+            shown++;
+            if (!q) return;
+
+            hits += markMatches(e.card, q);
+            // 접힌 상세 안에 일치가 있으면 펼쳐서 보이게
+            var details = e.card.querySelector('details');
+            if (details && !details.open && details.querySelector('mark.search-hit')) {
+                details.open = true;
+                openedByFilter.push(details);
+            }
         });
 
         // 그룹 패널: 남은 카드가 없으면 통째로 접고, 카드 사이 구분선을 다시 계산
@@ -1043,22 +1105,53 @@ title: Projects
         // 목차에 없는 '그 외 프로젝트' 블록과 그 위 구분선도 함께 처리
         var misc = document.querySelector('.misc');
         if (misc) {
+            clearMarks(misc);
             var miscHit = !q || (misc.textContent || '').toLowerCase().indexOf(q) !== -1;
             hide(misc, !miscHit);
             var miscRule = misc.previousElementSibling;
             // 위에 남은 카드가 없으면 구분선이 맨 앞에 오므로 같이 숨긴다
             if (miscRule && miscRule.classList.contains('rule-sub')) hide(miscRule, !miscHit || shown === 0);
-            if (miscHit) shown++;
+            if (miscHit) {
+                shown++;
+                if (q) hits += markMatches(misc, q);
+            }
         }
 
-        count.textContent = q ? (shown ? shown + '개 일치' : '결과 없음') : '';
+        if (!q) count.textContent = '';
+        else if (!shown) count.textContent = '결과 없음';
+        else count.textContent = shown + '개 프로젝트 · ' + hits + '곳';
+
         window.dispatchEvent(new Event('scroll'));   // 강조 위치 재계산
+    }
+
+    // 첫 일치 지점으로 이동 (입력 중에는 화면이 튀지 않게 Enter 로만)
+    function jumpToFirstHit() {
+        var first = document.querySelector('mark.search-hit');
+        if (!first) return;
+        document.querySelectorAll('mark.search-hit.is-current')
+            .forEach(function (m) { m.classList.remove('is-current'); });
+        first.classList.add('is-current');
+        first.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }
 
     input.addEventListener('input', apply);
     input.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') { input.value = ''; apply(); }
+        if (e.key === 'Enter') { e.preventDefault(); jumpToFirstHit(); }
     });
+
+    // 목차에서 프로젝트를 고르면, 검색 중일 땐 그 카드의 첫 일치 지점으로
+    document.querySelectorAll('.side-nav a').forEach(function (link) {
+        link.addEventListener('click', function () {
+            if (!input.value.trim()) return;
+            var el = document.getElementById(link.hash.slice(1));
+            var card = el && el.closest('.project');
+            var hit = card && card.querySelector('mark.search-hit');
+            if (!hit) return;
+            setTimeout(function () { hit.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 0);
+        });
+    });
+
     apply();
 })();
 </script>
