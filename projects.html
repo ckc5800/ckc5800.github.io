@@ -56,11 +56,12 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>시스템 아키텍처:</strong> FastAPI WebSocket/REST 게이트웨이 + vLLM-Omni(Qwen3-TTS) 추론 엔진 + Redis 분산락 & 캐싱 + React 대시보드. 문장 단위 논리 청킹 및 WebSocket 스트리밍으로 TTFB 단축.</p>
-    <p><strong>성능 최적화:</strong> L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 활용 개선. Redis 캐싱으로 동일 문장 재요청 시 즉시 스트리밍 개시(캐시 히트 TTFB 50ms 미만). 7가지 엔지니어링 문제 해결 (팝 노이즈, 스토리지 누수, 세션 탈취, ITN 토크나이저, CPU 스파이크, 백색소음 장애, WAV 헤더 정리 — 아래 상세).</p>
+    <p><strong>성능 최적화:</strong> L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 활용 개선. Redis 캐싱으로 동일 문장 재요청 시 즉시 스트리밍 개시(캐시 히트 TTFB 50ms 미만). 9가지 엔지니어링 문제 해결 (팝 노이즈, 스토리지 누수, 세션 탈취, ITN 토크나이저, CPU 스파이크, 백색소음 장애, WAV 헤더 정리, 스트림 집단 절단 오진, HTTP 스트림 tail 지연 — 아래 상세).</p>
+    <p><strong>지연 구조 분해:</strong> 튜닝에 앞서 TTFB가 어느 구간에서 나오는지부터 계측 — 엔진 패치에 전처리(prep)와 엔진 첫 청크(큐+prefill+보코더) 지표를 심어 분해한 결과, 전처리 3~6ms·API 약 100ms는 고정이고 <strong>동시 요청 수에 선형 비례하는 구간은 엔진 디코드 루프</strong>(동시 +1당 약 +20ms)임을 확인. 스트림 세마포어를 32→40으로 여는 통상적 처방은 대조 실험 결과 대기 위치가 엔진 안으로 옮겨갈 뿐 SLA는 오히려 악화 — 세마포어를 병목이 아니라 보호막으로 재정의. 실효 레버를 코덱 좌측 컨텍스트(72→25, CUDA graph capture 목록 정합 수정 동반)와 첫 청크 프레임 수(4→2) 둘로 좁혀 확정하고, 청크 경계 불연속을 z-검정으로 자동 판정하는 품질 게이트를 통과시킨 뒤 채택.</p>
     <p><strong>측정 하네스:</strong> 성능 스윕을 도구화하는 과정에서 "0.6B 라벨로 1.7B를 측정"한 오라벨 사고를 겪은 뒤, 측정 자체를 신뢰할 수 있게 만드는 안전장치를 하네스에 내장 — 서빙 중인 모델의 3중 검증(환경변수·엔진 응답·부하기 재검증), 파라미터 반영 확인 실패 시 해당 값 스킵, SLA 판정에 연속성 요구(스파이크 하나로 뚫린 상위 동시성 채택 금지). GPU 상태를 1초마다 폴링하던 nvidia-smi가 GPU를 멈춰 세워 측정을 오염시키던 것까지 찾아 폴링 주기를 늘리고, 동일 문장 반복의 prefix cache 낙관을 가변 문장 모드로 병행 측정해 해소.</p>
     <p><strong>기능 확장:</strong> 참조 음성 5초만으로 화자 목소리를 복제하는 ICL(In-Context Learning) 기반 음성복제 기능 구현. OpenAI TTS API 호환 인터페이스와 기존 WebSocket 프로토콜 호환 레이어를 만들어 외부 서비스가 코드 수정 없이 연동되도록 지원. Redis 기반 Atomic quota, 분산락, Circuit Breaker 등 장애 대응 로직 개발.</p>
     <p><strong>모델 및 품질:</strong> Whisper 기반 CER/WER 자동 품질 측정 파이프라인 구축.</p>
-    <p><strong>운영 고도화:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성 — 장애 시 Circuit Breaker가 CPU 엔진으로 자동 폴백. 무중단 롤링 재배포 체계, 온보딩 가이드·운영 런북·장애복구 절차·성능 명세까지 문서화해 운영 이관이 가능한 수준으로 정비.</p>
+    <p><strong>운영 고도화:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성 — 장애 시 Circuit Breaker가 CPU 엔진으로 자동 폴백. 무중단 롤링 재배포 체계, 온보딩 가이드·운영 런북·장애복구 절차·성능 명세까지 문서화해 운영 이관이 가능한 수준으로 정비. 배포 직후에는 활성 음성별 prefill 워밍과 정형 인사말 프리캐시를 자동 실행해 첫 사용자가 콜드 경로를 밟지 않게 했고, 합성 결과의 길이-비율 이상(잘림·반복)을 자동 감지해 해당 캐시를 배제하는 자가 치유 장치로 품질 사고가 캐시에 굳는 것을 차단.</p>
 
     <h4 style="margin-top: 20px; color: #555;">성과 (KPI)</h4>
     <ul style="list-style-position: inside; line-height: 2;">
@@ -69,6 +70,8 @@ title: Projects
         <li>32개 언어 지원 단일 플랫폼 (vLLM 10개 + Supertonic 22개)</li>
         <li>ITN 정규화 정확도 50.1% → 70.9% (검증셋 기준)</li>
         <li><strong>모델 경량화 전환(1.7B→0.6B) 후 엔진 재튜닝: burst p95 TTFB 0.5초(동시 15)·1초(동시 30), 동시 스트림 수용 한계 36 실측</strong> — 첫 청크 프레임 수·코덱 좌측 컨텍스트를 미세그리드 스윕으로 확정 (2026.07 말)</li>
+        <li><strong>동일 GPU에서 burst p95 TTFB 1,008ms → 652ms (동시 20 기준)</strong> — ≤500ms SLA는 달성 불가에서 동시 15, ≤1000ms는 동시 20~25에서 30으로. 저부하 엔진 첫 청크 약 180ms → 107ms</li>
+        <li>핫 패스 정리: TTFB 경로의 순차 Redis 왕복 16 → 13회(서킷·긴급정지·인증 캐시 중복 조회 제거), 문장 캐시 일괄 조회로 N왕복 → 1왕복, 정규식 인터셉터 fast-path로 요청당 이벤트 루프 블로킹 대폭 감소</li>
     </ul>
 
     <h4 style="margin-top: 20px; color: #555;">운영 대시보드</h4>
@@ -90,7 +93,7 @@ title: Projects
         </div>
     </div>
 
-    <h4 style="margin-top: 20px; color: #555;">핵심 엔지니어링 (7가지 문제 해결)</h4>
+    <h4 style="margin-top: 20px; color: #555;">핵심 엔지니어링 (9가지 문제 해결)</h4>
     <ol style="list-style-position: inside; line-height: 2;">
         <li><strong>스트리밍 팝 노이즈</strong> — 스트리밍 중 간헐적으로 '틱' 잡음 발생. PCM 청크가 홀수 바이트로 끊겨 와 16bit 샘플 정렬이 깨지는 것이 원인. 잔여 바이트를 다음 청크에 이어 붙이는 Residual Buffer로 정렬을 보장하고, 청크 경계에 Micro-fade를 적용해 해결</li>
         <li><strong>스토리지 누수</strong> — 보이스를 삭제해도 디스크 사용량이 계속 증가. 원본을 지워도 파생된 MD5 해시 캐시 파일이 남는 구조여서, 파생 파일까지 추적해 함께 지우는 Deep GC를 구현해 차단</li>
@@ -99,6 +102,8 @@ title: Projects
         <li><strong>CPU 스파이크 (ReDoS 가드 오버헤드)</strong> — 정규식 치환의 ReDoS 방어용 ThreadPoolExecutor(max_workers=1) 가드가 치환마다 새로 인스턴스화되어 다수 합성 시 CPU 스파이크와 지연을 유발. 오버엔지니어링된 가드를 철거하고 네이티브 C 구현체(re.sub) 동기 호출로 교체해 핫 패스 병목 제거</li>
         <li><strong>전면 백색소음 장애</strong> — vLLM 0.24 전환 직후 모든 합성이 백색소음으로 재생되는 문제를 추적해, 엔진의 SSE(JSON) 응답이 그대로 PCM으로 재생된 것이 원인임을 확인. 응답 포맷을 오디오로 강제해 해결</li>
         <li><strong>스트리밍 WAV 헤더 정리</strong> — 엔진이 문장마다 RIFF 헤더를 붙여 보내 클라이언트 디코딩이 어긋나는 문제. 문장별 헤더를 걷어내고 세션 전체에 스트리밍 WAV 헤더를 한 번만 내보내는 구조로 정리해 해결</li>
+        <li><strong>크래시로 오진할 뻔한 스트림 집단 절단</strong> — 고부하 burst 도중 스트림이 무더기로 끊기고 수 분간 무응답. 엔진 크래시로 보고 GPU 메모리와 CUDA graph 설정을 의심했으나, 컨테이너 재시작 횟수가 0인 것을 확인하고 가설을 폐기. 실체는 오픈소스 추론 엔진(vLLM-Omni) 자체의 텐서 결합 오류가 집단 발생하자 API 서킷 브레이커가 열려 빈 응답을 반환한 연쇄였음. 원인을 바로잡아 무고하게 보류돼 있던 튜닝 값의 채택을 재개하고, 동시 한도를 실측 실링(40)보다 한 티어 낮춰(36) 과부하 진입 자체를 완화</li>
+        <li><strong>HTTP 스트림 tail 지연</strong> — 저지연을 표방하는 HTTP 스트림이 실제로는 문장별 tail 버퍼를 문장 끝까지 붙들어, 약 615ms 분량이 모일 때까지 한 바이트도 내보내지 않던 구조. WebSocket 경로에만 있던 무음 감지 기반 조기 flush(연속 무음 150ms)를 동일 trim·fade 파라미터로 HTTP 경로에 이식해 단문 TTFB와 다문장 경계 끊김을 함께 해소</li>
     </ol>
 
     <div class="tech-tags" style="margin-top: 20px;">
