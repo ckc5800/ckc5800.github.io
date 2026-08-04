@@ -98,7 +98,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="tts">Qwen3-TTS 플랫폼 구축 <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2026.03 ~ 현재 · PM · 풀스택 단독 개발 (백엔드 · 프론트 · 인프라)</p>
-    <p class="project-summary"><span class="sentence">상담 센터에서 쓰던 기존 TTS를 Qwen3-TTS 기반으로 새로 구축.</span><span class="sentence">vLLM(GPU)·Supertonic(CPU) 듀얼 엔진을 모델 선정부터 서빙·배포·운영까지 단독 수행.</span><span class="sentence">지연은 추측이 아니라 구간 계측으로 병목을 특정해 단축.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>상담 센터 TTS가 응답이 느리고 음성 선택지도 좁아 실시간 상담에 쓰기 어려웠음</dd>
+        <dt>해결</dt><dd>Qwen3-TTS 기반으로 교체. 지연은 구간 계측으로 분해해 병목(엔진 디코드 루프)만 정조준</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">1,008 → 652ms</span><span class="metric-label">burst p95 TTFB</span></div>
         <div class="metric"><span class="metric-value">0.68 → 3.09 rps</span><span class="metric-label">엔진 처리량</span></div>
@@ -237,7 +240,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="tts-api">TTS 스트리밍 API 리팩토링 (ZipVoice 기반) <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2025.09 ~ 2025.10 · 스트리밍 API 담당 (인수인계, 기여도 100%)</p>
-    <p class="project-summary"><span class="sentence">실시간 상담에 쓰기 어려울 만큼 느리던 레거시 TTS 스트리밍 API를 문장 단위 합성 → 즉시 전송 구조로 전환.</span><span class="sentence">원인 분석부터 조치·검증·고객 보고까지 단독 수행</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>전체 텍스트를 다 합성한 뒤 전송하는 구조라, 문장이 길수록 첫 응답이 비례해 늦어짐</dd>
+        <dt>해결</dt><dd>엔진의 gRPC 서버 스트리밍을 써서 문장 단위 합성 → 즉시 전송하는 엔드포인트 신설</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2,292 → 334ms</span><span class="metric-label">TTFB (85.4% 단축)</span></div>
         <div class="metric"><span class="metric-value">6.85배</span><span class="metric-label">응답 개선</span></div>
@@ -285,7 +291,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="stt">STT 배포 <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2025.07 ~ 2025.09 · STT 배포 · 서빙 담당 (팀 협업)</p>
-    <p class="project-summary">상담 전화를 실시간 처리하던 기존 STT의 채널 부족과 지연을 풀기 위해, Triton 기반 파이프라인을 전처리·후처리·서비스 계층으로 재구성하고 화자 분리를 결합한 전사 제공.</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>대량 상담 전화를 실시간 처리해야 하는데 기존 STT가 채널 부족·추론 지연으로 병목</dd>
+        <dt>해결</dt><dd>Triton 기반으로 전처리·후처리·서비스 계층을 분리하고, 파일·스트리밍 두 경로에 화자 분리 결합</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">4건</span><span class="metric-label">고객사 요구사항 해결</span></div>
         <div class="metric"><span class="metric-value">파일 · 스트리밍</span><span class="metric-label">2개 경로 서빙</span></div>
@@ -328,7 +337,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="diarization">Speaker Diarization with Pyannote <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2025.04 ~ 2025.07 · 화자 분할 모델 파인튜닝 · STT 통합</p>
-    <p class="project-summary">Pyannote 화자 분할 모델을 파인튜닝(DER 검증)하고 STT와 연동해 상담사·고객이 구분된 전사 파이프라인을 구성.</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>STT가 텍스트만 돌려줘 상담사와 고객 발화를 구분할 수 없었고, 그래서 품질 분석이 불가</dd>
+        <dt>해결</dt><dd>Pyannote 를 파인튜닝(DER 검증)하고 화자 구간을 STT 에 넘겨 화자별 전사를 생성</dd>
+    </dl>
     <div class="tech-tags">
         <span class="tech-tag">Pyannote</span>
         <span class="tech-tag">Speaker Diarization</span>
@@ -361,7 +373,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="visual">한국어 멀티모달 상품 검색 (visual-search) <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.08 · 커머스 비주얼 검색 E2E 단독 구축</p>
-    <p class="project-summary"><span class="sentence">패션 상품 카탈로그를 한국어 문장형 질의로 검색하는 시스템을, 임베딩 인덱스부터 평가셋·하이브리드 검색·웹 데모까지 구축.</span><span class="sentence">임베딩 단독의 세부 조건 약점을 구간 분해로 규명한 뒤 메타 필터를 결합해 해소.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>한국어 문장형 질의는 색·성별 같은 세부 조건에서 임베딩 검색만으로 정확도가 떨어짐</dd>
+        <dt>해결</dt><dd>실패를 gold 크기 구간별로 분해해 원인을 먼저 규명한 뒤, 질의에서 속성을 뽑아 메타 필터로 결합</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">90 → 98%</span><span class="metric-label">hit@10 (한국어 50문항)</span></div>
         <div class="metric"><span class="metric-value">6종</span><span class="metric-label">다국어 전략 실측 비교</span></div>
@@ -408,7 +423,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="rag">LangGraph 기반 Corrective-RAG Agent <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.07 · LLM Agent 시스템 설계 · 구현</p>
-    <p class="project-summary"><span class="sentence">LangGraph 기반 Corrective-RAG를 전 구간 로컬(Ollama)로 구축.</span><span class="sentence">실패를 검색·청킹·생성 층으로 분해해 병목을 정량 규명.</span><span class="sentence">지표를 쓰기 전에 채점기부터 검증.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>RAG 정답률이 낮을 때 검색·청킹·생성 중 어디가 원인인지 분리되지 않음</dd>
+        <dt>해결</dt><dd>층별 단독 평가 체계를 만들어 병목을 정량 규명. 지표를 쓰기 전에 채점기부터 검증</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">68 → 75%</span><span class="metric-label">정답률 (51문항)</span></div>
         <div class="metric"><span class="metric-value">90% · 0.95</span><span class="metric-label">검색 recall@1 · MRR</span></div>
@@ -470,7 +488,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="pdm">예지보전 Agent (pdm-agent) <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.07 · 센서 이상 탐지 + LLM 진단 파이프라인 설계 · 구현</p>
-    <p class="project-summary"><span class="sentence">회전기계 센서에서 이상을 탐지하고 LLM이 정비 진단 리포트를 쓰는 예지보전 파이프라인.</span><span class="sentence">탐지는 결정적 신호처리, 해석만 LLM 담당으로 역할 분리.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>LLM 에 이상 탐지까지 맡기면 근거 없는 수치를 지어내 정비 판단에 쓸 수 없음</dd>
+        <dt>해결</dt><dd>탐지는 결정적 신호처리(z-score·EWMA·추세 회귀)가 맡고, LLM 은 탐지 근거 해석만 하도록 역할 분리</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">15/15</span><span class="metric-label">주입 결함 탐지 (오탐 0)</span></div>
         <div class="metric"><span class="metric-value">28.5 → 12.9</span><span class="metric-label">RUL MAE (사이클)</span></div>
@@ -518,7 +539,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="mcp">Portfolio MCP Server <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.07 · MCP 서버 설계 · 구현</p>
-    <p class="project-summary"><span class="sentence">포트폴리오를 MCP 도구로 노출해 AI 도구 생태계에 연결한 read-only 서버.</span><span class="sentence">추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지.</span><span class="sentence">RAG Agent가 이 서버를 클라이언트로 소비.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>포트폴리오가 문서로만 있어 AI 도구가 경력·프로젝트를 직접 조회할 수 없음</dd>
+        <dt>해결</dt><dd>MCP 표준 서버로 read-only 도구 4종을 제공하고, 추론은 클라이언트 LLM 에 위임해 서버는 결정적으로 유지</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">의존성 2개</span><span class="metric-label">clone 후 30초 내 동작</span></div>
         <div class="metric"><span class="metric-value">18% 감소</span><span class="metric-label">BM25 토큰 정제</span></div>
@@ -564,7 +588,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="nlp">NLP Text Summarization System <span class="badge">인피닉</span></h3>
     <p class="project-meta">2024.01 ~ 2024.07 · 사내 지식 관리 · 요약 시스템 개발</p>
-    <p class="project-summary">휴가 후 복귀한 직원이 쌓인 업무 대화를 따라잡기 어렵다는 문제에서 출발해, 사내 메신저에 넣을 한국어 요약 모델(대화 BART·문서 T5, R3F 정규화) 개발.</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>휴가·부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 시간이 오래 걸림</dd>
+        <dt>해결</dt><dd>대화는 BART, 문서는 T5 로 나눠 파인튜닝(R3F 정규화)하고 사내 메신저에 탑재</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2초대</span><span class="metric-label">업무 대화 요약</span></div>
         <div class="metric"><span class="metric-value">사내 메신저</span><span class="metric-label">실서비스 탑재</span></div>
@@ -604,7 +631,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="k8s">Kubernetes-based AI Infrastructure <span class="badge">인피닉</span></h3>
     <p class="project-meta">2024.03 ~ 2025.04 · 회사 최초 K8s 기반 AI 플랫폼 설계 · 구축</p>
-    <p class="project-summary"><span class="sentence">20개가 넘는 AI 서비스를 수동 배포하던 온프레미스 환경에, 회사 최초의 Kubernetes 기반 AI 플랫폼 설계·구축.</span><span class="sentence">장애 대응·리소스 관리까지 운영 담당.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>AI 서비스 20여 개를 수동 배포해 한 번에 수 시간이 걸리고, 스케일링·자원 효율도 확보 불가</dd>
+        <dt>해결</dt><dd>온프레미스에 K8s 플랫폼 구축 — MetalLB·Ingress·NFS PV + GitLab → Jenkins → ArgoCD GitOps</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">20개 이상</span><span class="metric-label">운영 ML 모델</span></div>
         <div class="metric"><span class="metric-value">수시간 → 자동화</span><span class="metric-label">배포 소요</span></div>
@@ -662,7 +692,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="llmbench">llm-bench <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.07 · LLM 추론 벤치마크 CLI 설계 · 구현</p>
-    <p class="project-summary"><span class="sentence">TTS 게이트웨이를 튜닝하며 손으로 하던 측정을 도구화.</span><span class="sentence">OpenAI 호환 엔드포인트에 동시 부하를 걸어 TTFT·지연 percentile·처리량 측정.</span><span class="sentence">병목의 위치를 수치로 증명.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>추론 서버 성능을 손으로 재다 보니 병목이 큐잉인지 연산인지 구분되지 않음</dd>
+        <dt>해결</dt><dd>동시성 수준별 스윕으로 TTFT 와 처리량을 함께 기록해, 처리량이 고정된 채 지연만 느는 큐잉을 분리</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">12.4 → 0.93초</span><span class="metric-label">TTFT p50</span></div>
         <div class="metric"><span class="metric-value">8.1 → 22.9</span><span class="metric-label">처리량 (tokens/s)</span></div>
@@ -702,7 +735,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="seg3d">3D Semantic Segmentation Research <span class="badge">인피닉</span></h3>
     <p class="project-meta">2022.08 ~ 2022.12 · 센서 퓨전 기반 자율주행 연구 · 모델 개발</p>
-    <p class="project-summary">자율주행 환경 인식에 필요한 3D 거리·높이 정보를 얻기 위해, LiDAR 포인트 클라우드와 카메라 이미지를 융합하는 Trans-Unet 설계.</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>2D 세그멘테이션만으로는 자율주행에 필요한 거리·높이 정보를 얻을 수 없음</dd>
+        <dt>해결</dt><dd>LiDAR 와 카메라를 융합하는 Trans-Unet 설계 — Transformer 의 장거리 의존성 + U-Net 의 다중 스케일</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2편</span><span class="metric-label">논문 (제1저자)</span></div>
         <div class="metric"><span class="metric-value">2건</span><span class="metric-label">특허 (제1발명자)</span></div>
@@ -739,7 +775,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="latent">Synthetic Data Generation with Latent Diffusion <span class="badge">인피닉</span></h3>
     <p class="project-meta">2023.01 ~ 2023.12 · 생성 모델 기반 국방 데이터 확보 연구</p>
-    <p class="project-summary"><span class="sentence">보안 제약으로 수집이 어려운 국방 도메인의 학습 데이터 부족을 Latent Diffusion 합성 데이터로 보완.</span><span class="sentence">실제 모델 학습에 투입해 유효성 검증.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>국방 도메인은 보안 제약으로 학습 데이터 수집이 어렵고, GAN 은 모드 붕괴로 대안이 못 됨</dd>
+        <dt>해결</dt><dd>Latent Diffusion 에 조건부 생성과 LoRA 를 얹어 도메인 특성을 학습시키고 합성 데이터 생성</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">우수 논문상</span><span class="metric-label">한국국방기술학회 2023</span></div>
         <div class="metric"><span class="metric-value">2편</span><span class="metric-label">관련 논문</span></div>
@@ -784,7 +823,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="tank">Tank Object Detection Model <span class="badge">인피닉</span></h3>
     <p class="project-meta">2023.01 ~ 2023.08 · 전차 탐지 모델 개발</p>
-    <p class="project-summary"><span class="sentence">정찰·드론 영상용 YOLO 기반 전차 탐지 모델.</span><span class="sentence">조도·각도·배경이 바뀌어도 유지되는 탐지 강건성 확보.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>정찰·드론 영상을 사람이 일일이 분석해 시간과 비용이 큼</dd>
+        <dt>해결</dt><dd>YOLO 기반 탐지 모델에 조도·각도·배경 증강을 더해 환경이 바뀌어도 탐지가 유지되도록 학습</dd>
+    </dl>
     <div class="tech-tags">
         <span class="tech-tag">YOLO</span>
         <span class="tech-tag">Object Detection</span>
@@ -815,7 +857,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="ecg">심전도 부정맥 진단 AI <span class="badge">대회 참가</span></h3>
     <p class="project-meta">2021 · Heart Disease AI Datathon · 부정맥 진단 트랙 참가 — 모델 · 전처리 개발</p>
-    <p class="project-summary"><span class="sentence">과기정통부·NIA 주최 의료 AI 데이터톤 참가.</span><span class="sentence">기저선 변동·노이즈 제거 전처리 후 1D-CNN으로 부정맥을 이진 분류.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>심전도 원신호에 기저선 변동·근전도 노이즈가 섞여 그대로 학습하면 판별이 어려움</dd>
+        <dt>해결</dt><dd>침식·팽창 연산과 spline 보간으로 기저선을 제거한 뒤, lead I 신호를 1D-CNN 으로 이진 분류</dd>
+    </dl>
     <div class="tech-tags">
         <span class="tech-tag">1D-CNN</span>
         <span class="tech-tag">ECG / Bio-signal</span>
@@ -845,7 +890,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="deid">AI Face De-ID (얼굴 정보 자동 비식별화) <span class="badge">팀 프로젝트</span></h3>
     <p class="project-meta">2021 · 4인 팀 프로젝트 (데이터 어드벤처 팀)</p>
-    <p class="project-summary"><span class="sentence">모자이크의 정보 손실 문제를 생성 얼굴 대체로 푸는 비식별화 파이프라인.</span><span class="sentence">얼굴 검출·랜드마크 검출부터 합성까지 구성한 4인 팀 프로젝트.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>모자이크 비식별화는 정보를 지워버려 Re-ID·행동 인식 같은 후속 태스크에 쓸 수 없음</dd>
+        <dt>해결</dt><dd>얼굴 검출·랜드마크 검출 후 생성 모델로 가짜 얼굴을 합성해 대체 — 형태는 남기고 신원만 제거</dd>
+    </dl>
     <div class="tech-tags">
         <span class="tech-tag">Computer Vision</span>
         <span class="tech-tag">Face Detection</span>
@@ -875,7 +923,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="ocr">OCR Dataset Annotation Tool <span class="badge">이든티앤에스</span></h3>
     <p class="project-meta">2022.04 ~ 2022.08 · 단독 개발 (Full-Stack) — GUI 도구 설계 · 구현</p>
-    <p class="project-summary"><span class="sentence">PDF·이미지 문서의 표 영역을 추출할 OCR 학습 데이터가 필요해, PyQt 기반 어노테이션 도구를 단독 설계·개발.</span><span class="sentence">표 탐지·셀 텍스트 추출 모델까지 구현.</span></p>
+    <dl class="ps">
+        <dt>문제</dt><dd>표 영역 OCR 학습 데이터를 수동 주석으로 만들다 보니 그 작업 자체가 병목</dd>
+        <dt>해결</dt><dd>PyQt 주석 도구를 직접 만들어 생성 과정을 자동화하고, 표 탐지·셀 텍스트 추출 모델까지 구현</dd>
+    </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">단독 개발</span><span class="metric-label">설계부터 구현까지</span></div>
         <div class="metric"><span class="metric-value">성과금 수령</span><span class="metric-label">프로젝트 성공</span></div>
@@ -913,7 +964,10 @@ title: 프로젝트
 <div class="project">
     <h3 id="quhedge">Data Collection & Preprocessing <span class="badge">큐헷지</span></h3>
     <p class="project-meta">2020.09 ~ 2021.09 · 인턴 — 데이터 수집 · 전처리 파이프라인 구축</p>
-    <p class="project-summary">금융 데이터 수집 → 정제 → 검증 → 저장을 자동화한 파이프라인 구축(인턴).</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>여러 소스에서 모은 금융 데이터를 수동으로 정제·통합하느라 분석까지 시간이 오래 걸림</dd>
+        <dt>해결</dt><dd>수집 → 정제 → 검증 → 저장을 자동화한 파이프라인 구축</dd>
+    </dl>
     <div class="tech-tags">
         <span class="tech-tag">Python</span>
         <span class="tech-tag">Pandas / NumPy</span>
