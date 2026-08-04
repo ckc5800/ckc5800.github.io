@@ -87,9 +87,10 @@ title: Projects
     </div>
 </div>
 
+<section class="group">
 <h2 class="group-title" id="g-voice">음성 AI 서빙<span class="group-count">4</span></h2>
 <p class="group-desc">실시간 스트리밍 TTS·STT 서빙과 화자 분리. 지연·처리량을 계측해 좁히는 작업이 중심.</p>
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="tts">Qwen3-TTS 플랫폼 구축 <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">MiCo AI</span></h3>
     <p><strong>Period:</strong> 2026.03 ~ Present</p>
     <p><strong>Role:</strong> PM 및 풀스택 단독 개발 (Backend/Frontend/Infrastructure)</p>
@@ -111,12 +112,12 @@ title: Projects
 
     <h4 style="margin-top: 20px; color: #555;">시스템 구조</h4>
     <div style="overflow-x: auto; margin: 20px 0;">
-        <img src="/assets/images/tts-physical-architecture.svg" alt="Qwen3-TTS 물리 구조도 — 클라이언트/SDK에서 tts-api를 거쳐 vLLM(GPU)과 Supertonic(CPU) 엔진으로 분기하는 컨테이너 구성" style="width: 100%; min-width: 760px; border-radius: 8px; border: 1px solid #ddd;">
+        <img src="/assets/images/tts-physical-architecture.svg" alt="Qwen3-TTS 물리 구조도 — 클라이언트/SDK에서 tts-api를 거쳐 vLLM(GPU)과 Supertonic(CPU) 엔진으로 분기하는 컨테이너 구성" style="background: #ffffff; width: 100%; min-width: 760px; border-radius: 8px; border: 1px solid #ddd;">
     </div>
     <p style="font-size: 13px; color: #888;">물리 구조 — 컨테이너 단위 배치. 실선은 현재 기동 중인 경로, 점선은 에디션에 따라 선택 기동되는 경로(nginx·PostgreSQL은 Ed4 전용, vllm-b는 GPU 증설 시 부하분산용).</p>
 
     <div style="overflow-x: auto; margin: 20px 0;">
-        <img src="/assets/images/tts-logical-architecture.svg" alt="Qwen3-TTS 논리 구조도 — 라우터에서 텍스트 파이프라인, 합성 서비스, 엔진 레지스트리, 엔진 어댑터를 거쳐 두 백엔드로 내려가는 계층" style="width: 100%; max-width: 900px; min-width: 620px; border-radius: 8px; border: 1px solid #ddd;">
+        <img src="/assets/images/tts-logical-architecture.svg" alt="Qwen3-TTS 논리 구조도 — 라우터에서 텍스트 파이프라인, 합성 서비스, 엔진 레지스트리, 엔진 어댑터를 거쳐 두 백엔드로 내려가는 계층" style="background: #ffffff; width: 100%; max-width: 900px; min-width: 620px; border-radius: 8px; border: 1px solid #ddd;">
     </div>
     <p style="font-size: 13px; color: #888;">논리 구조 — 요청이 내려가는 계층. 텍스트 파이프라인(정규화·ITN·발음교정·문장분할)과 엔진 선택(voice_id 접두사 기반 라우팅)을 분리해, 엔진을 추가해도 상위 계층이 바뀌지 않도록 구성.</p>
 
@@ -176,7 +177,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="tts-api">TTS 스트리밍 API 리팩토링 (ZipVoice 기반) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">MiCo AI</span></h3>
     <p><strong>Period:</strong> 2025.09 ~ 2025.10</p>
     <p><strong>Role:</strong> 스트리밍 API 담당 (인수인계 받아 진행, 기여도 100%)</p>
@@ -211,7 +212,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="stt">STT 배포 <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">MiCo AI</span></h3>
     <p><strong>Period:</strong> 2025.07 ~ 2025.09</p>
     <p><strong>Role:</strong> STT 배포 및 서빙 담당 (팀 협업)</p>
@@ -251,7 +252,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="diarization">Speaker Diarization with Pyannote <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">MiCo AI</span></h3>
     <p><strong>Period:</strong> 2025.04 ~ 2025.07</p>
     <p><strong>Role:</strong> 화자 분할 모델 파인튜닝 및 STT 통합</p>
@@ -281,10 +282,12 @@ title: Projects
         </div>
     </details>
 </div>
+</section>
 
+<section class="group">
 <h2 class="group-title" id="g-llm">LLM · 검색 시스템<span class="group-count">5</span></h2>
 <p class="group-desc">RAG·에이전트·멀티모달 검색. 지표를 먼저 검증하고 실패를 층으로 분해하는 평가 방법론이 공통 축.</p>
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="visual">한국어 멀티모달 상품 검색 (visual-search) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
     <p><strong>Period:</strong> 2026.08</p>
     <p><strong>Role:</strong> 커머스 비주얼 검색 E2E 구축 — 임베딩 인덱스·평가셋·하이브리드 검색·웹 데모</p>
@@ -330,7 +333,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="rag">LangGraph 기반 Corrective-RAG Agent <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
     <p><strong>Period:</strong> 2026.07</p>
     <p><strong>Role:</strong> LLM Agent 시스템 학습 목적의 개인 구축 프로젝트</p>
@@ -391,7 +394,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="pdm">예지보전 Agent (pdm-agent) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
     <p><strong>Period:</strong> 2026.07</p>
     <p><strong>Role:</strong> 센서 이상 탐지 + LLM 진단 파이프라인 설계·구현</p>
@@ -437,7 +440,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="mcp">Portfolio MCP Server <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
     <p><strong>Period:</strong> 2026.07</p>
     <p><strong>Role:</strong> MCP(Model Context Protocol) 서버 설계 및 구현</p>
@@ -482,7 +485,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="nlp">NLP Text Summarization System <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">인피닉</span></h3>
     <p><strong>Period:</strong> 2024.01 ~ 2024.07</p>
     <p><strong>Role:</strong> 사내 지식 관리 및 요약 시스템 개발</p>
@@ -515,10 +518,12 @@ title: Projects
         </div>
     </details>
 </div>
+</section>
 
+<section class="group">
 <h2 class="group-title" id="g-mlops">MLOps · 성능 엔지니어링<span class="group-count">2</span></h2>
 <p class="group-desc">배포 자동화와 측정 도구. 병목의 위치를 수치로 증명하는 쪽에 무게.</p>
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="k8s">Kubernetes-based AI Infrastructure <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">인피닉</span></h3>
     <p><strong>Period:</strong> 2024.03 ~ 2025.04</p>
     <p><strong>Role:</strong> 회사 최초 K8s 기반 AI 플랫폼 설계 및 구축</p>
@@ -564,7 +569,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="llmbench">llm-bench <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">개인 프로젝트</span></h3>
     <p><strong>Period:</strong> 2026.07</p>
     <p><strong>Role:</strong> LLM 추론 벤치마크 CLI 설계·구현</p>
@@ -597,10 +602,12 @@ title: Projects
         </div>
     </details>
 </div>
+</section>
 
+<section class="group">
 <h2 class="group-title" id="g-vision">비전 · 생성모델<span class="group-count">5</span></h2>
 <p class="group-desc">센서 퓨전, 생성 모델, 탐지. 논문 7편·특허 2건이 나온 연구 기간의 작업.</p>
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="seg3d">3D Semantic Segmentation Research <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">인피닉</span></h3>
     <p><strong>Period:</strong> 2022.08 ~ 2022.12</p>
     <p><strong>Role:</strong> 센서 퓨전 기반 자율주행 연구 및 모델 개발</p>
@@ -634,7 +641,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="latent">Synthetic Data Generation with Latent Diffusion <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">인피닉</span></h3>
     <p><strong>Period:</strong> 2023.01 ~ 2023.12</p>
     <p><strong>Role:</strong> 생성 모델을 활용한 국방 데이터 확보 연구 및 구현</p>
@@ -676,7 +683,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="tank">Tank Object Detection Model <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">인피닉</span></h3>
     <p><strong>Period:</strong> 2023.01 ~ 2023.08</p>
     <p><strong>Role:</strong> 전차 탐지 모델 개발</p>
@@ -708,7 +715,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="ecg">심전도 부정맥 진단 AI <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">대회 참가</span></h3>
     <p><strong>Period:</strong> 2021 (Heart Disease AI Datathon 2021)</p>
     <p><strong>Role:</strong> 심전도 부정맥 진단 트랙 참가 — 모델·전처리 개발</p>
@@ -739,7 +746,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="deid">AI Face De-ID (얼굴 정보 자동 비식별화) <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">팀 프로젝트</span></h3>
     <p><strong>Period:</strong> 2021</p>
     <p><strong>Role:</strong> 4인 팀 프로젝트 (데이터 어드벤처 팀)</p>
@@ -766,10 +773,12 @@ title: Projects
         </div>
     </details>
 </div>
+</section>
 
+<section class="group">
 <h2 class="group-title" id="g-data">데이터 파이프라인 · 도구<span class="group-count">2</span></h2>
 <p class="group-desc">학습 데이터를 만들고 정제하는 쪽. 경력 초반의 풀스택·데이터 엔지니어링 경험.</p>
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="ocr">OCR Dataset Annotation Tool <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">이든티앤에스</span></h3>
     <p><strong>Period:</strong> 2022.04 ~ 2022.08</p>
     <p><strong>Role:</strong> 독립 개발 (Full-Stack) - GUI 도구 설계 및 구현</p>
@@ -804,7 +813,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div style="margin-bottom: 46px;">
+<div class="project">
     <h3 id="quhedge">Data Collection & Preprocessing <span style="font-size: 14px; background: #f0f0f0; padding: 3px 10px; border-radius: 12px; vertical-align: middle;">큐헷지</span></h3>
     <p><strong>Period:</strong> 2020.09 ~ 2021.09</p>
     <p><strong>Role:</strong> 인턴 - 데이터 수집 및 전처리 파이프라인 구축</p>
@@ -834,6 +843,7 @@ title: Projects
         </div>
     </details>
 </div>
+</section>
 
 <hr class="rule-sub">
 
