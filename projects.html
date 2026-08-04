@@ -6,6 +6,11 @@ title: Projects
 <h2>Projects</h2>
 
 <nav class="side-nav" aria-label="프로젝트 목차">
+    <div class="side-nav-search">
+        <input type="search" id="project-filter" placeholder="프로젝트 검색"
+               aria-label="프로젝트 검색" autocomplete="off">
+        <div class="side-nav-count" id="filter-count" role="status" aria-live="polite"></div>
+    </div>
     <div class="side-nav-group">
         <div class="side-nav-label">음성 AI 서빙</div>
         <a href="#tts">Qwen3-TTS 플랫폼</a>
@@ -847,7 +852,7 @@ title: Projects
 
 <hr class="rule-sub">
 
-<div>
+<div class="misc">
     <h3>그 외 프로젝트 (2021)</h3>
     <ul style="list-style-position: inside; line-height: 2;">
         <li><strong>욕설 탐지 모델</strong> — 한국어 텍스트 분류 (NLP)</li>
@@ -893,5 +898,77 @@ title: Projects
     window.addEventListener('resize', onScroll);
     document.addEventListener('toggle', onScroll, true);   // 상세 펼침/접힘
     update();
+})();
+
+// 검색: 목차 항목과 본문 카드를 함께 걸러낸다
+(function () {
+    var input = document.getElementById('project-filter');
+    var count = document.getElementById('filter-count');
+    if (!input) return;
+
+    var entries = [].slice.call(document.querySelectorAll('.side-nav a')).map(function (link) {
+        var el = document.getElementById(link.hash.slice(1));
+        var card = el && el.closest('.project');
+        return card ? { link: link, card: card, text: (card.textContent || '').toLowerCase() } : null;
+    }).filter(Boolean);
+
+    function hide(el, on) { el.classList.toggle('is-filtered-out', on); }
+
+    function apply() {
+        var q = input.value.trim().toLowerCase();
+        var shown = 0;
+
+        entries.forEach(function (e) {
+            var hit = !q || e.text.indexOf(q) !== -1;
+            hide(e.card, !hit);
+            hide(e.link, !hit);
+            if (hit) shown++;
+        });
+
+        // 그룹 패널: 남은 카드가 없으면 통째로 접고, 카드 사이 구분선을 다시 계산
+        [].forEach.call(document.querySelectorAll('section.group'), function (group) {
+            var visible = [].slice.call(group.querySelectorAll('.project')).filter(function (c) {
+                return !c.classList.contains('is-filtered-out');
+            });
+            hide(group, visible.length === 0);
+            [].forEach.call(group.querySelectorAll('.rule-sub'), function (r) { hide(r, true); });
+            visible.slice(1).forEach(function (c) {
+                var prev = c.previousElementSibling;
+                if (prev && prev.classList.contains('rule-sub')) hide(prev, false);
+            });
+        });
+
+        // 목차 그룹도 비면 접고, 남은 첫 그룹은 구분선 없이 시작
+        var firstVisibleGroup = null;
+        [].forEach.call(document.querySelectorAll('.side-nav-group'), function (group) {
+            var any = [].slice.call(group.querySelectorAll('a')).some(function (a) {
+                return !a.classList.contains('is-filtered-out');
+            });
+            hide(group, !any);
+            group.classList.remove('is-first-visible');
+            if (any && !firstVisibleGroup) firstVisibleGroup = group;
+        });
+        if (firstVisibleGroup) firstVisibleGroup.classList.add('is-first-visible');
+
+        // 목차에 없는 '그 외 프로젝트' 블록과 그 위 구분선도 함께 처리
+        var misc = document.querySelector('.misc');
+        if (misc) {
+            var miscHit = !q || (misc.textContent || '').toLowerCase().indexOf(q) !== -1;
+            hide(misc, !miscHit);
+            var miscRule = misc.previousElementSibling;
+            // 위에 남은 카드가 없으면 구분선이 맨 앞에 오므로 같이 숨긴다
+            if (miscRule && miscRule.classList.contains('rule-sub')) hide(miscRule, !miscHit || shown === 0);
+            if (miscHit) shown++;
+        }
+
+        count.textContent = q ? (shown ? shown + '개 일치' : '결과 없음') : '';
+        window.dispatchEvent(new Event('scroll'));   // 강조 위치 재계산
+    }
+
+    input.addEventListener('input', apply);
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { input.value = ''; apply(); }
+    });
+    apply();
 })();
 </script>
