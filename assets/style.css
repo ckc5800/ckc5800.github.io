@@ -315,6 +315,43 @@ h2[id] {
     vertical-align: 5px;
 }
 
+/* ===== 프로젝트 상세 본문 서식 (18개 카드 공통) ===== */
+.detail-head {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.2px;
+    margin: 28px 0 10px;
+}
+
+/* 한 줄이 너무 길면 눈이 다음 줄 첫머리를 놓친다 — 한글 기준 55자 안팎으로 제한 */
+.project p,
+.detail-list {
+    max-width: 760px;
+}
+
+.project p {
+    margin-bottom: 13px;
+}
+
+/* 문단 첫머리 라벨 — "구현:", "성과:" 처럼 문단을 여는 굵은 말 */
+.project p > strong:first-child {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.detail-list {
+    /* inside 로 두면 줄바꿈된 줄이 글머리 기호 아래로 흘러 문단처럼 뭉친다 */
+    list-style-position: outside;
+    padding-left: 20px;
+    line-height: 1.75;
+    margin-bottom: 14px;
+}
+
+.detail-list li + li {
+    margin-top: 9px;
+}
+
 /* 그룹 안에서 프로젝트끼리는 옅은 선으로만 구분 (묶음은 패널이 담당) */
 .rule-sub {
     border: none;
