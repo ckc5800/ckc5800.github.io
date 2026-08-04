@@ -846,6 +846,29 @@ h2[id] {
     }
 }
 
+/* ===== 연락처 ===== */
+/* 6개 항목이라 3열 2행으로 떨어지게 (220px 이면 4+2 로 어긋남) */
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.contact-grid .skill-category {
+    text-align: center;
+}
+
+.contact-grid a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    word-break: break-all;
+}
+
+.contact-grid a:hover {
+    color: var(--accent);
+}
+
 /* ===== 검색 결과 강조 ===== */
 mark.search-hit {
     background-color: rgba(255, 204, 0, 0.42);
