@@ -97,7 +97,7 @@ title: Projects
 <div class="project">
     <h3 id="tts">Qwen3-TTS 플랫폼 구축 <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2026.03 ~ 현재 · PM · 풀스택 단독 개발 (백엔드 · 프론트 · 인프라)</p>
-    <p class="project-summary">고객 상담 센터용 TTS를 차세대 플랫폼으로 전면 재구축. vLLM(GPU)·Supertonic(CPU) 듀얼 엔진을 모델 선정부터 서빙·배포·운영까지 단독으로 맡았고, 지연은 추측 대신 구간 계측으로 병목을 특정해 줄였다.</p>
+    <p class="project-summary">고객 상담 센터용 TTS를 차세대 플랫폼으로 전면 재구축. vLLM(GPU)·Supertonic(CPU) 듀얼 엔진을 모델 선정부터 서빙·배포·운영까지 단독 수행. 지연은 추측이 아니라 구간 계측으로 병목을 특정해 단축.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">1,008 → 652ms</span><span class="metric-label">burst p95 TTFB</span></div>
         <div class="metric"><span class="metric-value">0.68 → 3.09 rps</span><span class="metric-label">엔진 처리량</span></div>
@@ -137,14 +137,14 @@ title: Projects
         <li>Pre-Normalization · CUDA Graph Warmup · 세마포어 동시성 제어로 GPU 메모리 활용 개선</li>
         <li>Redis 캐싱으로 동일 문장 재요청 시 즉시 스트리밍 개시 (캐시 히트 TTFB 50ms 미만)</li>
     </ul>
-    <p><strong>지연 구조 분해:</strong> 튜닝에 앞서 TTFB가 어느 구간에서 나오는지부터 계측. 엔진 패치에 전처리(prep)와 엔진 첫 청크(큐+prefill+보코더) 지표를 심어 분해했다.</p>
+    <p><strong>지연 구조 분해:</strong> 튜닝에 앞서 TTFB가 어느 구간에서 나오는지부터 계측. 엔진 패치에 전처리(prep)와 엔진 첫 청크(큐+prefill+보코더) 지표를 심어 분해.</p>
     <ul class="detail-list">
         <li>전처리 3~6ms·API 약 100ms는 고정이고, <strong>동시 요청 수에 선형 비례하는 구간은 엔진 디코드 루프</strong>(동시 +1당 약 +20ms)임을 확인</li>
         <li>스트림 세마포어를 32→40으로 여는 통상적 처방은 대조 실험 결과 대기 위치만 엔진 안으로 옮길 뿐 SLA는 오히려 악화 — 세마포어를 병목이 아니라 보호막으로 재정의</li>
         <li>실효 레버를 코덱 좌측 컨텍스트(72→25, CUDA graph capture 목록 정합 수정 동반)와 첫 청크 프레임 수(4→2) 둘로 좁혀 확정</li>
         <li>청크 경계 불연속을 z-검정으로 자동 판정하는 품질 게이트를 통과시킨 뒤 채택</li>
     </ul>
-    <p><strong>측정 하네스:</strong> 성능 스윕을 도구화하던 중 "0.6B 라벨로 1.7B를 측정"한 오라벨 사고를 겪고, 측정 자체를 믿을 수 있게 만드는 안전장치를 하네스에 내장했다.</p>
+    <p><strong>측정 하네스:</strong> 성능 스윕을 도구화하던 중 "0.6B 라벨로 1.7B를 측정"한 오라벨 사고를 겪고, 측정 자체를 믿을 수 있게 만드는 안전장치를 하네스에 내장.</p>
     <ul class="detail-list">
         <li>서빙 중인 모델 3중 검증 — 환경변수·엔진 응답·부하기 재검증. 불일치 시 스윕 시작 불가</li>
         <li>파라미터 반영 확인 실패 시 해당 값 스킵, SLA 판정에 연속성 요구(스파이크 하나로 뚫린 상위 동시성 채택 금지)</li>
@@ -201,7 +201,7 @@ title: Projects
         <li><strong>CPU 스파이크 (ReDoS 가드 오버헤드)</strong> — 정규식 치환의 ReDoS 방어용 ThreadPoolExecutor(max_workers=1) 가드가 치환마다 새로 인스턴스화되어 다수 합성 시 CPU 스파이크와 지연을 유발. 오버엔지니어링된 가드를 철거하고 네이티브 C 구현체(re.sub) 동기 호출로 교체해 핫 패스 병목 제거</li>
         <li><strong>전면 백색소음 장애</strong> — vLLM 0.24 전환 직후 모든 합성이 백색소음으로 재생되는 문제를 추적해, 엔진의 SSE(JSON) 응답이 그대로 PCM으로 재생된 것이 원인임을 확인. 응답 포맷을 오디오로 강제해 해결</li>
         <li><strong>스트리밍 WAV 헤더 정리</strong> — 엔진이 문장마다 RIFF 헤더를 붙여 보내 클라이언트 디코딩이 어긋나는 문제. 문장별 헤더를 걷어내고 세션 전체에 스트리밍 WAV 헤더를 한 번만 내보내는 구조로 정리해 해결</li>
-        <li><strong>크래시로 오진할 뻔한 스트림 집단 절단</strong> — 고부하 burst 중 스트림이 무더기로 끊기고 수 분간 무응답. 엔진 크래시로 보였으나 컨테이너 재시작 횟수가 0인 것을 확인하고 가설을 폐기했다. 실체는 추론 엔진의 텐서 결합 오류가 집단 발생하자 API 서킷 브레이커가 열려 빈 응답을 반환한 연쇄. 동시 한도를 실링(40)보다 한 티어 낮춰(36) 과부하 진입 자체를 완화</li>
+        <li><strong>크래시로 오진할 뻔한 스트림 집단 절단</strong> — 고부하 burst 중 스트림이 무더기로 끊기고 수 분간 무응답. 엔진 크래시로 보였으나 컨테이너 재시작 횟수가 0인 것을 확인하고 가설 폐기. 실체는 추론 엔진의 텐서 결합 오류가 집단 발생하자 API 서킷 브레이커가 열려 빈 응답을 반환한 연쇄. 동시 한도를 실링(40)보다 한 티어 낮춰(36) 과부하 진입 자체를 완화</li>
         <li><strong>HTTP 스트림 tail 지연</strong> — 저지연을 표방하면서 실제로는 tail 버퍼를 문장 끝까지 붙들어, 약 615ms 분량이 모일 때까지 한 바이트도 내보내지 않던 구조. WebSocket 경로에만 있던 무음 감지 기반 조기 flush를 HTTP에 이식해 단문 TTFB와 문장 경계 끊김을 함께 해소</li>
     </ol>
         </div>
@@ -213,7 +213,7 @@ title: Projects
 <div class="project">
     <h3 id="tts-api">TTS 스트리밍 API 리팩토링 (ZipVoice 기반) <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2025.09 ~ 2025.10 · 스트리밍 API 담당 (인수인계, 기여도 100%)</p>
-    <p class="project-summary">실시간 상담에 쓰기 어려울 만큼 느리던 레거시 TTS 스트리밍 API를 문장 단위 합성 → 즉시 전송 구조로 전환. 원인 분석부터 조치·검증·고객 보고까지 단독 수행했다.</p>
+    <p class="project-summary">실시간 상담에 쓰기 어려울 만큼 느리던 레거시 TTS 스트리밍 API를 문장 단위 합성 → 즉시 전송 구조로 전환. 원인 분석부터 조치·검증·고객 보고까지 단독 수행</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2,292 → 334ms</span><span class="metric-label">TTFB (85.4% 단축)</span></div>
         <div class="metric"><span class="metric-value">6.85배</span><span class="metric-label">응답 개선</span></div>
@@ -231,7 +231,7 @@ title: Projects
     <p>고객 상담 센터용 기존 TTS(ZipVoice 기반)의 응답 지연(TTFB 2.3초)이 심각해 실시간 상담에 부적합했음. 신규 플랫폼 구축에 앞서 기존 서비스의 응답성부터 개선 필요.</p>
 
     <h4 class="detail-head">구현</h4>
-    <p><strong>SSE 청크 디코딩 실패 해결:</strong> 브라우저 <code>decodeAudioData()</code>가 두 번째 청크부터 실패한다는 고객 이슈를 추적했다.</p>
+    <p><strong>SSE 청크 디코딩 실패 해결:</strong> 브라우저 <code>decodeAudioData()</code>가 두 번째 청크부터 실패한다는 고객 이슈를 추적.</p>
     <ul class="detail-list">
         <li>원인 — 엔진이 첫 청크에만 RIFF WAV 헤더를 붙이고 이후는 raw PCM만 반환</li>
         <li>조치 — 첫 청크 헤더에서 샘플레이트·채널을 파싱해 모든 SSE 청크에 독립 헤더를 재생성, 청크 단위 독립 디코딩 가능하게</li>
@@ -261,7 +261,7 @@ title: Projects
 <div class="project">
     <h3 id="stt">STT 배포 <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2025.07 ~ 2025.09 · STT 배포 · 서빙 담당 (팀 협업)</p>
-    <p class="project-summary">상담 전화를 실시간 처리하던 기존 STT의 채널 부족과 지연을 풀기 위해, Triton 기반 파이프라인을 전처리·후처리·서비스 계층으로 재구성하고 화자 분리를 결합한 전사를 붙였다.</p>
+    <p class="project-summary">상담 전화를 실시간 처리하던 기존 STT의 채널 부족과 지연을 풀기 위해, Triton 기반 파이프라인을 전처리·후처리·서비스 계층으로 재구성하고 화자 분리를 결합한 전사 제공.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">4건</span><span class="metric-label">고객사 요구사항 해결</span></div>
         <div class="metric"><span class="metric-value">파일 · 스트리밍</span><span class="metric-label">2개 경로 서빙</span></div>
@@ -337,7 +337,7 @@ title: Projects
 <div class="project">
     <h3 id="visual">한국어 멀티모달 상품 검색 (visual-search) <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.08 · 커머스 비주얼 검색 E2E 단독 구축</p>
-    <p class="project-summary">패션 상품 카탈로그를 한국어 문장형 질의로 검색하는 시스템을, 임베딩 인덱스부터 평가셋·하이브리드 검색·웹 데모까지 구축. 임베딩 단독의 세부 조건 약점을 구간 분해로 규명한 뒤 메타 필터를 결합해 해소했다.</p>
+    <p class="project-summary">패션 상품 카탈로그를 한국어 문장형 질의로 검색하는 시스템을, 임베딩 인덱스부터 평가셋·하이브리드 검색·웹 데모까지 구축. 임베딩 단독의 세부 조건 약점을 구간 분해로 규명한 뒤 메타 필터를 결합해 해소.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">90 → 98%</span><span class="metric-label">hit@10 (한국어 50문항)</span></div>
         <div class="metric"><span class="metric-value">6종</span><span class="metric-label">다국어 전략 실측 비교</span></div>
@@ -384,7 +384,7 @@ title: Projects
 <div class="project">
     <h3 id="rag">LangGraph 기반 Corrective-RAG Agent <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.07 · LLM Agent 시스템 설계 · 구현</p>
-    <p class="project-summary">LangGraph 기반 Corrective-RAG를 전 구간 로컬(Ollama)로 구축. 실패를 검색·청킹·생성 층으로 분해해 병목을 정량 규명했고, 지표를 쓰기 전에 채점기부터 검증했다.</p>
+    <p class="project-summary">LangGraph 기반 Corrective-RAG를 전 구간 로컬(Ollama)로 구축. 실패를 검색·청킹·생성 층으로 분해해 병목을 정량 규명. 지표를 쓰기 전에 채점기부터 검증.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">68 → 75%</span><span class="metric-label">정답률 (51문항)</span></div>
         <div class="metric"><span class="metric-value">90% · 0.95</span><span class="metric-label">검색 recall@1 · MRR</span></div>
@@ -446,7 +446,7 @@ title: Projects
 <div class="project">
     <h3 id="pdm">예지보전 Agent (pdm-agent) <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.07 · 센서 이상 탐지 + LLM 진단 파이프라인 설계 · 구현</p>
-    <p class="project-summary">회전기계 센서에서 이상을 탐지하고 LLM이 정비 진단 리포트를 쓰는 예지보전 파이프라인. 탐지는 결정적 신호처리가 맡고 LLM은 해석만 하도록 역할을 갈랐다.</p>
+    <p class="project-summary">회전기계 센서에서 이상을 탐지하고 LLM이 정비 진단 리포트를 쓰는 예지보전 파이프라인. 탐지는 결정적 신호처리, 해석만 LLM 담당으로 역할 분리.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">15/15</span><span class="metric-label">주입 결함 탐지 (오탐 0)</span></div>
         <div class="metric"><span class="metric-value">28.5 → 12.9</span><span class="metric-label">RUL MAE (사이클)</span></div>
@@ -480,7 +480,7 @@ title: Projects
     <ul class="detail-list">
         <li>같은 탐지기를 터보팬 엔진 100대의 run-to-failure 벤치마크에 적용 — 합성에서 튜닝한 4σ 한계는 63/100으로 보수적, 3σ 완화 시 <strong>고장 전 경보 94/100, 조기 경보 0건</strong> (관리한계 트레이드오프를 표로 공개)</li>
         <li>RUL은 보정(엔진 1~50)과 평가(51~100)를 분리해 라벨 누수 차단 — 선형 외삽 MAE 28.5사이클을 지수 열화 모델로 <strong>12.9사이클</strong>까지 절반 이하로 개선 (추정 보류 트레이드오프까지 기록)</li>
-        <li><strong>4개 셋 전부로 확장</strong>(통합 CLI) — 운전 조건이 6개인 FD002는 정규화 없이 경보 0/130이었고, 조건별 z-정규화로 104/130 회복. 난이도를 지배한 건 결함 모드 수가 아니라 <strong>운전 조건 수</strong>였다</li>
+        <li><strong>4개 셋 전부로 확장</strong>(통합 CLI) — 운전 조건이 6개인 FD002는 정규화 없이 경보 0/130이었고, 조건별 z-정규화로 104/130 회복. 난이도를 지배한 건 결함 모드 수가 아니라 <strong>운전 조건 수</strong></li>
         <li>센서 10개를 하나의 health index로 <strong>융합</strong> — 단일 결함 모드 셋은 대폭 개선(FD001 94→<strong>100/100</strong>, FD002 104→<strong>130/130</strong>), 결함 모드가 2개인 셋은 오히려 악화. 평균 융합의 전제가 깨지는 지점까지 그대로 기록</li>
     </ul>
 
@@ -494,7 +494,7 @@ title: Projects
 <div class="project">
     <h3 id="mcp">Portfolio MCP Server <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.07 · MCP 서버 설계 · 구현</p>
-    <p class="project-summary">포트폴리오를 MCP 도구로 노출해 AI 도구 생태계에 연결한 read-only 서버. 추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지했으며, RAG Agent가 이 서버를 클라이언트로 소비한다.</p>
+    <p class="project-summary">포트폴리오를 MCP 도구로 노출해 AI 도구 생태계에 연결한 read-only 서버. 추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지. RAG Agent가 이 서버를 클라이언트로 소비.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">의존성 2개</span><span class="metric-label">clone 후 30초 내 동작</span></div>
         <div class="metric"><span class="metric-value">18% 감소</span><span class="metric-label">BM25 토큰 정제</span></div>
@@ -540,7 +540,7 @@ title: Projects
 <div class="project">
     <h3 id="nlp">NLP Text Summarization System <span class="badge">인피닉</span></h3>
     <p class="project-meta">2024.01 ~ 2024.07 · 사내 지식 관리 · 요약 시스템 개발</p>
-    <p class="project-summary">휴가 후 복귀한 직원이 쌓인 업무 대화를 따라잡기 어렵다는 문제에서 출발해, 사내 메신저에 넣을 한국어 요약 모델(대화 BART·문서 T5, R3F 정규화)을 개발했다.</p>
+    <p class="project-summary">휴가 후 복귀한 직원이 쌓인 업무 대화를 따라잡기 어렵다는 문제에서 출발해, 사내 메신저에 넣을 한국어 요약 모델(대화 BART·문서 T5, R3F 정규화) 개발.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2초대</span><span class="metric-label">업무 대화 요약</span></div>
         <div class="metric"><span class="metric-value">사내 메신저</span><span class="metric-label">실서비스 탑재</span></div>
@@ -580,7 +580,7 @@ title: Projects
 <div class="project">
     <h3 id="k8s">Kubernetes-based AI Infrastructure <span class="badge">인피닉</span></h3>
     <p class="project-meta">2024.03 ~ 2025.04 · 회사 최초 K8s 기반 AI 플랫폼 설계 · 구축</p>
-    <p class="project-summary">20개가 넘는 AI 서비스를 수동 배포하던 온프레미스 환경에, 회사 최초의 Kubernetes 기반 AI 플랫폼을 설계·구축하고 장애 대응·리소스 관리까지 운영을 담당했다.</p>
+    <p class="project-summary">20개가 넘는 AI 서비스를 수동 배포하던 온프레미스 환경에, 회사 최초의 Kubernetes 기반 AI 플랫폼 설계·구축. 장애 대응·리소스 관리까지 운영 담당.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">20개 이상</span><span class="metric-label">운영 ML 모델</span></div>
         <div class="metric"><span class="metric-value">수시간 → 자동화</span><span class="metric-label">배포 소요</span></div>
@@ -602,7 +602,7 @@ title: Projects
     <p>20개 이상의 AI 서비스/API 운영 중 수동 배포로 배포 시간 수시간 소요. 자동화, 스케일링, 리소스 효율 개선 필요.</p>
 
     <h4 class="detail-head">구현</h4>
-    <p><strong>인프라 설계:</strong> 온프레미스라 클라우드식 로드밸런서가 없는 조건에서 출발했다.</p>
+    <p><strong>인프라 설계:</strong> 온프레미스라 클라우드식 로드밸런서가 없는 조건.</p>
     <ul class="detail-list">
         <li>MetalLB로 LoadBalancer를 직접 구성하고, Ingress-nginx로 외부 요청 라우팅·서비스 노출 구조 설계</li>
         <li>서비스는 Docker로 컨테이너화해 Deployment/StatefulSet으로 배포, 영속 데이터는 NFS 기반 PV/PVC로 관리</li>
@@ -638,7 +638,7 @@ title: Projects
 <div class="project">
     <h3 id="llmbench">llm-bench <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.07 · LLM 추론 벤치마크 CLI 설계 · 구현</p>
-    <p class="project-summary">TTS 게이트웨이를 튜닝하며 손으로 하던 측정을 도구화. OpenAI 호환 엔드포인트에 동시 부하를 걸어 TTFT·지연 percentile·처리량을 재고, 병목이 어디인지 수치로 증명한다.</p>
+    <p class="project-summary">TTS 게이트웨이를 튜닝하며 손으로 하던 측정을 도구화. OpenAI 호환 엔드포인트에 동시 부하를 걸어 TTFT·지연 percentile·처리량 측정. 병목의 위치를 수치로 증명.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">12.4 → 0.93초</span><span class="metric-label">TTFT p50</span></div>
         <div class="metric"><span class="metric-value">8.1 → 22.9</span><span class="metric-label">처리량 (tokens/s)</span></div>
@@ -678,7 +678,7 @@ title: Projects
 <div class="project">
     <h3 id="seg3d">3D Semantic Segmentation Research <span class="badge">인피닉</span></h3>
     <p class="project-meta">2022.08 ~ 2022.12 · 센서 퓨전 기반 자율주행 연구 · 모델 개발</p>
-    <p class="project-summary">자율주행 환경 인식에 필요한 3D 거리·높이 정보를 얻기 위해, LiDAR 포인트 클라우드와 카메라 이미지를 융합하는 Trans-Unet을 설계했다.</p>
+    <p class="project-summary">자율주행 환경 인식에 필요한 3D 거리·높이 정보를 얻기 위해, LiDAR 포인트 클라우드와 카메라 이미지를 융합하는 Trans-Unet 설계.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2편</span><span class="metric-label">논문 (제1저자)</span></div>
         <div class="metric"><span class="metric-value">2건</span><span class="metric-label">특허 (제1발명자)</span></div>
@@ -715,7 +715,7 @@ title: Projects
 <div class="project">
     <h3 id="latent">Synthetic Data Generation with Latent Diffusion <span class="badge">인피닉</span></h3>
     <p class="project-meta">2023.01 ~ 2023.12 · 생성 모델 기반 국방 데이터 확보 연구</p>
-    <p class="project-summary">보안 제약으로 수집이 어려운 국방 도메인의 학습 데이터 부족을 Latent Diffusion 합성 데이터로 메우고, 실제 모델 학습에 투입해 유효성을 검증했다.</p>
+    <p class="project-summary">보안 제약으로 수집이 어려운 국방 도메인의 학습 데이터 부족을 Latent Diffusion 합성 데이터로 보완. 실제 모델 학습에 투입해 유효성 검증.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">우수 논문상</span><span class="metric-label">한국국방기술학회 2023</span></div>
         <div class="metric"><span class="metric-value">2편</span><span class="metric-label">관련 논문</span></div>
@@ -851,7 +851,7 @@ title: Projects
 <div class="project">
     <h3 id="ocr">OCR Dataset Annotation Tool <span class="badge">이든티앤에스</span></h3>
     <p class="project-meta">2022.04 ~ 2022.08 · 단독 개발 (Full-Stack) — GUI 도구 설계 · 구현</p>
-    <p class="project-summary">PDF·이미지 문서의 표 영역을 추출할 OCR 학습 데이터가 필요해, PyQt 기반 어노테이션 도구를 단독 설계·개발하고 표 탐지·셀 텍스트 추출 모델까지 구현했다.</p>
+    <p class="project-summary">PDF·이미지 문서의 표 영역을 추출할 OCR 학습 데이터가 필요해, PyQt 기반 어노테이션 도구를 단독 설계·개발. 표 탐지·셀 텍스트 추출 모델까지 구현.</p>
     <div class="metrics">
         <div class="metric"><span class="metric-value">단독 개발</span><span class="metric-label">설계부터 구현까지</span></div>
         <div class="metric"><span class="metric-value">성과금 수령</span><span class="metric-label">프로젝트 성공</span></div>
