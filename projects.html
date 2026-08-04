@@ -54,6 +54,17 @@ title: Projects
     <h4 style="margin-top: 20px; color: #555;">배경</h4>
     <p>고객 상담 센터용 TTS를 차세대 플랫폼으로 전면 재구축 — 모델 선정(Qwen3-TTS)부터 서빙 아키텍처, 백엔드·프론트엔드, 배포·운영까지 전 구간을 단독으로 수행.</p>
 
+    <h4 style="margin-top: 20px; color: #555;">시스템 구조</h4>
+    <div style="overflow-x: auto; margin: 20px 0;">
+        <img src="/assets/images/tts-physical-architecture.svg" alt="Qwen3-TTS 물리 구조도 — 클라이언트/SDK에서 tts-api를 거쳐 vLLM(GPU)과 Supertonic(CPU) 엔진으로 분기하는 컨테이너 구성" style="width: 100%; min-width: 760px; border-radius: 8px; border: 1px solid #ddd;">
+    </div>
+    <p style="font-size: 13px; color: #888;">물리 구조 — 컨테이너 단위 배치. 실선은 현재 기동 중인 경로, 점선은 에디션에 따라 선택 기동되는 경로(nginx·PostgreSQL은 Ed4 전용, vllm-b는 GPU 증설 시 부하분산용).</p>
+
+    <div style="overflow-x: auto; margin: 20px 0;">
+        <img src="/assets/images/tts-logical-architecture.svg" alt="Qwen3-TTS 논리 구조도 — 라우터에서 텍스트 파이프라인, 합성 서비스, 엔진 레지스트리, 엔진 어댑터를 거쳐 두 백엔드로 내려가는 계층" style="width: 100%; max-width: 900px; min-width: 620px; border-radius: 8px; border: 1px solid #ddd;">
+    </div>
+    <p style="font-size: 13px; color: #888;">논리 구조 — 요청이 내려가는 계층. 텍스트 파이프라인(정규화·ITN·발음교정·문장분할)과 엔진 선택(voice_id 접두사 기반 라우팅)을 분리해, 엔진을 추가해도 상위 계층이 바뀌지 않도록 구성.</p>
+
     <h4 style="margin-top: 20px; color: #555;">구현</h4>
     <p><strong>시스템 아키텍처:</strong> FastAPI WebSocket/REST 게이트웨이 + vLLM-Omni(Qwen3-TTS) 추론 엔진 + Redis 분산락 & 캐싱 + React 대시보드. 문장 단위 논리 청킹 및 WebSocket 스트리밍으로 TTFB 단축.</p>
     <p><strong>성능 최적화:</strong> L40S GPU 추론 환경 구성, FP8 양자화, executor backend 최적화 및 concurrency tuning으로 추론 처리량 개선. Pre-Normalization, CUDA Graph Warmup, 세마포어 동시성 제어로 GPU 메모리 활용 개선. Redis 캐싱으로 동일 문장 재요청 시 즉시 스트리밍 개시(캐시 히트 TTFB 50ms 미만). 9가지 엔지니어링 문제 해결 (팝 노이즈, 스토리지 누수, 세션 탈취, ITN 토크나이저, CPU 스파이크, 백색소음 장애, WAV 헤더 정리, 스트림 집단 절단 오진, HTTP 스트림 tail 지연 — 아래 상세).</p>
