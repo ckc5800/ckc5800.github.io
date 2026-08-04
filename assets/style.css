@@ -361,10 +361,55 @@ h2[id] {
         z-index: 50;
     }
 
+    .side-nav-search {
+        margin-bottom: 18px;
+    }
+
+    .side-nav-search input {
+        width: 100%;
+        padding: 7px 11px;
+        font-family: inherit;
+        font-size: 12.5px;
+        color: var(--text);
+        background-color: var(--surface);
+        border: 1px solid var(--separator);
+        border-radius: 9px;
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .side-nav-search input::placeholder {
+        color: var(--text-secondary);
+    }
+
+    .side-nav-search input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+    }
+
+    .side-nav-count {
+        margin-top: 7px;
+        font-size: 11.5px;
+        color: var(--text-secondary);
+    }
+
+    .side-nav-count:empty {
+        display: none;
+    }
+
     .side-nav-group + .side-nav-group {
         margin-top: 20px;
         padding-top: 18px;
         border-top: 1px solid rgba(0, 0, 0, 0.09);
+    }
+
+    /* 검색으로 앞 그룹이 접히면, 남은 첫 그룹은 구분선 없이 시작 */
+    .side-nav-group.is-first-visible {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
     }
 
     /* 그룹 이름: 진하게·왼쪽 끝에 붙임 */
@@ -553,4 +598,9 @@ h2[id] {
         margin: 12px 8px 30px;
         padding: 24px 18px 32px;
     }
+}
+
+/* ===== 검색 필터로 숨겨진 요소 (마지막에 두어 다른 display 규칙보다 우선) ===== */
+.is-filtered-out {
+    display: none;
 }
