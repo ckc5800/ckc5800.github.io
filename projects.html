@@ -630,10 +630,10 @@ title: 프로젝트
 <h2 class="group-title" id="g-mlops">MLOps · 성능 엔지니어링<span class="group-count">2</span></h2>
 <div class="project">
     <h3 id="k8s">Kubernetes-based AI Infrastructure <span class="badge">인피닉</span></h3>
-    <p class="project-meta">2024.03 ~ 2025.04 · 3인 인프라 팀 — 모니터링 · 로깅 스택 담당</p>
+    <p class="project-meta">2024.03 ~ 2025.04 · 3인 인프라 팀 — 관측성 · 스토리지 담당</p>
     <dl class="ps">
         <dt>문제</dt><dd>AI 서비스 20여 개를 수동 배포해 한 번에 수 시간이 걸리고, 장애가 나도 클러스터 어디서 무엇이 터졌는지 볼 수단이 없었음</dd>
-        <dt>해결</dt><dd>3인 인프라 팀으로 사내 첫 K8s 플랫폼 구축. 그중 <strong>관측성 전 계층(지표·경보·로그)</strong>을 맡아 클러스터와 20여 개 모델을 들여다볼 수 있게 만듦</dd>
+        <dt>해결</dt><dd>3인 인프라 팀으로 사내 첫 K8s 플랫폼 구축. 그중 <strong>관측성 전 계층(지표·경보·로그)과 스토리지(NFS PV/PVC)</strong>를 맡아, 20여 개 모델이 도는 클러스터를 들여다보고 모델·데이터 볼륨을 관리</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">5종</span><span class="metric-label">직접 구축한 관측 스택</span></div>
@@ -642,13 +642,14 @@ title: 프로젝트
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Kubernetes</span>
-        <span class="tech-tag">Docker</span>
-        <span class="tech-tag">Helm</span>
-        <span class="tech-tag">GitLab CI/CD</span>
-        <span class="tech-tag">Jenkins</span>
-        <span class="tech-tag">ArgoCD</span>
         <span class="tech-tag">Prometheus</span>
         <span class="tech-tag">Grafana</span>
+        <span class="tech-tag">AlertManager</span>
+        <span class="tech-tag">Elasticsearch</span>
+        <span class="tech-tag">Loki</span>
+        <span class="tech-tag">NFS PV/PVC</span>
+        <span class="tech-tag">Docker</span>
+        <span class="tech-tag">ArgoCD</span>
     </div>
     <details>
         <summary>상세 보기</summary>
@@ -659,7 +660,8 @@ title: 프로젝트
     <h4 class="detail-head">팀 구성과 담당</h4>
     <p>인프라 엔지니어 3인이 온프레미스에 사내 첫 Kubernetes 플랫폼을 구축. 아래가 팀이 만든 전체 구성이고, 그중 <strong>관측성 계층이 본인 담당</strong>.</p>
     <ul class="detail-list">
-        <li>클러스터·네트워크 — MetalLB LoadBalancer, Ingress-nginx 라우팅, NFS 기반 PV/PVC <span class="who">팀</span></li>
+        <li>클러스터·네트워크 — MetalLB LoadBalancer, Ingress-nginx 라우팅 <span class="who">팀</span></li>
+        <li><strong>스토리지 — NFS 기반 PV/PVC 로 모델·데이터 영속 볼륨 관리</strong> <span class="who mine">본인</span></li>
         <li>배포 파이프라인 — GitLab → Jenkins·Argo Workflow → Harbor → ArgoCD GitOps <span class="who">팀</span></li>
         <li><strong>지표·경보 — Prometheus 수집, Grafana 대시보드, AlertManager 경보 규칙</strong> <span class="who mine">본인</span></li>
         <li><strong>로그 — Elasticsearch(ELK)와 Loki 를 클러스터에 직접 설치해 수집·조회 환경 구성</strong> <span class="who mine">본인</span></li>
@@ -670,6 +672,7 @@ title: 프로젝트
         <li>Prometheus 로 클러스터·노드·워크로드 지표를 수집하고, Grafana 대시보드로 20여 개 모델의 상태를 한 화면에서 보게 구성</li>
         <li>AlertManager 경보 규칙을 세워 장애를 사람이 발견하기 전에 알리도록 전환</li>
         <li>로그는 관리형 서비스 없이 클러스터에 Elasticsearch·Loki 를 직접 설치·운영 — 온프레미스라 외부 로깅 SaaS 를 쓸 수 없는 조건</li>
+        <li>NFS 기반 PV/PVC 로 모델 가중치·데이터 볼륨의 영속 저장을 구성 — 파드가 재시작돼도 모델을 다시 받지 않게</li>
         <li>구축 이후 클러스터 장애 대응과 리소스 관리에 팀의 일원으로 참여</li>
     </ul>
 
@@ -677,6 +680,7 @@ title: 프로젝트
     <ul class="detail-list">
         <li><strong>회사 최초 Kubernetes 기반 AI 플랫폼 구축</strong> — 3인 인프라 팀, 수동 배포에서 GitOps 자동화로 전환 <span class="who">팀 성과</span></li>
         <li><strong>관측성 전 계층을 혼자 구축</strong> — 지표·대시보드·경보·로그 5종(Prometheus·Grafana·AlertManager·Elasticsearch·Loki)</li>
+        <li><strong>스토리지 계층 담당</strong> — NFS 기반 PV/PVC 로 20여 개 모델의 가중치·데이터 볼륨을 영속 관리</li>
         <li>20개 이상 ML 모델이 도는 클러스터를 지표와 로그로 들여다볼 수 있게 만들어, 장애 원인 추적이 가능해짐</li>
     </ul>
 
