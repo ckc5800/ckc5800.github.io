@@ -1228,3 +1228,45 @@ mark.search-hit.is-current {
         background: transparent !important;
     }
 }
+
+/* ===== 다크 모드 — OS 설정을 따른다 (prefers-color-scheme) =====
+   전 컴포넌트가 CSS 변수를 참조하므로 변수 팔레트 교체가 대부분이고,
+   rgba 하드코딩이던 유리 내비게이션·구분선·인라인 코드만 개별 조정한다.
+   아키텍처 다이어그램(SVG)의 흰 배경은 의도적으로 유지 — 도식이 흰
+   배경 기준으로 그려져 있어 반전하면 가독성이 깨진다. */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #0e0e10;
+        --surface: #1c1c1e;
+        --text: #f5f5f7;
+        --text-secondary: #a1a1a6;
+        --accent: #2997ff;
+        --accent-hover: #52aeff;
+        --separator: #3a3a3c;
+        --pill-bg: #2c2c2e;
+        --shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+        --shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.65);
+    }
+
+    .navbar {
+        background: rgba(22, 22, 24, 0.72);
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .project code {
+        background-color: rgba(255, 255, 255, 0.09);
+    }
+
+    .rule-sub {
+        border-top-color: rgba(255, 255, 255, 0.10);
+    }
+
+    .side-nav-group + .side-nav-group {
+        border-top-color: rgba(255, 255, 255, 0.10);
+    }
+
+    .cta-button.secondary:hover,
+    .dl[open] > summary {
+        background-color: rgba(41, 151, 255, 0.14);
+    }
+}
