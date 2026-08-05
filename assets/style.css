@@ -168,10 +168,16 @@ main.container {
     box-shadow: inset 0 0 0 1px var(--accent);
 }
 
-/* ===== 이력서 다운로드 드롭다운 (PDF / Word 선택) ===== */
+/* ===== 이력서 다운로드 드롭다운 (PDF / Word 선택) =====
+   기본은 숨김 — 주소에 #resume 을 붙여 접속했을 때만 나타난다 (:target).
+   접근 제어가 아니라 은닉이다: 파일 URL을 아는 사람은 여전히 받을 수 있다. */
 .dl {
-    display: inline-block;
+    display: none;
     position: relative;
+}
+
+.dl:target {
+    display: inline-block;
 }
 
 .dl > summary {
