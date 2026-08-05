@@ -545,6 +545,25 @@ h2[id] {
     margin-top: 14px;
 }
 
+/* 팀 프로젝트에서 담당 구분 — 무엇이 내 몫인지 흐려지지 않게 */
+.who {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 1px 8px;
+    margin-left: 6px;
+    border-radius: 980px;
+    background-color: var(--pill-bg);
+    color: var(--text-secondary);
+    vertical-align: 2px;
+    white-space: nowrap;
+}
+
+.who.mine {
+    background-color: var(--text);
+    color: var(--surface);
+}
+
 /* 한 줄에 한 문장 — 마침표마다 줄이 바뀌어 눈이 문장 단위로 끊어 읽는다 */
 .sentence {
     display: block;
