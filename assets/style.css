@@ -1550,7 +1550,7 @@ mark.search-hit.is-current {
 /* 구조도 — 줄여서 싣고 클릭하면 크게. 다크에서도 흰 바탕 유지 */
 .diagram-wrap {
     margin: 24px 0;
-    max-width: 760px;
+    max-width: 480px;   /* 본문에선 '무슨 그림인지' 만, 자세히는 클릭해서 */
 }
 
 .diagram {
