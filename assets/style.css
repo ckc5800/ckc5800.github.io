@@ -286,7 +286,7 @@ h3 {
 
 p {
     margin-bottom: 16px;
-    line-height: 1.65;
+    line-height: 1.6;
 }
 
 /* ===== Project Cards (홈 화면) ===== */
@@ -426,7 +426,7 @@ h2[id] {
 }
 
 .project {
-    margin-bottom: 48px;
+    margin-bottom: 40px;
 }
 
 .group > .project:last-child {
@@ -476,7 +476,7 @@ h2[id] {
 
 .ps dd {
     font-size: 16px;
-    line-height: 1.65;
+    line-height: 1.6;
 }
 
 @media (max-width: 600px) {
@@ -614,7 +614,7 @@ h2[id] {
     /* inside 로 두면 줄바꿈된 줄이 글머리 기호 아래로 흘러 문단처럼 뭉친다 */
     list-style-position: outside;
     padding-left: 20px;
-    line-height: 1.65;
+    line-height: 1.6;
     margin-bottom: 24px;
 }
 
@@ -1679,12 +1679,12 @@ h2 {
 
 /* L3 — 기본: 덩어리 사이 */
 .detail-body > * + * {
-    margin-top: 24px;
+    margin-top: 20px;
 }
 
 /* L4 — 절 경계 */
 .detail-body > * + .detail-head {
-    margin-top: 32px;
+    margin-top: 28px;
 }
 
 .detail-body > .detail-head + * {
