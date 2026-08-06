@@ -1021,6 +1021,10 @@ title: 프로젝트
 
     var current = null, ticking = false;
 
+    function visible(item) {
+        return !item.link.classList.contains('is-filtered-out');
+    }
+
     function update() {
         ticking = false;
         var active = items[0];
@@ -1028,6 +1032,18 @@ title: 프로젝트
             if (items[i].target.getBoundingClientRect().top <= 140) active = items[i];
             else break;
         }
+
+        // 문서 끝에 닿으면 마지막 항목을 활성으로.
+        // 마지막 카드가 짧으면 그 제목이 판정선(140px)까지 못 올라와서,
+        // 눌러서 이동해도 직전 항목이 계속 강조된 채로 남는다.
+        var atBottom = window.innerHeight + window.scrollY
+            >= document.documentElement.scrollHeight - 2;
+        if (atBottom) {
+            for (var j = items.length - 1; j >= 0; j--) {
+                if (visible(items[j])) { active = items[j]; break; }
+            }
+        }
+
         if (active.link === current) return;
         if (current) {
             current.classList.remove('is-active');
