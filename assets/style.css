@@ -462,7 +462,7 @@ h2[id] {
     grid-template-columns: max-content 1fr;
     gap: 8px 16px;
     margin-top: 16px;
-    max-width: 820px;
+    max-width: 760px;   /* 문단·목록과 같은 폭 — 오른쪽 끝을 맞춘다 */
 }
 
 .ps dt {
@@ -613,7 +613,7 @@ h2[id] {
 .detail-list {
     /* inside 로 두면 줄바꿈된 줄이 글머리 기호 아래로 흘러 문단처럼 뭉친다 */
     list-style-position: outside;
-    padding-left: 20px;
+    padding-left: 24px;   /* 글머리 기호와 본문 사이 — 매달림 들여쓰기 기준선 */
     line-height: 1.6;
     margin-bottom: 24px;
 }
