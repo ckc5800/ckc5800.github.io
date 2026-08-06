@@ -697,10 +697,14 @@ h2[id] {
         max-height: calc(100vh - 116px);
         overflow-y: auto;
         overscroll-behavior: contain;
-        /* 넘칠 때 아래가 흐려져 '아래 더 있다'가 보이게 */
-        mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
-        -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
         z-index: 50;
+    }
+
+    /* 아래가 흐려지는 건 '실제로 넘칠 때 + 아직 끝이 아닐 때' 뿐이다.
+       항상 켜두면 다 보이는데도 마지막 항목이 흐려 보인다. */
+    .side-nav.can-scroll:not(.at-end) {
+        mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent);
+        -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent);
     }
 
     .side-nav-search {
