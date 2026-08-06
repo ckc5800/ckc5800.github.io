@@ -104,7 +104,7 @@ title: 프로젝트
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">1,008 → 652ms</span><span class="metric-label">burst p95 TTFB</span></div>
-        <div class="metric"><span class="metric-value">0.68 → 3.09 rps</span><span class="metric-label">엔진 처리량</span></div>
+        <div class="metric"><span class="metric-value">0.68 → 3.09rps</span><span class="metric-label">엔진 처리량</span></div>
         <div class="metric"><span class="metric-value">36</span><span class="metric-label">동시 스트림 수용</span></div>
     </div>
     <div class="tech-tags">
@@ -122,7 +122,7 @@ title: 프로젝트
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">상담 센터에서 쓰던 기존 TTS는 응답이 느리고 음성 선택지도 좁아 실시간 상담에 쓰기 어려웠음.</span><span class="sentence">모델 선정부터 서빙 아키텍처, 백엔드·프론트엔드, 배포·운영까지 전 구간을 단독으로 맡아 교체.</span></p>
 
-    <h4 class="detail-head">핵심 성과 3가지</h4>
+    <h4 class="detail-head">차별점</h4>
     <p><strong>① 스트리밍 품질 자동 감지 · 자가 치유</strong> — 서빙이 아니라 프로덕트 품질 문제를 직접 정의하고 메커니즘을 설계한 부분.</p>
     <ul class="detail-list">
         <li><span class="sentence">합성 오디오의 <strong>예상 길이 대비 실제 길이 비율</strong>로 잘림·반복을 판정 (0.35배 미만 = 잘림 의심, 3배 초과 = 반복 의심).</span><span class="sentence">텍스트에서 음절 버킷으로 기대 길이를 추정</span></li>
@@ -219,7 +219,7 @@ title: 프로젝트
         </div>
     </div>
 
-    <h4 class="detail-head">핵심 엔지니어링 (9가지 문제 해결)</h4>
+    <h4 class="detail-head">핵심 엔지니어링</h4>
     <ol class="detail-list">
         <li><span class="sentence"><strong>스트리밍 팝 노이즈</strong> — 스트리밍 중 간헐적으로 '틱' 잡음 발생.</span><span class="sentence">PCM 청크가 홀수 바이트로 끊겨 와 16bit 샘플 정렬이 깨지는 것이 원인.</span><span class="sentence">잔여 바이트를 다음 청크에 이어 붙이는 Residual Buffer로 정렬을 보장하고, 청크 경계에 Micro-fade를 적용해 해결</span></li>
         <li><span class="sentence"><strong>스토리지 누수</strong> — 보이스를 삭제해도 디스크 사용량이 계속 증가.</span><span class="sentence">원본을 지워도 파생된 MD5 해시 캐시 파일이 남는 구조여서, 파생 파일까지 추적해 함께 지우는 Deep GC를 구현해 차단</span></li>
@@ -297,7 +297,6 @@ title: 프로젝트
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">4건</span><span class="metric-label">고객사 요구사항 해결</span></div>
-        <div class="metric"><span class="metric-value">파일 · 스트리밍</span><span class="metric-label">2개 경로 서빙</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Whisper-large-v3</span>
@@ -397,14 +396,6 @@ title: 프로젝트
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">rag-agent에서 구축한 검색 평가 방법론(gold 라벨, 실패 원인 분해, 미채택 실험 기록)을 멀티모달로 확장.</span><span class="sentence">패션 상품 44,072개(공개 데이터셋)를 한국어 문장형 질의("체크무늬 네이비 남성 셔츠")로 검색하는 시스템을 CLIP 임베딩 인덱스부터 평가셋·대화형 데모까지 구축.</span></p>
 
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li><strong>hit@10 90% → 98%</strong> (한국어 50문항 × 44K) — 임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 precision@10 0.10)한 뒤, 질의에서 색·성별·용도를 뽑아 메타 필터로 결합해 해소(0.53)</li>
-        <li><span class="sentence"><strong>다국어 검색 전략 6종 실측 비교</strong> — 같은 이미지 인덱스에서 텍스트 경로만 교체.</span><span class="sentence">m-clip 48% &lt; 소형 MT 86% &lt; <strong>LLM(3B)+커머스 용어집 92%</strong>. 번역기는 크기순이 아니었다(NLLB 600M 76% &lt; 8배 작은 opus 86%)</span></li>
-        <li><span class="sentence"><strong>대형 멀티링구얼(jina-v2 865M)과 상보 관계 발견</strong> — 지표는 jina-v2 우위지만 임베딩 비용이 ko-clip의 약 130배.</span><span class="sentence">실패 문항이 정확히 갈렸다 — 외래어는 멀티링구얼이, 콩글리시는 한국어 특화가 강함</span></li>
-        <li><span class="sentence"><strong>hit@k 인플레이션 통제</strong> — gold가 넓은 질의는 hit이 자동으로 나오는 문제를 구간별 분해·precision@10 병기로 해소.</span><span class="sentence">결과마다 재현 메타(모델 id·시각·top-10 id) 기록</span></li>
-    </ul>
-
     <h4 class="detail-head">구현</h4>
     <ul class="detail-list">
         <li>이미지+텍스트 복합 질의 — "이 상품이랑 비슷한데 검정색으로": 스타일은 임베딩 가중 합성, 속성은 메타 필터가 담당</li>
@@ -413,7 +404,15 @@ title: 프로젝트
         <li>44K 규모라 정확 탐색(numpy 내적) 채택 — ANN 도입 시점을 규모 기준으로 명시</li>
     </ul>
 
-    <p class="repo-link"><a href="https://github.com/ckc5800/visual-search" target="_blank">GitHub 저장소 (데모 GIF·평가 리포트·번역문 전수 기록)</a></p>
+    <p class="repo-link"><a href="https://github.com/ckc5800/visual-search" target="_blank">GitHub 저장소 (데모 GIF·평가 리포트·번역문 전수 기록)</a></p><h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
+        <li><strong>hit@10 90% → 98%</strong> (한국어 50문항 × 44K) — 임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 precision@10 0.10)한 뒤, 질의에서 색·성별·용도를 뽑아 메타 필터로 결합해 해소(0.53)</li>
+        <li><span class="sentence"><strong>다국어 검색 전략 6종 실측 비교</strong> — 같은 이미지 인덱스에서 텍스트 경로만 교체.</span><span class="sentence">m-clip 48% &lt; 소형 MT 86% &lt; <strong>LLM(3B)+커머스 용어집 92%</strong>. 번역기는 크기순이 아니었다(NLLB 600M 76% &lt; 8배 작은 opus 86%)</span></li>
+        <li><span class="sentence"><strong>대형 멀티링구얼(jina-v2 865M)과 상보 관계 발견</strong> — 지표는 jina-v2 우위지만 임베딩 비용이 ko-clip의 약 130배.</span><span class="sentence">실패 문항이 정확히 갈렸다 — 외래어는 멀티링구얼이, 콩글리시는 한국어 특화가 강함</span></li>
+        <li><span class="sentence"><strong>hit@k 인플레이션 통제</strong> — gold가 넓은 질의는 hit이 자동으로 나오는 문제를 구간별 분해·precision@10 병기로 해소.</span><span class="sentence">결과마다 재현 메타(모델 id·시각·top-10 id) 기록</span></li>
+    </ul>
+
+    
         </div>
     </details>
 </div>
@@ -447,20 +446,20 @@ title: 프로젝트
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">LLM Agent 시스템(RAG, tool orchestration, state 관리)의 E2E 구축 역량 확보 목적.</span><span class="sentence">포트폴리오 기술문서를 지식 베이스로 하는 Q&A Agent를 전부 로컬 환경(Ollama)에서 구현.</span></p>
 
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li><strong>정답률 68% → 75% (51문항)</strong> — 실패를 검색/청킹/생성 층으로 분해해 병목(생성)을 정량 규명, 컨텍스트 수 튜닝으로 개선</li>
-        <li><strong>검색 recall@1 90% · MRR 0.95</strong> (무작위 기준선 3% 병기) — 하이브리드 검색 결함 7건 발견·수정</li>
-        <li><strong>채점기 자체 결함 6%p 발견·정정</strong> — 동의 표기를 오답 집계하던 문제 (지표를 쓰기 전에 지표부터 검증)</li>
-        <li><strong>환각 측정 지표 신설</strong> — 코퍼스에 답 없는 거부 문항 10개를 넣어, 컨텍스트를 넓힐수록 환각이 느는 트레이드오프를 실측</li>
-    </ul>
-
     <h4 class="detail-head">구현</h4>
     <ul class="detail-list">
         <li>LangGraph StateGraph 기반 Corrective-RAG — retrieve → grade(자가 평가) → 판정 부족 시 rewrite 재검색 → generate</li>
         <li>FAISS(의미) + BM25(키워드) RRF 융합 직접 구현 — 벡터 저장소는 환경변수로 Qdrant 교체 가능, 동일 평가로 비교해 선택 기준 실측</li>
         <li>에이전트 레이어 3종 — ReAct 도구 호출, Planner–Worker–Synthesizer 멀티홉 분해, MCP 클라이언트</li>
         <li>인덱싱 전 데이터 검수 CI 연결 — 노션 내부 링크가 코퍼스의 9.4%를 차지하던 오염 발견·제거</li>
+    </ul>
+
+    <h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
+        <li><strong>정답률 68% → 75% (51문항)</strong> — 실패를 검색/청킹/생성 층으로 분해해 병목(생성)을 정량 규명, 컨텍스트 수 튜닝으로 개선</li>
+        <li><strong>검색 recall@1 90% · MRR 0.95</strong> (무작위 기준선 3% 병기) — 하이브리드 검색 결함 7건 발견·수정</li>
+        <li><strong>채점기 자체 결함 6%p 발견·정정</strong> — 동의 표기를 오답 집계하던 문제 (지표를 쓰기 전에 지표부터 검증)</li>
+        <li><strong>환각 측정 지표 신설</strong> — 코퍼스에 답 없는 거부 문항 10개를 넣어, 컨텍스트를 넓힐수록 환각이 느는 트레이드오프를 실측</li>
     </ul>
 
     <h4 class="detail-head">평가 방법론</h4>
@@ -471,7 +470,7 @@ title: 프로젝트
         <li>RAGAS 도입 검토 후 보류 — 로컬 3B 심판의 일치율 45~50%로 정보량이 없음을 실측하고, 재도입 조건(7B 이상·일치율 90%)을 코드에 명시</li>
     </ul>
 
-    <h4 class="detail-head">실험 기록 (미채택 포함)</h4>
+    <h4 class="detail-head">실험 기록</h4>
     <ul class="detail-list">
         <li><span class="sentence">Parent-Child 청킹 — 초기엔 유일하게 풀던 집계 질문을 base의 top-N 확장이 함께 해결했고 child recall@1도 열위(78% vs 89%)라 미채택.</span><span class="sentence">판단 근거를 코드 주석에 기록</span></li>
         <li>시맨틱 청킹(임베딩 유사도 breakpoint, 직접 구현) — 동일 조건 비교에서 base가 전 지표 우위로 미채택</li>
@@ -495,7 +494,7 @@ title: 프로젝트
     <div class="metrics">
         <div class="metric"><span class="metric-value">15/15</span><span class="metric-label">주입 결함 탐지 (오탐 0)</span></div>
         <div class="metric"><span class="metric-value">28.5 → 12.9</span><span class="metric-label">RUL MAE (사이클)</span></div>
-        <div class="metric"><span class="metric-value">4개 셋</span><span class="metric-label">NASA C-MAPSS 전체</span></div>
+        <div class="metric"><span class="metric-value">4개</span><span class="metric-label">NASA C-MAPSS 전체 셋</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Time Series</span>
@@ -544,8 +543,8 @@ title: 프로젝트
         <dt>해결</dt><dd>MCP 표준 서버로 read-only 도구 4종을 제공하고, 추론은 클라이언트 LLM 에 위임해 서버는 결정적으로 유지</dd>
     </dl>
     <div class="metrics">
-        <div class="metric"><span class="metric-value">의존성 2개</span><span class="metric-label">clone 후 30초 내 동작</span></div>
-        <div class="metric"><span class="metric-value">18% 감소</span><span class="metric-label">BM25 토큰 정제</span></div>
+        <div class="metric"><span class="metric-value">2개</span><span class="metric-label">의존성 · clone 후 30초 내 동작</span></div>
+        <div class="metric"><span class="metric-value">18%</span><span class="metric-label">BM25 토큰 감소</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">MCP</span>
@@ -594,7 +593,7 @@ title: 프로젝트
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2초대</span><span class="metric-label">업무 대화 요약</span></div>
-        <div class="metric"><span class="metric-value">사내 메신저</span><span class="metric-label">실서비스 탑재</span></div>
+        <div class="metric"><span class="metric-value">실서비스 탑재</span><span class="metric-label">사내 메신저</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">BART</span>
@@ -667,7 +666,7 @@ title: 프로젝트
         <li><strong>로그 — Elasticsearch(ELK)와 Loki 를 클러스터에 직접 설치해 수집·조회 환경 구성</strong> <span class="who mine">본인</span></li>
     </ul>
 
-    <h4 class="detail-head">구현 (담당 범위)</h4>
+    <h4 class="detail-head">구현</h4>
     <ul class="detail-list">
         <li>Prometheus 로 클러스터·노드·워크로드 지표를 수집하고, Grafana 대시보드로 20여 개 모델의 상태를 한 화면에서 보게 구성</li>
         <li>AlertManager 경보 규칙을 세워 장애를 사람이 발견하기 전에 알리도록 전환</li>
@@ -684,7 +683,7 @@ title: 프로젝트
         <li>20개 이상 ML 모델이 도는 클러스터를 지표와 로그로 들여다볼 수 있게 만들어, 장애 원인 추적이 가능해짐</li>
     </ul>
 
-    <h4 class="detail-head">시스템 아키텍처</h4>
+    <h4 class="detail-head">시스템 구조</h4>
     <div class="shot-grid one">
         <img class="shot" src="/assets/images/kubernetes-architecture.png" alt="Kubernetes Infrastructure Architecture">
     </div>
@@ -933,7 +932,6 @@ title: 프로젝트
         <dt>해결</dt><dd>PyQt 주석 도구를 직접 만들어 생성 과정을 자동화하고, 표 탐지·셀 텍스트 추출 모델까지 구현</dd>
     </dl>
     <div class="metrics">
-        <div class="metric"><span class="metric-value">단독 개발</span><span class="metric-label">설계부터 구현까지</span></div>
         <div class="metric"><span class="metric-value">성과금 수령</span><span class="metric-label">프로젝트 성공</span></div>
     </div>
     <div class="tech-tags">
