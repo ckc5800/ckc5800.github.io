@@ -56,6 +56,51 @@
         {{ content }}
     </main>
 
+    <figure class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="이미지 크게 보기">
+        <button type="button" class="lightbox-close" id="lightbox-close" aria-label="닫기">×</button>
+        <img id="lightbox-img" src="" alt="">
+        <figcaption id="lightbox-cap"></figcaption>
+    </figure>
+
+    <script>
+    // 이미지 확대 보기 — 목록에선 작게, 누르면 크게
+    (function () {
+        var box = document.getElementById('lightbox');
+        var img = document.getElementById('lightbox-img');
+        var cap = document.getElementById('lightbox-cap');
+        var closeBtn = document.getElementById('lightbox-close');
+        if (!box) return;
+        var lastFocus = null;
+
+        function open(src, alt) {
+            lastFocus = document.activeElement;
+            img.src = src;
+            img.alt = alt || '';
+            cap.textContent = alt || '';
+            box.classList.add('open');
+            document.body.classList.add('no-scroll');
+            closeBtn.focus();
+        }
+
+        function close() {
+            box.classList.remove('open');
+            document.body.classList.remove('no-scroll');
+            img.src = '';
+            if (lastFocus) lastFocus.focus();
+        }
+
+        document.addEventListener('click', function (e) {
+            var t = e.target.closest('.shot, .diagram');
+            if (t) { open(t.getAttribute('src'), t.getAttribute('alt')); return; }
+            if (e.target === box || e.target === closeBtn || e.target === cap) close();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && box.classList.contains('open')) close();
+        });
+    })();
+    </script>
+
     <script>
     // 지표 미니 막대 — "2,292 → 334ms" 같은 전후 값을 길이로 옮긴다
     (function () {

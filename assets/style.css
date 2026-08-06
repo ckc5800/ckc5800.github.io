@@ -1512,9 +1512,10 @@ mark.search-hit.is-current {
 /* 스크린샷 · 결과 이미지 */
 .shot-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
     margin: 24px 0;
+    max-width: 760px;
 }
 
 .shot-grid.one {
@@ -1527,27 +1528,42 @@ mark.search-hit.is-current {
 
 .shot {
     width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top left;
     border-radius: 8px;
     border: 1px solid var(--separator);
+    cursor: zoom-in;
+    transition: border-color 0.18s ease;
 }
 
-/* 구조도 — 넓어서 가로 스크롤을 허용하고, 다크에서도 흰 바탕 유지 */
+.shot:hover {
+    border-color: var(--accent);
+}
+
+/* 한 장짜리 그리드는 잘라내지 않고 전체를 보여준다 */
+.shot-grid.one .shot {
+    aspect-ratio: auto;
+    object-fit: contain;
+}
+
+/* 구조도 — 줄여서 싣고 클릭하면 크게. 다크에서도 흰 바탕 유지 */
 .diagram-wrap {
-    overflow-x: auto;
     margin: 24px 0;
+    max-width: 760px;
 }
 
 .diagram {
     background: #ffffff;
     width: 100%;
-    min-width: 760px;
     border-radius: 8px;
     border: 1px solid var(--separator);
+    cursor: zoom-in;
+    transition: border-color 0.18s ease;
 }
 
-.diagram.narrow {
-    max-width: 900px;
-    min-width: 620px;
+.diagram:hover {
+    border-color: var(--accent);
 }
 
 /* 이미지·도표 설명 */
@@ -1694,4 +1710,79 @@ h2 {
 /* L2 — 리드 문단에 딸린 목록은 한 덩어리 */
 .detail-body > p + .detail-list {
     margin-top: 8px;
+}
+
+
+/* ===== 이미지 확대 보기 =====
+   목록에서는 작게 싣고, 누르면 전체를 덮어 크게 보여준다. */
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    display: none;
+    place-items: center;
+    padding: 32px;
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    cursor: zoom-out;
+}
+
+.lightbox.open {
+    display: grid;
+}
+
+.lightbox img {
+    max-width: 100%;
+    max-height: calc(100vh - 120px);
+    object-fit: contain;
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+.lightbox figcaption {
+    margin-top: 12px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 980px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.26);
+}
+
+.lightbox-close:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+body.no-scroll {
+    overflow: hidden;
+}
+
+@media print {
+    .lightbox {
+        display: none !important;
+    }
+
+    .shot {
+        aspect-ratio: auto;
+        object-fit: contain;
+    }
 }
