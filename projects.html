@@ -168,7 +168,7 @@ title: 프로젝트
     <p><span class="sentence"><strong>지연 구조 분해:</strong> 튜닝에 앞서 TTFB가 어느 구간에서 나오는지부터 계측.</span><span class="sentence">엔진 패치에 전처리(prep)와 엔진 첫 청크(큐+prefill+보코더) 지표를 심어 분해.</span></p>
     <ul class="detail-list">
         <li>전처리 3~6ms·API 약 100ms는 고정이고, <strong>동시 요청 수에 선형 비례하는 구간은 엔진 디코드 루프</strong>(동시 +1당 약 +20ms)임을 확인</li>
-        <li>스트림 세마포어를 32→40으로 여는 통상적 처방은 대조 실험 결과 대기 위치만 엔진 안으로 옮길 뿐 SLA는 오히려 악화.</span><span class="sentence">세마포어의 역할을 병목 제거 장치에서 과부하 보호막으로 다시 규정</li>
+        <li><span class="sentence">스트림 세마포어를 32→40으로 여는 통상적 처방은 대조 실험 결과 대기 위치만 엔진 안으로 옮길 뿐 SLA는 오히려 악화.</span><span class="sentence">세마포어의 역할을 병목 제거 장치에서 과부하 보호막으로 다시 규정</span></li>
         <li>실효 레버를 코덱 좌측 컨텍스트(72→25, CUDA graph capture 목록 정합 수정 동반)와 첫 청크 프레임 수(4→2) 둘로 좁혀 확정</li>
         <li>청크 경계 불연속을 z-검정으로 자동 판정하는 품질 게이트를 통과시킨 뒤 채택</li>
     </ul>
