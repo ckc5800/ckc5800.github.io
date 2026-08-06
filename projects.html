@@ -61,6 +61,7 @@ title: 프로젝트
         <div class="toc-label">LLM · 검색 시스템</div>
         <div class="toc-links">
             <a class="toc-link" href="#visual">멀티모달 상품 검색</a>
+            <a class="toc-link" href="#forecast">수요 예측</a>
             <a class="toc-link" href="#rag">RAG Agent</a>
             <a class="toc-link" href="#pdm">예지보전 Agent</a>
             <a class="toc-link" href="#mcp">MCP Server</a>
@@ -414,6 +415,51 @@ title: 프로젝트
     </ul>
 
     
+        </div>
+    </details>
+</div>
+
+<hr class="rule-sub">
+
+<div class="project">
+    <h3 id="forecast">수요 예측 × 시계열 파운데이션 모델 검증 (demand-forecast) <span class="badge">개인 프로젝트</span></h3>
+    <p class="project-meta">2026.08 · M5 수요 예측 백테스트·모델 비교 E2E 단독 구축</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>"제로샷 시계열 파운데이션 모델이 튜닝된 베이스라인을 이기는가"에 대한 실측 근거 부재 — 간헐 수요에선 지표 함정까지 겹침</dd>
+        <dt>해결</dt><dd>M5 3만 시리즈 롤링 백테스트로 베이스라인·LightGBM·Chronos를 6라운드 비교 — 판정이 집계 레벨과 지표 선택에 따라 갈림을 실측</dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">역전</span><span class="metric-label">바닥(이동평균 1위) ↔ 집계(Chronos 1위)</span></div>
+        <div class="metric"><span class="metric-value">0.675</span><span class="metric-label">전사 RMSSE — 제로샷 전 레벨 1위</span></div>
+        <div class="metric"><span class="metric-value">학습 0초</span><span class="metric-label">CPU 28초에 1,500회 예측</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">Time Series Forecasting</span>
+        <span class="tech-tag">Chronos (Foundation Model)</span>
+        <span class="tech-tag">LightGBM</span>
+        <span class="tech-tag">Backtesting</span>
+        <span class="tech-tag">Evaluation</span>
+    </div>
+    <details>
+        <summary>상세 보기</summary>
+        <div class="detail-body">
+<h4 class="detail-head">배경</h4>
+    <p><span class="sentence">시계열 파운데이션 모델(Chronos)의 제로샷 성능 주장을 커머스 수요 데이터에서 직접 검증.</span><span class="sentence">월마트 일별 판매 30,490 시리즈(M5)에 h=28 롤링 오리진 백테스트를 구축하고, 오염 검증(M5가 Chronos 학습 코퍼스가 아닌 공식 제로샷 평가셋임을 확인)부터 선행.</span></p>
+
+    <h4 class="detail-head">구현</h4>
+    <ul class="detail-list">
+        <li>롤링 오리진 백테스트 하네스 — RMSSE(M5 공식)·MASE·WQL, 가변 길이 시리즈·시리즈별 시작 요일 대응, 스케일 미정의는 NaN+제외 보고</li>
+        <li>전 시리즈 공용 LightGBM(랙·롤링·요일·카테고리·달력 공변량, tweedie, 재귀 다단 예측) / Chronos-bolt 제로샷 / 시리즈 특성 기반 모델 라우팅</li>
+        <li>예측 곡선 시각화 — 집계 레벨의 주간 패턴 추종 vs 바닥 레벨 간헐 수요를 한 장으로 (재현 스크립트 포함)</li>
+    </ul>
+
+    <p class="repo-link"><a href="https://github.com/ckc5800/demand-forecast" target="_blank">GitHub 저장소 (라운드별 실측 기록·검증 리포트)</a></p><h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
+        <li><span class="sentence"><strong>계층 레벨에서 판정 역전 실측</strong>.</span><span class="sentence">판매 0이 55%인 바닥 레벨은 28일 이동평균이 RMSSE 1위(0.741), 집계 레벨(0 비율 ~0%)은 제로샷 Chronos가 전 레벨 1위(store 0.717·전사 0.675) — 파운데이션 모델의 가치는 "신호가 있는 곳"에서 크다</span></li>
+        <li><span class="sentence"><strong>지표·집계 방식이 결론을 바꾸는 지점 문서화</strong>.</span><span class="sentence">"전부 0 예측"이 naive를 이기는 간헐 수요 함정, MASE/RMSSE 승자 분화, 판매량 가중 시 이동평균-Chronos 동률(0.718 vs 0.720)</span></li>
+        <li><span class="sentence"><strong>반론 봉쇄</strong> — LightGBM 스윕 6구성 전수 기록·달력 공변량·집계 레벨별 재설계까지 측정.</span><span class="sentence">학습 모델이 학습 0초 제로샷을 평균에서 못 넘는 구도 확인(시리즈별 승수 4/10 한계 병기)</span></li>
+        <li><span class="sentence"><strong>강건성 검증</strong> — 겹치지 않는 대체 샘플·6폴드 확장에서 순위 재현, 컨텍스트 길이 민감도 ±0.5%.</span><span class="sentence">코드 감사로 잠재 버그 4건 수정, 회귀 테스트 10개</span></li>
+    </ul>
         </div>
     </details>
 </div>
