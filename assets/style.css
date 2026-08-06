@@ -828,9 +828,18 @@ h2[id] {
     border-left: none;
 }
 
-.skill-category h3 {
+.skill-category h3,
+.skill-category h4 {
     margin-top: 0;
     color: var(--text);
+}
+
+.contact-grid h4 {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
 }
 
 .skill-list {
@@ -899,16 +908,7 @@ h2[id] {
     gap: 18px;
 }
 
-.pub-links a {
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-}
 
-.pub-links a:hover {
-    color: var(--accent);
-}
 
 /* ===== Footer ===== */
 .footer {
@@ -1006,16 +1006,7 @@ h2[id] {
     text-align: center;
 }
 
-.contact-grid a {
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 500;
-    word-break: break-all;
-}
 
-.contact-grid a:hover {
-    color: var(--accent);
-}
 
 /* ===== 검색 결과 강조 ===== */
 mark.search-hit {
@@ -1627,17 +1618,7 @@ mark.search-hit.is-current {
     margin-top: 16px;
 }
 
-.repo-link a {
-    color: var(--text);
-    font-weight: 600;
-    text-decoration: none;
-    border-bottom: 1px solid var(--separator);
-}
 
-.repo-link a:hover {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-}
 
 /* 논문·특허 페이지의 큰 구분선 */
 .rule-major {
@@ -1830,4 +1811,47 @@ body.no-scroll {
 
 .detail-body > .detail-head {
     margin-left: -16px;
+}
+
+
+/* ===== 링크 =====
+   본문에서 밖으로 나가는 링크는 한 가지 모습으로. 밑줄이 있어야 링크임이
+   분명하고, 인쇄본에서도 구분된다. 크기는 문맥을 따른다(상속). */
+.repo-link a,
+.pub-links a,
+.contact-grid a {
+    color: var(--text);
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid var(--separator);
+    transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.repo-link a:hover,
+.pub-links a:hover,
+.contact-grid a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.contact-grid a {
+    word-break: break-all;
+}
+
+/* ===== 논문·특허 항목 — 프로젝트 카드와 같은 리듬 =====
+   제목만 왼쪽 끝, 나머지는 한 단 들여쓴다 (소제목 0 / 내용 16 규칙). */
+.publication-item > *:not(h4) {
+    margin-left: 16px;
+}
+
+.publication-item .meta {
+    margin-bottom: 12px;
+}
+
+.publication-item p {
+    margin-bottom: 0;
+}
+
+.pub-links {
+    margin-top: 16px;
 }
