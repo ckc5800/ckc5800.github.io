@@ -132,8 +132,8 @@ title: 프로젝트
 
     <p><strong>② 처리량 천장 진단 → 돌파</strong> — "배포했다"가 아니라 천장이 어디서 걸리는지 규명하고 뚫은 부분.</p>
     <ul class="detail-list">
-        <li>기존 사내 결론은 <strong>"약 1.7 rps 는 버전 무관한 구조적 천장"</strong>. 버전(0.22/0.24) × executor(mp/uni) <strong>2×2 전수 벤치</strong>로 이를 반증</li>
-        <li><span class="sentence">원인 규명 — 처리량의 몸통은 보코더(Code2Wav)가 launch-bound eager bs≈1 로 돌던 것이 <strong>CUDA-graph replay + 요청 간 배치 디코드</strong>로 바뀐 것.</span><span class="sentence">배칭 기계장치는 구버전 이미지에도 있었으나 자체 운영 config(eager 강제·EOS 튜닝·토큰예산)가 봉인하고 있었고, 네이티브 EOS·abort 레이스 수정이 그 봉인을 풀어줌</span></li>
+        <li>기존 사내 결론은 <strong>"약 1.7 rps는 버전 무관한 구조적 천장"</strong>. 버전(0.22/0.24) × executor(mp/uni) <strong>2×2 전수 벤치</strong>로 이를 반증</li>
+        <li><span class="sentence">원인 규명 — 처리량의 몸통은 보코더(Code2Wav)가 launch-bound eager bs≈1로 돌던 것이 <strong>CUDA-graph replay + 요청 간 배치 디코드</strong>로 바뀐 것.</span><span class="sentence">배칭 기계장치는 구버전 이미지에도 있었으나 자체 운영 config(eager 강제·EOS 튜닝·토큰예산)가 봉인하고 있었고, 네이티브 EOS·abort 레이스 수정이 그 봉인을 풀어줌</span></li>
         <li>결과 — 동일 부하(conc8) <strong>0.73 → 1.61 rps</strong>, 각자 최대 안정치 <strong>0.73 → 3.09 rps(4.2배)</strong>. 자체 패치 3종·EOS 튜닝·문장분할 의존도 함께 제거</li>
         <li>안정성은 질적 전환 — <strong>conc16 진입 시 엔진 사망(3회 재현) → conc48 무오류(1,500+ 요청)</strong></li>
     </ul>
@@ -141,7 +141,7 @@ title: 프로젝트
     <p><strong>③ 용량 한계 실측 (capacity engineering)</strong> — 감이 아니라 물리적 한계를 재서 SLA를 세운 부분.</p>
     <ul class="detail-list">
         <li>burst 스윕으로 SLA 확립 — TTFB <strong>≤500ms 동시 15 · ≤1000ms 동시 30</strong>, 수용 한계 36 (실링 약 40)</li>
-        <li>판정 기준을 지연이 아니라 <strong>RTF 여유</strong>로 잡음 — 코덱 좌측 컨텍스트 조정으로 N30 RTF 0.91 → 0.71 확보, N40 은 0.96~1.04 로 마진이 사라지는 것을 확인하고 운영값을 실링 -1 티어(36)로 결정</li>
+        <li>판정 기준을 지연이 아니라 <strong>RTF 여유</strong>로 잡음 — 코덱 좌측 컨텍스트 조정으로 N30 RTF 0.91 → 0.71 확보, N40은 0.96~1.04로 마진이 사라지는 것을 확인하고 운영값을 실링 -1 티어(36)로 결정</li>
         <li>자원 축도 함께 실측 — per-stage VRAM(stage0 18.9G + stage1 7.2G) · 컨테이너별 CPU/메모리 피크 · GPU 온도와 SM 클럭까지 기록해 열 스로틀링 드리프트를 측정 오염과 구분</li>
     </ul>
 
@@ -338,7 +338,7 @@ title: 프로젝트
     <p class="project-meta">2025.04 ~ 2025.07 · 화자 분할 모델 파인튜닝 · STT 통합</p>
     <dl class="ps">
         <dt>문제</dt><dd>STT가 텍스트만 돌려줘 상담사와 고객 발화를 구분할 수 없었고, 그래서 품질 분석이 불가</dd>
-        <dt>해결</dt><dd>Pyannote 를 파인튜닝(DER 검증)하고 화자 구간을 STT 에 넘겨 화자별 전사를 생성</dd>
+        <dt>해결</dt><dd>Pyannote를 파인튜닝(DER 검증)하고 화자 구간을 STT에 넘겨 화자별 전사를 생성</dd>
     </dl>
     <div class="tech-tags">
         <span class="tech-tag">Pyannote</span>
@@ -359,8 +359,8 @@ title: 프로젝트
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li>공개 화자분할 데이터로 파인튜닝한 모델을 DER 로 검증 (데이터 수집 → 파라미터 튜닝 → 학습)</li>
-        <li>화자 분할 결과를 STT 에 연동해 상담사·고객이 구분된 전사 파이프라인 완성</li>
+        <li>공개 화자분할 데이터로 파인튜닝한 모델을 DER로 검증 (데이터 수집 → 파라미터 튜닝 → 학습)</li>
+        <li>화자 분할 결과를 STT에 연동해 상담사·고객이 구분된 전사 파이프라인 완성</li>
     </ul>
         </div>
     </details>
@@ -488,8 +488,8 @@ title: 프로젝트
     <h3 id="pdm">예지보전 Agent (pdm-agent) <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.07 · 센서 이상 탐지 + LLM 진단 파이프라인 설계 · 구현</p>
     <dl class="ps">
-        <dt>문제</dt><dd>LLM 에 이상 탐지까지 맡기면 근거 없는 수치를 지어내 정비 판단에 쓸 수 없음</dd>
-        <dt>해결</dt><dd>탐지는 결정적 신호처리(z-score·EWMA·추세 회귀)가 맡고, LLM 은 탐지 근거 해석만 하도록 역할 분리</dd>
+        <dt>문제</dt><dd>LLM에 이상 탐지까지 맡기면 근거 없는 수치를 지어내 정비 판단에 쓸 수 없음</dd>
+        <dt>해결</dt><dd>탐지는 결정적 신호처리(z-score·EWMA·추세 회귀)가 맡고, LLM은 탐지 근거 해석만 하도록 역할 분리</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">15/15</span><span class="metric-label">주입 결함 탐지 (오탐 0)</span></div>
@@ -540,7 +540,7 @@ title: 프로젝트
     <p class="project-meta">2026.07 · MCP 서버 설계 · 구현</p>
     <dl class="ps">
         <dt>문제</dt><dd>포트폴리오가 문서로만 있어 AI 도구가 경력·프로젝트를 직접 조회할 수 없음</dd>
-        <dt>해결</dt><dd>MCP 표준 서버로 read-only 도구 4종을 제공하고, 추론은 클라이언트 LLM 에 위임해 서버는 결정적으로 유지</dd>
+        <dt>해결</dt><dd>MCP 표준 서버로 read-only 도구 4종을 제공하고, 추론은 클라이언트 LLM에 위임해 서버는 결정적으로 유지</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2개</span><span class="metric-label">의존성 · clone 후 30초 내 동작</span></div>
@@ -589,7 +589,7 @@ title: 프로젝트
     <p class="project-meta">2024.01 ~ 2024.07 · 사내 지식 관리 · 요약 시스템 개발</p>
     <dl class="ps">
         <dt>문제</dt><dd>휴가·부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 시간이 오래 걸림</dd>
-        <dt>해결</dt><dd>대화는 BART, 문서는 T5 로 나눠 파인튜닝(R3F 정규화)하고 사내 메신저에 탑재</dd>
+        <dt>해결</dt><dd>대화는 BART, 문서는 T5로 나눠 파인튜닝(R3F 정규화)하고 사내 메신저에 탑재</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2초대</span><span class="metric-label">업무 대화 요약</span></div>
@@ -660,18 +660,18 @@ title: 프로젝트
     <p>인프라 엔지니어 3인이 온프레미스에 사내 첫 Kubernetes 플랫폼을 구축. 아래가 팀이 만든 전체 구성이고, 그중 <strong>관측성 계층이 본인 담당</strong>.</p>
     <ul class="detail-list">
         <li>클러스터·네트워크 — MetalLB LoadBalancer, Ingress-nginx 라우팅 <span class="who">팀</span></li>
-        <li><strong>스토리지 — NFS 기반 PV/PVC 로 모델·데이터 영속 볼륨 관리</strong> <span class="who mine">본인</span></li>
+        <li><strong>스토리지 — NFS 기반 PV/PVC로 모델·데이터 영속 볼륨 관리</strong> <span class="who mine">본인</span></li>
         <li>배포 파이프라인 — GitLab → Jenkins·Argo Workflow → Harbor → ArgoCD GitOps <span class="who">팀</span></li>
         <li><strong>지표·경보 — Prometheus 수집, Grafana 대시보드, AlertManager 경보 규칙</strong> <span class="who mine">본인</span></li>
-        <li><strong>로그 — Elasticsearch(ELK)와 Loki 를 클러스터에 직접 설치해 수집·조회 환경 구성</strong> <span class="who mine">본인</span></li>
+        <li><strong>로그 — Elasticsearch(ELK)와 Loki를 클러스터에 직접 설치해 수집·조회 환경 구성</strong> <span class="who mine">본인</span></li>
     </ul>
 
     <h4 class="detail-head">구현</h4>
     <ul class="detail-list">
-        <li>Prometheus 로 클러스터·노드·워크로드 지표를 수집하고, Grafana 대시보드로 20여 개 모델의 상태를 한 화면에서 보게 구성</li>
+        <li>Prometheus로 클러스터·노드·워크로드 지표를 수집하고, Grafana 대시보드로 20여 개 모델의 상태를 한 화면에서 보게 구성</li>
         <li>AlertManager 경보 규칙을 세워 장애를 사람이 발견하기 전에 알리도록 전환</li>
-        <li>로그는 관리형 서비스 없이 클러스터에 Elasticsearch·Loki 를 직접 설치·운영 — 온프레미스라 외부 로깅 SaaS 를 쓸 수 없는 조건</li>
-        <li>NFS 기반 PV/PVC 로 모델 가중치·데이터 볼륨의 영속 저장을 구성 — 파드가 재시작돼도 모델을 다시 받지 않게</li>
+        <li>로그는 관리형 서비스 없이 클러스터에 Elasticsearch·Loki를 직접 설치·운영 — 온프레미스라 외부 로깅 SaaS를 쓸 수 없는 조건</li>
+        <li>NFS 기반 PV/PVC로 모델 가중치·데이터 볼륨의 영속 저장을 구성 — 파드가 재시작돼도 모델을 다시 받지 않게</li>
         <li>구축 이후 클러스터 장애 대응과 리소스 관리에 팀의 일원으로 참여</li>
     </ul>
 
@@ -679,7 +679,7 @@ title: 프로젝트
     <ul class="detail-list">
         <li><strong>회사 최초 Kubernetes 기반 AI 플랫폼 구축</strong> — 3인 인프라 팀, 수동 배포에서 GitOps 자동화로 전환 <span class="who">팀 성과</span></li>
         <li><strong>관측성 전 계층을 혼자 구축</strong> — 지표·대시보드·경보·로그 5종(Prometheus·Grafana·AlertManager·Elasticsearch·Loki)</li>
-        <li><strong>스토리지 계층 담당</strong> — NFS 기반 PV/PVC 로 20여 개 모델의 가중치·데이터 볼륨을 영속 관리</li>
+        <li><strong>스토리지 계층 담당</strong> — NFS 기반 PV/PVC로 20여 개 모델의 가중치·데이터 볼륨을 영속 관리</li>
         <li>20개 이상 ML 모델이 도는 클러스터를 지표와 로그로 들여다볼 수 있게 만들어, 장애 원인 추적이 가능해짐</li>
     </ul>
 
@@ -698,7 +698,7 @@ title: 프로젝트
     <p class="project-meta">2026.07 · LLM 추론 벤치마크 CLI 설계 · 구현</p>
     <dl class="ps">
         <dt>문제</dt><dd>추론 서버 성능을 손으로 재다 보니 병목이 큐잉인지 연산인지 구분되지 않음</dd>
-        <dt>해결</dt><dd>동시성 수준별 스윕으로 TTFT 와 처리량을 함께 기록해, 처리량이 고정된 채 지연만 느는 큐잉을 분리</dd>
+        <dt>해결</dt><dd>동시성 수준별 스윕으로 TTFT와 처리량을 함께 기록해, 처리량이 고정된 채 지연만 느는 큐잉을 분리</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">12.4 → 0.93초</span><span class="metric-label">TTFT p50</span></div>
@@ -741,7 +741,7 @@ title: 프로젝트
     <p class="project-meta">2022.08 ~ 2022.12 · 센서 퓨전 기반 자율주행 연구 · 모델 개발</p>
     <dl class="ps">
         <dt>문제</dt><dd>2D 세그멘테이션만으로는 자율주행에 필요한 거리·높이 정보를 얻을 수 없음</dd>
-        <dt>해결</dt><dd>LiDAR 와 카메라를 융합하는 Trans-Unet 설계 — Transformer 의 장거리 의존성 + U-Net 의 다중 스케일</dd>
+        <dt>해결</dt><dd>LiDAR와 카메라를 융합하는 Trans-Unet 설계 — Transformer의 장거리 의존성 + U-Net의 다중 스케일</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2편</span><span class="metric-label">논문 (제1저자)</span></div>
@@ -780,8 +780,8 @@ title: 프로젝트
     <h3 id="latent">Synthetic Data Generation with Latent Diffusion <span class="badge">인피닉</span></h3>
     <p class="project-meta">2023.01 ~ 2023.12 · 생성 모델 기반 국방 데이터 확보 연구</p>
     <dl class="ps">
-        <dt>문제</dt><dd>국방 도메인은 보안 제약으로 학습 데이터 수집이 어렵고, GAN 은 모드 붕괴로 대안이 못 됨</dd>
-        <dt>해결</dt><dd>Latent Diffusion 에 조건부 생성과 LoRA 를 얹어 도메인 특성을 학습시키고 합성 데이터 생성</dd>
+        <dt>문제</dt><dd>국방 도메인은 보안 제약으로 학습 데이터 수집이 어렵고, GAN은 모드 붕괴로 대안이 못 됨</dd>
+        <dt>해결</dt><dd>Latent Diffusion에 조건부 생성과 LoRA를 얹어 도메인 특성을 학습시키고 합성 데이터 생성</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">우수 논문상</span><span class="metric-label">한국국방기술학회 2023</span></div>
@@ -863,7 +863,7 @@ title: 프로젝트
     <p class="project-meta">2021 · Heart Disease AI Datathon · 부정맥 진단 트랙 참가 — 모델 · 전처리 개발</p>
     <dl class="ps">
         <dt>문제</dt><dd>심전도 원신호에 기저선 변동·근전도 노이즈가 섞여 그대로 학습하면 판별이 어려움</dd>
-        <dt>해결</dt><dd>침식·팽창 연산과 spline 보간으로 기저선을 제거한 뒤, lead I 신호를 1D-CNN 으로 이진 분류</dd>
+        <dt>해결</dt><dd>침식·팽창 연산과 spline 보간으로 기저선을 제거한 뒤, lead I 신호를 1D-CNN으로 이진 분류</dd>
     </dl>
     <div class="tech-tags">
         <span class="tech-tag">1D-CNN</span>
