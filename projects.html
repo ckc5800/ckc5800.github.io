@@ -149,12 +149,12 @@ title: 프로젝트
     <div style="overflow-x: auto; margin: 20px 0;">
         <img src="/assets/images/tts-physical-architecture.svg" alt="Qwen3-TTS 물리 구조도 — 클라이언트/SDK에서 tts-api를 거쳐 vLLM(GPU)과 Supertonic(CPU) 엔진으로 분기하는 컨테이너 구성" style="background: #ffffff; width: 100%; min-width: 760px; border-radius: 8px; border: 1px solid var(--separator);">
     </div>
-    <p style="font-size: 13px; color: var(--text-secondary);"><span class="sentence">물리 구조 — 컨테이너 단위 배치.</span><span class="sentence">실선은 현재 기동 중인 경로, 점선은 에디션에 따라 선택 기동되는 경로(nginx·PostgreSQL은 Ed4 전용, vllm-b는 GPU 증설 시 부하분산용).</span></p>
+    <p style="font-size: 13px; color: var(--text-secondary);"><span class="sentence">물리 구조 — 컨테이너 단위 배치.</span><span class="sentence">실선이 현재 기동 중인 경로, 점선은 미기동 경로(nginx·PostgreSQL·vllm-b).</span><span class="sentence">API 한 프로세스가 vLLM(GPU)과 Supertonic(CPU) 두 엔진을 함께 부린다.</span></p>
 
     <div style="overflow-x: auto; margin: 20px 0;">
         <img src="/assets/images/tts-logical-architecture.svg" alt="Qwen3-TTS 논리 구조도 — 라우터에서 텍스트 파이프라인, 합성 서비스, 엔진 레지스트리, 엔진 어댑터를 거쳐 두 백엔드로 내려가는 계층" style="background: #ffffff; width: 100%; max-width: 900px; min-width: 620px; border-radius: 8px; border: 1px solid var(--separator);">
     </div>
-    <p style="font-size: 13px; color: var(--text-secondary);"><span class="sentence">논리 구조 — 요청이 내려가는 계층.</span><span class="sentence">텍스트 파이프라인(정규화·ITN·발음교정·문장분할)과 엔진 선택(voice_id 접두사 기반 라우팅)을 분리해, 엔진을 추가해도 상위 계층이 바뀌지 않도록 구성.</span></p>
+    <p style="font-size: 13px; color: var(--text-secondary);"><span class="sentence">논리 구조 — 요청이 거치는 6개 계층.</span><span class="sentence">캐시 히트면 텍스트 처리와 합성을 건너뛰고, 미스면 전 구간을 통과한다.</span><span class="sentence">로그·모니터링·감사·헬스체크는 특정 단계가 아니라 모든 단계에 공통으로 걸린다.</span></p>
 
     <h4 class="detail-head">구현</h4>
     <p><span class="sentence"><strong>시스템 아키텍처:</strong> FastAPI WebSocket/REST 게이트웨이 + vLLM-Omni(Qwen3-TTS) 추론 엔진 + Redis 분산락 & 캐싱 + React 대시보드.</span><span class="sentence">문장 단위 논리 청킹 및 WebSocket 스트리밍으로 TTFB 단축.</span></p>

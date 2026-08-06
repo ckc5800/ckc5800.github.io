@@ -1,90 +1,129 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 930" role="img" aria-label="Qwen3-TTS 논리 구조도">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1000" role="img" aria-label="Qwen3-TTS 논리 구조도 — 요청이 거치는 계층">
   <title>Qwen3-TTS 논리 구조</title>
   <style>
-    .d  { font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif; }
-    .t  { font-size: 20px; font-weight: 700; }
-    .s  { font-size: 15px; fill: #444b57; }
-    .m  { font-size: 15px; fill: #444b57; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .core  { fill: #e9e7fb; stroke: #8b7fd4; stroke-width: 2; }
-    .entry { fill: #dee5fb; stroke: #6b86d8; stroke-width: 2; }
-    .cache { fill: #fdead9; stroke: #e0913f; stroke-width: 2; }
-    .db    { fill: #d9eafc; stroke: #4a90d9; stroke-width: 2; }
-    .gpu   { fill: #f3e9fd; stroke: #a855f7; stroke-width: 2; }
-    .cpu   { fill: #e2f8ef; stroke: #14b8a6; stroke-width: 2; }
-    .flow  { fill: none; stroke: #9aa3af; stroke-width: 3; }
+    .d   { font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif; }
+    .lt  { font-size: 21px; font-weight: 700; fill: #1f3350; }
+    .ls  { font-size: 13.5px; fill: #5a6a80; }
+    .bx  { font-size: 15px; fill: #22334d; }
+    .sm  { font-size: 13px; fill: #22334d; }
+    .lbl { font-size: 14.5px; fill: #4a5a70; }
+    .layer { fill: #dde3ec; stroke: #a8b4c8; stroke-width: 1.5; }
+    .node  { fill: #ffffff; stroke: #3a4a6b; stroke-width: 1.5; }
+    .side  { fill: none; stroke: #7d8ba3; stroke-width: 1.5; stroke-dasharray: 9 7; }
+    .flow  { fill: none; stroke: #8a97ab; stroke-width: 2.5; }
+    .dash  { fill: none; stroke: #8a97ab; stroke-width: 2.5; stroke-dasharray: 9 7; }
   </style>
   <defs>
     <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#9aa3af"/>
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a97ab"/>
     </marker>
   </defs>
 
   <g class="d">
-    <!-- entry -->
-    <rect x="300" y="70" width="290" height="66" rx="6" class="entry"/>
-    <text x="318" y="100" class="t" fill="#22357a">main.py — FastAPI</text>
-    <text x="318" y="124" class="s">lifespan · 엔진 워밍업 · 프론트 서빙</text>
+    <!-- 공통 기능 -->
+    <rect x="30" y="228" width="258" height="612" rx="10" class="side"/>
+    <text x="52" y="266" class="lt" style="font-size:19px">공통 기능 (모든 단계)</text>
+    <rect x="52" y="292" width="214" height="62" rx="3" class="node"/>
+    <text x="72" y="330" class="sm">음성 — DB, 파일</text>
+    <rect x="52" y="354" width="214" height="62" rx="3" class="node"/>
+    <text x="72" y="392" class="sm">설정 — DB</text>
+    <text x="60" y="452" class="sm">로그:</text>
+    <text x="78" y="476" class="sm">Loguru</text>
+    <text x="60" y="518" class="sm">모니터링:</text>
+    <text x="78" y="542" class="sm">Prometheus / Redis</text>
+    <text x="78" y="566" class="sm">nvidia-smi / Redis</text>
+    <text x="60" y="608" class="sm">사용 기록:</text>
+    <text x="78" y="632" class="sm">Audit_logs</text>
+    <text x="60" y="674" class="sm">헬스체크:</text>
+    <text x="78" y="698" class="sm">/health, /ready</text>
 
-    <!-- routers -->
-    <rect x="180" y="168" width="530" height="132" rx="6" class="core"/>
-    <text x="198" y="199" class="t" fill="#3b2f8f">라우터 · routers/</text>
-    <text x="198" y="226" class="m">synthesize</text>        <text x="352" y="226" class="s">— REST 단건/배치</text>
-    <text x="198" y="248" class="m">ws_synthesize</text>     <text x="352" y="248" class="s">— WebSocket 스트리밍</text>
-    <text x="198" y="270" class="m">multi_synth</text>       <text x="352" y="270" class="s">— 다건 배치</text>
-    <text x="198" y="292" class="m">openai_compat</text>     <text x="352" y="292" class="s">— OpenAI/AIVOX 호환</text>
+    <!-- 1. 입력 -->
+    <rect x="345" y="92" width="900" height="112" rx="14" class="layer"/>
+    <text x="368" y="130" class="lt">입력</text>
+    <text x="368" y="158" class="ls">클라이언트 계층</text>
+    <rect x="640" y="120" width="132" height="56" rx="3" class="node"/>
+    <text x="676" y="154" class="bx">텍스트</text>
+    <rect x="812" y="120" width="196" height="56" rx="3" class="node"/>
+    <text x="836" y="154" class="bx">음성 선택(voice)</text>
+    <rect x="1048" y="120" width="152" height="56" rx="3" class="node"/>
+    <text x="1078" y="154" class="bx">기타 옵션</text>
+    <path d="M772,148 H804" class="flow" marker-end="url(#a)"/>
+    <path d="M1008,148 H1040" class="flow" marker-end="url(#a)"/>
 
-    <!-- text pipeline -->
-    <rect x="180" y="332" width="530" height="90" rx="6" class="core"/>
-    <text x="198" y="363" class="t" fill="#3b2f8f">텍스트 파이프라인</text>
-    <text x="198" y="389" class="s" style="font-size:14px">정리(Length · Unicode · Symbol) → CustomRule → ITN → Punctuation →</text>
-    <text x="198" y="410" class="s" style="font-size:14px">Whitespace → 발음교정(최후단) → sentence_splitter</text>
+    <!-- 2. 인증 · 접근 -->
+    <rect x="345" y="244" width="900" height="122" rx="14" class="layer"/>
+    <text x="368" y="284" class="lt">인증 · 접근</text>
+    <text x="368" y="312" class="ls">접근·보안 계층</text>
+    <rect x="596" y="262" width="220" height="86" rx="3" class="node"/>
+    <text x="614" y="290" class="sm">인증 확인</text>
+    <text x="614" y="312" class="sm">(일반: 인증 없음)</text>
+    <text x="614" y="334" class="sm">(관리자: secret key)</text>
+    <rect x="856" y="277" width="148" height="56" rx="3" class="node"/>
+    <text x="884" y="311" class="bx">권한 확인</text>
+    <rect x="1044" y="277" width="156" height="56" rx="3" class="node"/>
+    <text x="1070" y="311" class="bx">레이트리밋</text>
+    <path d="M816,305 H848" class="flow" marker-end="url(#a)"/>
+    <path d="M1004,305 H1036" class="flow" marker-end="url(#a)"/>
 
-    <!-- synthesis service -->
-    <rect x="180" y="454" width="530" height="90" rx="6" class="core"/>
-    <text x="198" y="485" class="t" fill="#3b2f8f">합성 서비스 · services/tts/</text>
-    <text x="198" y="511" class="s">batch · stream · websocket</text>
-    <text x="198" y="532" class="s">common_cache(캐시키) · L0b duration-anomaly(이상 → 캐시배제)</text>
+    <!-- 3. 텍스트 처리 -->
+    <rect x="345" y="424" width="900" height="122" rx="14" class="layer"/>
+    <text x="368" y="464" class="lt">텍스트 처리</text>
+    <text x="368" y="492" class="ls">비즈니스 계층</text>
+    <rect x="616" y="457" width="128" height="56" rx="3" class="node"/>
+    <text x="650" y="491" class="bx">정규화</text>
+    <rect x="784" y="457" width="96" height="56" rx="3" class="node"/>
+    <text x="812" y="491" class="bx">ITN</text>
+    <rect x="920" y="457" width="152" height="56" rx="3" class="node"/>
+    <text x="946" y="491" class="bx">발음 교정</text>
+    <rect x="1112" y="457" width="140" height="56" rx="3" class="node"/>
+    <text x="1138" y="491" class="bx">문장 분할</text>
+    <path d="M744,485 H776" class="flow" marker-end="url(#a)"/>
+    <path d="M880,485 H912" class="flow" marker-end="url(#a)"/>
+    <path d="M1072,485 H1104" class="flow" marker-end="url(#a)"/>
 
-    <!-- redis -->
-    <rect x="778" y="454" width="200" height="90" rx="6" class="cache"/>
-    <text x="796" y="487" class="t" fill="#b5651d">Redis 캐시</text>
-    <text x="796" y="521" class="s">오디오 · 동시성 카운터</text>
+    <!-- 4. 음성 합성 -->
+    <rect x="345" y="566" width="900" height="176" rx="14" class="layer"/>
+    <text x="368" y="606" class="lt">음성 합성</text>
+    <text x="368" y="634" class="ls">엔진 계층</text>
+    <rect x="620" y="626" width="136" height="56" rx="3" class="node"/>
+    <text x="648" y="660" class="bx">엔진 선택</text>
+    <rect x="836" y="586" width="180" height="56" rx="3" class="node"/>
+    <text x="862" y="620" class="bx">vLLM (GPU)</text>
+    <rect x="836" y="666" width="204" height="56" rx="3" class="node"/>
+    <text x="858" y="700" class="bx">Supertonic (CPU)</text>
+    <path d="M756,650 H796 V614 H828" class="dash" marker-end="url(#a)"/>
+    <path d="M756,656 H796 V694 H828" class="dash" marker-end="url(#a)"/>
 
-    <!-- registry -->
-    <rect x="180" y="576" width="530" height="90" rx="6" class="core"/>
-    <text x="198" y="607" class="t" fill="#3b2f8f">registry / engine_registry — 엔진 선택</text>
-    <text x="198" y="636" class="s">voice_id 접두사(supertonic_ / qwen_st_) → 엔진 라우팅 · twin dedup</text>
+    <!-- 5. 품질 · 캐시 -->
+    <rect x="345" y="762" width="900" height="122" rx="14" class="layer"/>
+    <text x="368" y="802" class="lt">품질 · 캐시</text>
+    <text x="368" y="830" class="ls">데이터 계층</text>
+    <rect x="640" y="790" width="180" height="66" rx="3" class="node"/>
+    <text x="662" y="818" class="sm">이상 감지</text>
+    <text x="662" y="840" class="sm">(duration)</text>
+    <rect x="860" y="795" width="184" height="56" rx="3" class="node"/>
+    <text x="882" y="829" class="bx">Redis 캐시 저장</text>
+    <path d="M820,823 H852" class="flow" marker-end="url(#a)"/>
 
-    <!-- db -->
-    <rect x="778" y="576" width="230" height="90" rx="6" class="db"/>
-    <text x="796" y="607" class="t" fill="#1d5c9e">DB</text>
-    <text x="796" y="633" class="s">voice 메타 · 실효 설정</text>
-    <text x="796" y="654" class="s">audit · SQLite(Ed2)/PG(Ed4)</text>
+    <!-- 6. 출력 -->
+    <rect x="345" y="904" width="436" height="86" rx="14" class="layer"/>
+    <text x="368" y="940" class="lt">스트리밍 출력</text>
+    <text x="368" y="966" class="ls">클라이언트 계층</text>
+    <rect x="809" y="904" width="436" height="86" rx="14" class="layer"/>
+    <text x="832" y="940" class="lt">배치 출력</text>
+    <text x="832" y="966" class="ls">클라이언트 계층</text>
 
-    <!-- adapters -->
-    <rect x="180" y="698" width="530" height="90" rx="6" class="core"/>
-    <text x="198" y="729" class="t" fill="#3b2f8f">엔진 어댑터 · engines/</text>
-    <text x="198" y="755" class="s">vllm_stream · vllm_batch · vllm_chunk · vllm_lang · vllm_voice</text>
-    <text x="198" y="776" class="s">supertonic_remote · voice_fallback · vocoder · health_mixin</text>
+    <!-- 계층 간 흐름 -->
+    <path d="M795,204 V236" class="flow" marker-end="url(#a)"/>
+    <path d="M795,366 V416" class="flow" marker-end="url(#a)"/>
+    <text x="812" y="398" class="lbl">Cache miss</text>
+    <path d="M795,546 V558" class="flow" marker-end="url(#a)"/>
+    <path d="M795,742 V754" class="flow" marker-end="url(#a)"/>
+    <path d="M700,884 V896" class="dash" marker-end="url(#a)"/>
+    <path d="M900,884 V896" class="dash" marker-end="url(#a)"/>
 
-    <!-- backends -->
-    <rect x="180" y="828" width="230" height="82" rx="6" class="gpu"/>
-    <text x="198" y="861" class="t" fill="#6b21a8">vLLM 백엔드 (GPU)</text>
-    <text x="198" y="893" class="s">tts-vllm-a :8400</text>
-
-    <rect x="470" y="828" width="260" height="82" rx="6" class="cpu"/>
-    <text x="488" y="861" class="t" fill="#0f766e">Supertonic 백엔드 (CPU)</text>
-    <text x="488" y="893" class="s">tts-fast-a :11200</text>
-
-    <!-- flows -->
-    <path d="M445,136 V160" class="flow" marker-end="url(#a)"/>
-    <path d="M445,300 V324" class="flow" marker-end="url(#a)"/>
-    <path d="M445,422 V446" class="flow" marker-end="url(#a)"/>
-    <path d="M445,544 V568" class="flow" marker-end="url(#a)"/>
-    <path d="M445,666 V690" class="flow" marker-end="url(#a)"/>
-    <path d="M714,499 H770" class="flow" marker-start="url(#a)" marker-end="url(#a)"/>
-    <path d="M714,621 H770" class="flow" marker-start="url(#a)" marker-end="url(#a)"/>
-    <path d="M400,788 L305,820" class="flow" marker-end="url(#a)"/>
-    <path d="M490,788 L585,820" class="flow" marker-end="url(#a)"/>
+    <!-- Cache hit — 인증 단계에서 합성 계층으로 바로 -->
+    <path d="M1245,305 H1330 V654 H1253" class="dash" marker-end="url(#a)"/>
+    <text x="1268" y="486" class="lbl">Cache hit</text>
   </g>
 </svg>
