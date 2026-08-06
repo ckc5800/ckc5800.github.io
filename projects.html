@@ -1050,6 +1050,23 @@ title: 프로젝트
     update();
 })();
 
+// 목차 아래쪽 흐림 — 넘칠 때만, 그리고 아직 끝이 아닐 때만
+(function () {
+    var nav = document.querySelector('.side-nav');
+    if (!nav) return;
+
+    function sync() {
+        var over = nav.scrollHeight - nav.clientHeight;
+        nav.classList.toggle('can-scroll', over > 2);
+        nav.classList.toggle('at-end', nav.scrollTop >= over - 2);
+    }
+
+    nav.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    window.addEventListener('scroll', sync, { passive: true });  // 검색 필터도 이 이벤트를 쏜다
+    sync();
+})();
+
 // 검색: 목차 항목과 본문 카드를 함께 걸러낸다
 (function () {
     var input = document.getElementById('project-filter');
