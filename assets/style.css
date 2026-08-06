@@ -472,8 +472,8 @@ h2[id] {
 }
 
 .ps dd {
-    font-size: 15.5px;
-    line-height: 1.65;
+    font-size: 16px;
+    line-height: 1.75;
 }
 
 @media (max-width: 600px) {
@@ -582,11 +582,11 @@ h2[id] {
 
 /* ===== 프로젝트 상세 본문 서식 (18개 카드 공통) ===== */
 .detail-head {
-    font-size: 15px;
+    font-size: 16.5px;
     font-weight: 600;
     color: var(--text);
     letter-spacing: -0.2px;
-    margin: 28px 0 10px;
+    margin: 36px 0 14px;
 }
 
 /* 한 줄이 너무 길면 눈이 다음 줄 첫머리를 놓친다 — 한글 기준 55자 안팎으로 제한 */
@@ -596,7 +596,7 @@ h2[id] {
 }
 
 .project p {
-    margin-bottom: 13px;
+    margin-bottom: 20px;
 }
 
 /* 문단 첫머리 라벨 — "구현:", "성과:" 처럼 문단을 여는 굵은 말 */
@@ -610,11 +610,11 @@ h2[id] {
     list-style-position: outside;
     padding-left: 20px;
     line-height: 1.75;
-    margin-bottom: 14px;
+    margin-bottom: 22px;
 }
 
 .detail-list li + li {
-    margin-top: 14px;
+    margin-top: 16px;
 }
 
 /* 팀 프로젝트에서 담당 구분 — 무엇이 내 몫인지 흐려지지 않게 */
@@ -642,7 +642,7 @@ h2[id] {
 }
 
 .sentence + .sentence {
-    margin-top: 5px;
+    margin-top: 7px;
 }
 
 /* 문장 스팬이 inline으로 흐르는 컨텍스트(모바일 intro·인쇄)에서 문장 사이 공백 보장
