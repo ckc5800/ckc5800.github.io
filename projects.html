@@ -118,7 +118,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">상담 센터에서 쓰던 기존 TTS는 응답이 느리고 음성 선택지도 좁아 실시간 상담에 쓰기 어려웠음.</span><span class="sentence">모델 선정부터 서빙 아키텍처, 백엔드·프론트엔드, 배포·운영까지 전 구간을 단독으로 맡아 교체.</span></p>
 
@@ -146,15 +146,15 @@ title: 프로젝트
     </ul>
 
     <h4 class="detail-head">시스템 구조</h4>
-    <div style="overflow-x: auto; margin: 20px 0;">
-        <img src="/assets/images/tts-physical-architecture.svg" alt="Qwen3-TTS 물리 구조도 — 클라이언트/SDK에서 tts-api를 거쳐 vLLM(GPU)과 Supertonic(CPU) 엔진으로 분기하는 컨테이너 구성" style="background: #ffffff; width: 100%; min-width: 760px; border-radius: 8px; border: 1px solid var(--separator);">
+    <div class="diagram-wrap">
+        <img class="diagram" src="/assets/images/tts-physical-architecture.svg" alt="Qwen3-TTS 물리 구조도 — 클라이언트/SDK에서 tts-api를 거쳐 vLLM(GPU)과 Supertonic(CPU) 엔진으로 분기하는 컨테이너 구성">
     </div>
-    <p style="font-size: 13px; color: var(--text-secondary);"><span class="sentence">물리 구조 — 컨테이너 단위 배치.</span><span class="sentence">실선이 현재 기동 중인 경로, 점선은 미기동 경로(nginx·PostgreSQL·vllm-b).</span><span class="sentence">API 한 프로세스가 vLLM(GPU)과 Supertonic(CPU) 두 엔진을 함께 부린다.</span></p>
+    <p class="caption"><span class="sentence">물리 구조 — 컨테이너 단위 배치.</span><span class="sentence">실선이 현재 기동 중인 경로, 점선은 미기동 경로(nginx·PostgreSQL·vllm-b).</span><span class="sentence">API 한 프로세스가 vLLM(GPU)과 Supertonic(CPU) 두 엔진을 함께 부린다.</span></p>
 
-    <div style="overflow-x: auto; margin: 20px 0;">
-        <img src="/assets/images/tts-logical-architecture.svg" alt="Qwen3-TTS 논리 구조도 — 라우터에서 텍스트 파이프라인, 합성 서비스, 엔진 레지스트리, 엔진 어댑터를 거쳐 두 백엔드로 내려가는 계층" style="background: #ffffff; width: 100%; max-width: 900px; min-width: 620px; border-radius: 8px; border: 1px solid var(--separator);">
+    <div class="diagram-wrap">
+        <img class="diagram narrow" src="/assets/images/tts-logical-architecture.svg" alt="Qwen3-TTS 논리 구조도 — 라우터에서 텍스트 파이프라인, 합성 서비스, 엔진 레지스트리, 엔진 어댑터를 거쳐 두 백엔드로 내려가는 계층">
     </div>
-    <p style="font-size: 13px; color: var(--text-secondary);"><span class="sentence">논리 구조 — 요청이 거치는 6개 계층.</span><span class="sentence">캐시 히트면 텍스트 처리와 합성을 건너뛰고, 미스면 전 구간을 통과한다.</span><span class="sentence">로그·모니터링·감사·헬스체크는 특정 단계가 아니라 모든 단계에 공통으로 걸린다.</span></p>
+    <p class="caption"><span class="sentence">논리 구조 — 요청이 거치는 6개 계층.</span><span class="sentence">캐시 히트면 텍스트 처리와 합성을 건너뛰고, 미스면 전 구간을 통과한다.</span><span class="sentence">로그·모니터링·감사·헬스체크는 특정 단계가 아니라 모든 단계에 공통으로 걸린다.</span></p>
 
     <h4 class="detail-head">구현</h4>
     <p><span class="sentence"><strong>시스템 아키텍처:</strong> FastAPI WebSocket/REST 게이트웨이 + vLLM-Omni(Qwen3-TTS) 추론 엔진 + Redis 분산락 & 캐싱 + React 대시보드.</span><span class="sentence">문장 단위 논리 청킹 및 WebSocket 스트리밍으로 TTFB 단축.</span></p>
@@ -201,21 +201,21 @@ title: 프로젝트
     </ul>
 
     <h4 class="detail-head">운영 대시보드</h4>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
-        <img src="/assets/images/image 1.png" alt="TTS Dashboard 1" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
-        <img src="/assets/images/image 2.png" alt="TTS Dashboard 2" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
-        <img src="/assets/images/image 3.png" alt="TTS Dashboard 3" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
+    <div class="shot-grid">
+        <img class="shot" src="/assets/images/image 1.png" alt="TTS Dashboard 1">
+        <img class="shot" src="/assets/images/image 2.png" alt="TTS Dashboard 2">
+        <img class="shot" src="/assets/images/image 3.png" alt="TTS Dashboard 3">
     </div>
 
     <h4 class="detail-head">데모 영상</h4>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
-        <div style="text-align: center; padding: 20px; background-color: var(--pill-bg); border-radius: 8px;">
-            <p style="margin: 0 0 10px 0; font-weight: 600;">TTS Full Synthesis</p>
-            <a href="https://drive.google.com/file/d/18mJfKttw0on_zgHEbCDJG9VlUw9YXUFe/view?usp=drive_link" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: var(--text); color: var(--surface); text-decoration: none; border-radius: 980px; font-weight: 500;">영상 보기</a>
+    <div class="demo-grid">
+        <div class="demo">
+            <p>TTS Full Synthesis</p>
+            <a class="demo-btn" href="https://drive.google.com/file/d/18mJfKttw0on_zgHEbCDJG9VlUw9YXUFe/view?usp=drive_link" target="_blank">영상 보기</a>
         </div>
-        <div style="text-align: center; padding: 20px; background-color: var(--pill-bg); border-radius: 8px;">
-            <p style="margin: 0 0 10px 0; font-weight: 600;">배포 및 운영</p>
-            <a href="https://drive.google.com/file/d/1FE4p0ItxPPuKvGDC90gHxbmmGTHef8YB/view?usp=drive_link" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: var(--text); color: var(--surface); text-decoration: none; border-radius: 980px; font-weight: 500;">영상 보기</a>
+        <div class="demo">
+            <p>배포 및 운영</p>
+            <a class="demo-btn" href="https://drive.google.com/file/d/1FE4p0ItxPPuKvGDC90gHxbmmGTHef8YB/view?usp=drive_link" target="_blank">영상 보기</a>
         </div>
     </div>
 
@@ -256,7 +256,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">고객 상담 센터용 기존 TTS(ZipVoice 기반)의 응답 지연(TTFB 2.3초)이 심각해 실시간 상담에 부적합했음.</span><span class="sentence">신규 플랫폼 구축에 앞서 기존 서비스의 응답성부터 개선 필요.</span></p>
 
@@ -277,11 +277,11 @@ title: 프로젝트
     </ul>
 
     <h4 class="detail-head">데모 페이지</h4>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
-        <img src="/assets/images/zipvoice-demo-compare.png" alt="구버전 vs 신버전 TTFB 직접 비교 데모" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
-        <img src="/assets/images/zipvoice-demo-form.png" alt="TTS API 샘플 데모 폼" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
+    <div class="shot-grid">
+        <img class="shot" src="/assets/images/zipvoice-demo-compare.png" alt="구버전 vs 신버전 TTFB 직접 비교 데모">
+        <img class="shot" src="/assets/images/zipvoice-demo-form.png" alt="TTS API 샘플 데모 폼">
     </div>
-    <p style="font-size: 13px; color: var(--text-secondary);">고객 안내용으로 제공한 데모 페이지 — 동일 텍스트로 구버전(/sse)과 신버전(/sse-realtime)의 TTFB를 직접 비교 체험할 수 있게 구성 (스크린샷의 예시 런: 1943ms → 985ms, 내부 서버 주소는 가림 처리)</p>
+    <p class="caption">고객 안내용으로 제공한 데모 페이지 — 동일 텍스트로 구버전(/sse)과 신버전(/sse-realtime)의 TTFB를 직접 비교 체험할 수 있게 구성 (스크린샷의 예시 런: 1943ms → 985ms, 내부 서버 주소는 가림 처리)</p>
         </div>
     </details>
 </div>
@@ -310,7 +310,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">AIG 상담센터의 대량 상담 전화 실시간 처리 필요.</span><span class="sentence">기존 STT 시스템 병목으로 인한 채널 부족 및 추론 지연 불안정.</span></p>
 
@@ -350,7 +350,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">상담 품질 분석을 위해 발화자 식별 필요.</span><span class="sentence">기존 STT는 음성 인식만 제공하여 상담사/고객 구분 불가.</span></p>
 
@@ -393,7 +393,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">rag-agent에서 구축한 검색 평가 방법론(gold 라벨, 실패 원인 분해, 미채택 실험 기록)을 멀티모달로 확장.</span><span class="sentence">패션 상품 44,072개(공개 데이터셋)를 한국어 문장형 질의("체크무늬 네이비 남성 셔츠")로 검색하는 시스템을 CLIP 임베딩 인덱스부터 평가셋·대화형 데모까지 구축.</span></p>
 
@@ -413,7 +413,7 @@ title: 프로젝트
         <li>44K 규모라 정확 탐색(numpy 내적) 채택 — ANN 도입 시점을 규모 기준으로 명시</li>
     </ul>
 
-    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/visual-search" target="_blank" style="color: var(--text); font-weight: 600;">GitHub 저장소 (데모 GIF·평가 리포트·번역문 전수 기록)</a></p>
+    <p class="repo-link"><a href="https://github.com/ckc5800/visual-search" target="_blank">GitHub 저장소 (데모 GIF·평가 리포트·번역문 전수 기록)</a></p>
         </div>
     </details>
 </div>
@@ -443,7 +443,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">LLM Agent 시스템(RAG, tool orchestration, state 관리)의 E2E 구축 역량 확보 목적.</span><span class="sentence">포트폴리오 기술문서를 지식 베이스로 하는 Q&A Agent를 전부 로컬 환경(Ollama)에서 구현.</span></p>
 
@@ -478,7 +478,7 @@ title: 프로젝트
         <li>격리 단일 호출의 판단이 전체 파이프라인 반복 측정에서 뒤집힌 사례 확보 — n=1 실험의 함정을 실측으로 문서화</li>
     </ul>
 
-    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/rag-agent" target="_blank" style="color: var(--text); font-weight: 600;">GitHub 저장소 (코드 및 개선 히스토리)</a></p>
+    <p class="repo-link"><a href="https://github.com/ckc5800/rag-agent" target="_blank">GitHub 저장소 (코드 및 개선 히스토리)</a></p>
         </div>
     </details>
 </div>
@@ -506,7 +506,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">음성 AI에서 실시간 신호를 다뤄온 경험을 산업 설비 시계열로 확장.</span><span class="sentence">회전기계 센서(진동·온도·전류)에서 이상을 탐지하고 LLM이 정비 진단 리포트를 작성하는 예지보전 데모.</span></p>
 
@@ -529,7 +529,7 @@ title: 프로젝트
         <li><span class="sentence">센서 10개를 하나의 health index로 <strong>융합</strong> — 단일 결함 모드 셋은 대폭 개선(FD001 94→<strong>100/100</strong>, FD002 104→<strong>130/130</strong>), 결함 모드가 2개인 셋은 오히려 악화.</span><span class="sentence">평균 융합의 전제가 깨지는 지점까지 그대로 기록</span></li>
     </ul>
 
-    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/pdm-agent" target="_blank" style="color: var(--text); font-weight: 600;">GitHub 저장소</a></p>
+    <p class="repo-link"><a href="https://github.com/ckc5800/pdm-agent" target="_blank">GitHub 저장소</a></p>
         </div>
     </details>
 </div>
@@ -556,7 +556,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p>포트폴리오를 AI 도구 생태계에 연결 — Claude Desktop/Claude Code 등 MCP 클라이언트가 경력·프로젝트·논문 정보를 도구로 조회할 수 있도록 표준 프로토콜 서버 구현.</p>
 
@@ -578,7 +578,7 @@ title: 프로젝트
         <li>rag-agent의 에이전트가 이 서버를 MCP 클라이언트로 소비 — 서버(제공자)·클라이언트(소비자) 양쪽 구현</li>
     </ul>
 
-    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/portfolio-mcp" target="_blank" style="color: var(--text); font-weight: 600;">GitHub 저장소</a></p>
+    <p class="repo-link"><a href="https://github.com/ckc5800/portfolio-mcp" target="_blank">GitHub 저장소</a></p>
         </div>
     </details>
 </div>
@@ -606,7 +606,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">휴가나 부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 오랜 시간이 걸린다는 문제에서 출발.</span><span class="sentence">사내 메신저에 넣을 한국어 요약 모델 개발이 목표.</span></p>
 
@@ -653,7 +653,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">AI 서비스·API 20여 개를 수동 배포해 한 번에 수 시간이 소요.</span><span class="sentence">자동화·스케일링·자원 효율 개선이 필요했고, 클러스터로 옮긴 뒤에는 무엇이 어디서 터졌는지 볼 수단도 함께 있어야 했음.</span></p>
 
@@ -685,8 +685,8 @@ title: 프로젝트
     </ul>
 
     <h4 class="detail-head">시스템 아키텍처</h4>
-    <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin: 20px 0;">
-        <img src="/assets/images/kubernetes-architecture.png" alt="Kubernetes Infrastructure Architecture" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
+    <div class="shot-grid one">
+        <img class="shot" src="/assets/images/kubernetes-architecture.png" alt="Kubernetes Infrastructure Architecture">
     </div>
         </div>
     </details>
@@ -714,7 +714,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">TTS 게이트웨이 TTFB를 2292ms에서 334ms로 줄이며 손으로 하던 측정을 도구화.</span><span class="sentence">OpenAI 호환 엔드포인트(Ollama, vLLM 등)에 동시 부하를 걸어 TTFT·지연 percentile·처리량을 측정하는 CLI.</span></p>
 
@@ -729,7 +729,7 @@ title: 프로젝트
         <li><span class="sentence">후속 검증: NUM_PARALLEL=4로 서버 설정만 바꿔 같은 스윕을 재실행 — TTFT p50 12.4초 → 0.93초, 합산 처리량 8.1 → 22.9 tokens/s로 스케일.</span><span class="sentence">진단 → 설정 변경 → 재측정으로 루프를 닫음</span></li>
     </ul>
 
-    <p style="margin-top: 15px;"><a href="https://github.com/ckc5800/llm-bench" target="_blank" style="color: var(--text); font-weight: 600;">GitHub 저장소</a></p>
+    <p class="repo-link"><a href="https://github.com/ckc5800/llm-bench" target="_blank">GitHub 저장소</a></p>
         </div>
     </details>
 </div>
@@ -758,7 +758,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">자율주행 환경 인식에 3D 거리/높이 정보 필수.</span><span class="sentence">기존 2D 세그멘테이션의 한계로 인한 센서 퓨전 필요.</span></p>
 
@@ -797,7 +797,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">국방 도메인 AI 모델 개발의 학습 데이터 부족 (보안 제약으로 수집 어려움).</span><span class="sentence">GAN 모드 붕괴 문제 및 범용 생성 모델의 도메인 불일치.</span></p>
 
@@ -813,11 +813,11 @@ title: 프로젝트
     </ul>
 
     <h4 class="detail-head">생성 결과</h4>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
-        <img src="/assets/images/image 47.png" alt="Synthetic Data 1" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
-        <img src="/assets/images/image 48.png" alt="Synthetic Data 2" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
-        <img src="/assets/images/image 49.png" alt="Synthetic Data 3" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
-        <img src="/assets/images/image 50.png" alt="Synthetic Data 4" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
+    <div class="shot-grid">
+        <img class="shot" src="/assets/images/image 47.png" alt="Synthetic Data 1">
+        <img class="shot" src="/assets/images/image 48.png" alt="Synthetic Data 2">
+        <img class="shot" src="/assets/images/image 49.png" alt="Synthetic Data 3">
+        <img class="shot" src="/assets/images/image 50.png" alt="Synthetic Data 4">
     </div>
         </div>
     </details>
@@ -840,7 +840,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">정찰/드론 영상에서 전차 자동 탐지 필요.</span><span class="sentence">기존 수동 분석의 시간 및 비용 문제.</span></p>
 
@@ -875,7 +875,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">과기정통부·NIA 주최, 연세대·서울대병원 주관 의료 AI 데이터톤.</span><span class="sentence">심전도(ECG) 데이터셋으로 부정맥 여부를 진단하는 AI 모델 개발 트랙에 참가.</span></p>
 
@@ -883,8 +883,8 @@ title: 프로젝트
     <p><strong>신호 전처리:</strong> 기저선 변동(Baseline Wandering) 제거 — 침식·팽창 연산 및 spline 보간, 주파수 노이즈 제거, 근전도 노이즈는 moving average로 평활화.</p>
     <p><strong>모델:</strong> 8개 lead 중 심전도 관찰에 유리한 lead I의 5,000차원 신호를 입력으로, 1-D Convolution Layer(filter 32, kernel 5)를 계층적으로 연결한 1D-CNN으로 주기적 feature를 추출해 정상/부정맥 이진 분류.</p>
 
-    <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin: 20px 0; max-width: 480px;">
-        <img src="/assets/images/ecg-datathon-poster.png" alt="Heart Disease AI Datathon 2021" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
+    <div class="shot-grid one narrow">
+        <img class="shot" src="/assets/images/ecg-datathon-poster.png" alt="Heart Disease AI Datathon 2021">
     </div>
         </div>
     </details>
@@ -907,16 +907,16 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">공공 데이터 비식별화에 쓰이는 모자이크 처리는 원본 데이터의 정보 손실을 일으켜, Re-ID·행동 인식 등 얼굴 데이터가 필요한 후속 태스크에 활용하기 어려움.</span><span class="sentence">이를 해결하기 위해 <strong>AI로 생성한 가짜 얼굴로 원본 얼굴을 대체</strong>하는 비식별화 기법을 제안.</span></p>
 
     <h4 class="detail-head">구현</h4>
     <p>거리 영상에서 보행자 얼굴 영역 검출 및 랜드마크 검출 → 생성 모델 기반 가짜 얼굴 합성으로 정보 손실을 최소화하면서 개인정보를 보호하는 라벨링 파이프라인.</p>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
-        <img src="/assets/images/deid-overview.png" alt="Face De-ID 개요" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
-        <img src="/assets/images/deid-result.png" alt="Face Detection 결과" style="width: 100%; border-radius: 8px; border: 1px solid var(--separator);">
+    <div class="shot-grid">
+        <img class="shot" src="/assets/images/deid-overview.png" alt="Face De-ID 개요">
+        <img class="shot" src="/assets/images/deid-result.png" alt="Face Detection 결과">
     </div>
         </div>
     </details>
@@ -945,7 +945,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">PDF/이미지 문서에서 표 영역 추출을 위한 OCR 학습 데이터 필요.</span><span class="sentence">수동 주석 작업의 병목 해결 필요.</span></p>
 
@@ -981,7 +981,7 @@ title: 프로젝트
     </div>
     <details>
         <summary>상세 보기</summary>
-        <div style="margin-top: 16px;">
+        <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">금융 데이터 분석을 위한 고품질 데이터 필수.</span><span class="sentence">다중 소스 수집 데이터의 수동 정제 및 통합으로 인한 비효율.</span></p>
 
