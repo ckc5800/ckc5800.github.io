@@ -18,6 +18,13 @@
     --shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
     --shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.10);
 
+    /* 테마마다 달라지는 값 — 다크에서 이 변수들만 갈아끼우면 된다 */
+    --navbar-bg: rgba(255, 255, 255, 0.72);
+    --navbar-border: rgba(0, 0, 0, 0.07);
+    --code-bg: rgba(0, 0, 0, 0.05);
+    --hairline: rgba(0, 0, 0, 0.09);
+    --accent-soft: rgba(0, 113, 227, 0.08);
+
     /* 구버전 호환 변수 (인라인 스타일에서 참조) */
     --primary-black: #1d1d1f;
     --secondary-black: #2d2d2d;
@@ -56,10 +63,10 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(255, 255, 255, 0.72);
+    background: var(--navbar-bg);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    border-bottom: 1px solid var(--navbar-border);
     padding: 16px 0;
 }
 
@@ -164,7 +171,7 @@ main.container {
 }
 
 .cta-button.secondary:hover {
-    background-color: rgba(0, 113, 227, 0.08);
+    background-color: var(--accent-soft);
     box-shadow: inset 0 0 0 1px var(--accent);
 }
 
@@ -644,7 +651,7 @@ h2[id] {
 .project code {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.9em;
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: var(--code-bg);
     padding: 1px 5px;
     border-radius: 5px;
 }
@@ -652,7 +659,7 @@ h2[id] {
 /* 그룹 안에서 프로젝트끼리는 옅은 선으로만 구분 (묶음은 패널이 담당) */
 .rule-sub {
     border: none;
-    border-top: 1px solid rgba(0, 0, 0, 0.09);
+    border-top: 1px solid var(--hairline);
     margin: 32px 0;
 }
 
@@ -730,7 +737,7 @@ h2[id] {
     .side-nav-group + .side-nav-group {
         margin-top: 20px;
         padding-top: 18px;
-        border-top: 1px solid rgba(0, 0, 0, 0.09);
+        border-top: 1px solid var(--hairline);
     }
 
     /* 검색으로 앞 그룹이 접히면, 남은 첫 그룹은 구분선 없이 시작 */
@@ -1035,6 +1042,7 @@ mark.search-hit.is-current {
     .side-nav,
     .toc-projects,
     .project summary,
+    .theme-toggle,
     .cta-button {
         display: none !important;
     }
@@ -1229,44 +1237,111 @@ mark.search-hit.is-current {
     }
 }
 
-/* ===== 다크 모드 — OS 설정을 따른다 (prefers-color-scheme) =====
-   전 컴포넌트가 CSS 변수를 참조하므로 변수 팔레트 교체가 대부분이고,
-   rgba 하드코딩이던 유리 내비게이션·구분선·인라인 코드만 개별 조정한다.
-   아키텍처 다이어그램(SVG)의 흰 배경은 의도적으로 유지 — 도식이 흰
-   배경 기준으로 그려져 있어 반전하면 가독성이 깨진다. */
+/* ===== 다크 모드 =====
+   기본은 OS 설정(prefers-color-scheme)을 따르되, 상단 바 버튼으로 고른 값이
+   있으면 그쪽이 이긴다. 선택은 html[data-theme] 로 표시되고 localStorage 에 남는다.
+   테마 차이가 전부 변수에 모여 있어, 팔레트 블록만 갈아끼우면 된다.
+   아키텍처 다이어그램(SVG)의 흰 배경은 의도적으로 유지 — 도식이 흰 배경 기준으로
+   그려져 있어 반전하면 가독성이 깨진다. */
 @media (prefers-color-scheme: dark) {
-    :root {
-        --bg: #0e0e10;
-        --surface: #1c1c1e;
-        --text: #f5f5f7;
-        --text-secondary: #a1a1a6;
-        --accent: #2997ff;
-        --accent-hover: #52aeff;
-        --separator: #3a3a3c;
-        --pill-bg: #2c2c2e;
-        --shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
-        --shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.65);
+    :root:not([data-theme="light"]) {
+    --bg: #0e0e10;
+    --surface: #1c1c1e;
+    --text: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --accent: #2997ff;
+    --accent-hover: #52aeff;
+    --separator: #3a3a3c;
+    --pill-bg: #2c2c2e;
+    --shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+    --shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.65);
+    --navbar-bg: rgba(22, 22, 24, 0.72);
+    --navbar-border: rgba(255, 255, 255, 0.08);
+    --code-bg: rgba(255, 255, 255, 0.09);
+    --hairline: rgba(255, 255, 255, 0.10);
+    --accent-soft: rgba(41, 151, 255, 0.14);
+    color-scheme: dark;
+    }
+}
+
+:root[data-theme="dark"] {
+    --bg: #0e0e10;
+    --surface: #1c1c1e;
+    --text: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --accent: #2997ff;
+    --accent-hover: #52aeff;
+    --separator: #3a3a3c;
+    --pill-bg: #2c2c2e;
+    --shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+    --shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.65);
+    --navbar-bg: rgba(22, 22, 24, 0.72);
+    --navbar-border: rgba(255, 255, 255, 0.08);
+    --code-bg: rgba(255, 255, 255, 0.09);
+    --hairline: rgba(255, 255, 255, 0.10);
+    --accent-soft: rgba(41, 151, 255, 0.14);
+    color-scheme: dark;
+}
+
+/* ===== 테마 전환 버튼 ===== */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid var(--separator);
+    border-radius: 980px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background-color: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.theme-toggle svg {
+    width: 17px;
+    height: 17px;
+}
+
+/* 라이트에서는 '다크로 전환'(달), 다크에서는 '라이트로 전환'(해) */
+.theme-toggle .i-sun {
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle .i-sun {
+        display: block;
     }
 
-    .navbar {
-        background: rgba(22, 22, 24, 0.72);
-        border-bottom-color: rgba(255, 255, 255, 0.08);
+    :root:not([data-theme="light"]) .theme-toggle .i-moon {
+        display: none;
     }
+}
 
-    .project code {
-        background-color: rgba(255, 255, 255, 0.09);
-    }
+:root[data-theme="dark"] .theme-toggle .i-sun {
+    display: block;
+}
 
-    .rule-sub {
-        border-top-color: rgba(255, 255, 255, 0.10);
-    }
+:root[data-theme="dark"] .theme-toggle .i-moon {
+    display: none;
+}
 
-    .side-nav-group + .side-nav-group {
-        border-top-color: rgba(255, 255, 255, 0.10);
-    }
+:root[data-theme="light"] .theme-toggle .i-sun {
+    display: none;
+}
 
-    .cta-button.secondary:hover,
-    .dl[open] > summary {
-        background-color: rgba(41, 151, 255, 0.14);
-    }
+:root[data-theme="light"] .theme-toggle .i-moon {
+    display: block;
 }
