@@ -1798,3 +1798,22 @@ body.no-scroll {
         object-fit: contain;
     }
 }
+
+
+/* ===== 번호 붙은 소주제 (①②③) =====
+   번호를 왼쪽 여백으로 빼내 걸고, 본문과 딸린 목록을 같은 선에 맞춘다.
+   세 덩어리가 서로 떨어져 보이도록 위 여백도 한 단계 키운다. */
+.detail-body > .point {
+    margin-top: 28px;
+    padding-left: 28px;
+    text-indent: -28px;
+}
+
+.detail-body > .point:first-child {
+    margin-top: 0;
+}
+
+/* 소주제에 딸린 목록은 소주제 본문 선에서 다시 들여쓴다 */
+.detail-body > .point + .detail-list {
+    padding-left: 52px;
+}

@@ -123,14 +123,14 @@ title: 프로젝트
     <p><span class="sentence">상담 센터에서 쓰던 기존 TTS는 응답이 느리고 음성 선택지도 좁아 실시간 상담에 쓰기 어려웠음.</span><span class="sentence">모델 선정부터 서빙 아키텍처, 백엔드·프론트엔드, 배포·운영까지 전 구간을 단독으로 맡아 교체.</span></p>
 
     <h4 class="detail-head">차별점</h4>
-    <p><strong>① 스트리밍 품질 자동 감지 · 자가 치유</strong> — 서빙이 아니라 프로덕트 품질 문제를 직접 정의하고 메커니즘을 설계한 부분.</p>
+    <p class="point"><strong>① 스트리밍 품질 자동 감지 · 자가 치유</strong> — 서빙이 아니라 프로덕트 품질 문제를 직접 정의하고 메커니즘을 설계한 부분.</p>
     <ul class="detail-list">
         <li><span class="sentence">합성 오디오의 <strong>예상 길이 대비 실제 길이 비율</strong>로 잘림·반복을 판정 (0.35배 미만 = 잘림 의심, 3배 초과 = 반복 의심).</span><span class="sentence">텍스트에서 음절 버킷으로 기대 길이를 추정</span></li>
         <li>이상 클립은 캐시에 넣지 않고 배제 — 같은 문장의 다음 요청이 정상 합성을 받아 <strong>자가 치유</strong>. 스트리밍은 이미 나간 청크를 되돌릴 수 없으므로 후속 요청부터 회복되는 구조</li>
         <li><span class="sentence">감지(로깅)는 전 요청·전 언어 상시 동작.</span><span class="sentence"><strong>캐시 배제는 오탐이 정상 클립을 버리는 쪽이 더 위험</strong>하다고 판단해, 길이 추정이 신뢰되는 언어(CJK)로 게이팅하고 플래그로 단계 도입 — 현재 운영 관측 단계</span></li>
     </ul>
 
-    <p><strong>② 처리량 천장 진단 → 돌파</strong> — "배포했다"가 아니라 천장이 어디서 걸리는지 규명하고 뚫은 부분.</p>
+    <p class="point"><strong>② 처리량 천장 진단 → 돌파</strong> — "배포했다"가 아니라 천장이 어디서 걸리는지 규명하고 뚫은 부분.</p>
     <ul class="detail-list">
         <li>기존 사내 결론은 <strong>"약 1.7 rps는 버전 무관한 구조적 천장"</strong>. 버전(0.22/0.24) × executor(mp/uni) <strong>2×2 전수 벤치</strong>로 이를 반증</li>
         <li><span class="sentence">원인 규명 — 처리량의 몸통은 보코더(Code2Wav)가 launch-bound eager bs≈1로 돌던 것이 <strong>CUDA-graph replay + 요청 간 배치 디코드</strong>로 바뀐 것.</span><span class="sentence">배칭 기계장치는 구버전 이미지에도 있었으나 자체 운영 config(eager 강제·EOS 튜닝·토큰예산)가 봉인하고 있었고, 네이티브 EOS·abort 레이스 수정이 그 봉인을 풀어줌</span></li>
@@ -138,7 +138,7 @@ title: 프로젝트
         <li>안정성은 질적 전환 — <strong>conc16 진입 시 엔진 사망(3회 재현) → conc48 무오류(1,500+ 요청)</strong></li>
     </ul>
 
-    <p><strong>③ 용량 한계 실측 (capacity engineering)</strong> — 감이 아니라 물리적 한계를 재서 SLA를 세운 부분.</p>
+    <p class="point"><strong>③ 용량 한계 실측 (capacity engineering)</strong> — 감이 아니라 물리적 한계를 재서 SLA를 세운 부분.</p>
     <ul class="detail-list">
         <li>burst 스윕으로 SLA 확립 — TTFB <strong>≤500ms 동시 15 · ≤1000ms 동시 30</strong>, 수용 한계 36 (실링 약 40)</li>
         <li>판정 기준을 지연이 아니라 <strong>RTF 여유</strong>로 잡음 — 코덱 좌측 컨텍스트 조정으로 N30 RTF 0.91 → 0.71 확보, N40은 0.96~1.04로 마진이 사라지는 것을 확인하고 운영값을 실링 -1 티어(36)로 결정</li>
