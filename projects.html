@@ -100,7 +100,7 @@ title: 프로젝트
     <p class="project-meta">2026.03 ~ 현재 · PM · 풀스택 단독 개발 (백엔드 · 프론트 · 인프라)</p>
     <dl class="ps">
         <dt>문제</dt><dd>상담 센터 TTS가 응답이 느리고 음성 선택지도 좁아 실시간 상담에 쓰기 어려웠음</dd>
-        <dt>해결</dt><dd>Qwen3-TTS 기반으로 교체. 지연은 구간 계측으로 분해해 병목(엔진 디코드 루프)만 정조준</dd>
+        <dt>해결</dt><dd><span class="sentence">Qwen3-TTS 기반으로 교체.</span><span class="sentence">지연은 구간 계측으로 분해해 병목(엔진 디코드 루프)만 정조준</span></dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">1,008 → 652ms</span><span class="metric-label">burst p95 TTFB</span></div>
@@ -126,23 +126,23 @@ title: 프로젝트
     <p class="point"><strong>① 스트리밍 품질 자동 감지 · 자가 치유</strong> — 서빙이 아니라 프로덕트 품질 문제를 직접 정의하고 메커니즘을 설계한 부분.</p>
     <ul class="detail-list">
         <li><span class="sentence">합성 오디오의 <strong>예상 길이 대비 실제 길이 비율</strong>로 잘림·반복을 판정 (0.35배 미만 = 잘림 의심, 3배 초과 = 반복 의심).</span><span class="sentence">텍스트에서 음절 버킷으로 기대 길이를 추정</span></li>
-        <li>이상 클립은 캐시에 넣지 않고 배제한다. 같은 문장의 다음 요청이 정상 합성을 받아 <strong>자가 치유</strong>된다. 스트리밍은 이미 나간 청크를 되돌릴 수 없으므로 후속 요청부터 회복되는 구조</li>
+        <li><span class="sentence">이상 클립은 캐시에 넣지 않고 배제한다.</span><span class="sentence">같은 문장의 다음 요청이 정상 합성을 받아 <strong>자가 치유</strong>된다.</span><span class="sentence">스트리밍은 이미 나간 청크를 되돌릴 수 없으므로 후속 요청부터 회복되는 구조</span></li>
         <li><span class="sentence">감지(로깅)는 전 요청·전 언어 상시 동작.</span><span class="sentence"><strong>캐시 배제는 오탐이 정상 클립을 버리는 쪽이 더 위험</strong>하다고 판단해, 길이 추정이 신뢰되는 언어(CJK)로 게이팅하고 플래그로 단계 도입 — 현재 운영 관측 단계</span></li>
     </ul>
 
     <p class="point"><strong>② 처리량 천장 진단 → 돌파</strong> — "배포했다"가 아니라 천장이 어디서 걸리는지 규명하고 뚫은 부분.</p>
     <ul class="detail-list">
-        <li>기존 사내 결론은 <strong>"약 1.7 rps는 버전 무관한 구조적 천장"</strong>. 버전(0.22/0.24) × executor(mp/uni) <strong>2×2 전수 벤치</strong>로 이를 반증</li>
+        <li><span class="sentence">기존 사내 결론은 <strong>"약 1.7 rps는 버전 무관한 구조적 천장"</strong>.</span><span class="sentence">버전(0.22/0.24) × executor(mp/uni) <strong>2×2 전수 벤치</strong>로 이를 반증</span></li>
         <li><span class="sentence">처리량의 몸통은 보코더(Code2Wav)가 launch-bound eager bs≈1로 돌던 것이 <strong>CUDA-graph replay + 요청 간 배치 디코드</strong>로 바뀐 것.</span><span class="sentence">배칭 기계장치는 구버전 이미지에도 있었으나 자체 운영 config(eager 강제·EOS 튜닝·토큰예산)가 봉인하고 있었고, 네이티브 EOS·abort 레이스 수정이 그 봉인을 풀어줌</span></li>
-        <li>동일 부하(conc8)에서 <strong>0.73 → 1.61 rps</strong>, 각자 최대 안정치 <strong>0.73 → 3.09 rps(4.2배)</strong>. 자체 패치 3종·EOS 튜닝·문장분할 의존도 함께 제거</li>
-        <li>안정성도 질적으로 달라졌다. <strong>conc16 진입 시 엔진 사망(3회 재현)하던 것이 conc48 무오류(1,500+ 요청)로</strong></li>
+        <li><span class="sentence">동일 부하(conc8)에서 <strong>0.73 → 1.61 rps</strong>, 각자 최대 안정치 <strong>0.73 → 3.09 rps(4.2배)</strong>.</span><span class="sentence">자체 패치 3종·EOS 튜닝·문장분할 의존도 함께 제거</span></li>
+        <li><span class="sentence">안정성도 질적으로 달라졌다.</span><span class="sentence"><strong>conc16 진입 시 엔진 사망(3회 재현)하던 것이 conc48 무오류(1,500+ 요청)로</strong></span></li>
     </ul>
 
     <p class="point"><strong>③ 용량 한계 실측 (capacity engineering)</strong> — 감이 아니라 물리적 한계를 재서 SLA를 세운 부분.</p>
     <ul class="detail-list">
-        <li>burst 스윕으로 SLA를 세웠다. TTFB <strong>≤500ms 동시 15 · ≤1000ms 동시 30</strong>, 수용 한계 36 (실링 약 40)</li>
-        <li>판정 기준을 지연이 아니라 <strong>RTF 여유</strong>로 잡았다. 코덱 좌측 컨텍스트를 조정해 N30 RTF 0.91 → 0.71 확보, N40은 0.96~1.04로 마진이 사라지는 것을 확인하고 운영값을 실링 -1 티어(36)로 결정</li>
-        <li>자원 축도 함께 쟀다. per-stage VRAM(stage0 18.9G + stage1 7.2G) · 컨테이너별 CPU/메모리 피크 · GPU 온도와 SM 클럭까지 기록해 열 스로틀링 드리프트를 측정 오염과 구분</li>
+        <li><span class="sentence">burst 스윕으로 SLA를 세웠다.</span><span class="sentence">TTFB <strong>≤500ms 동시 15 · ≤1000ms 동시 30</strong>, 수용 한계 36 (실링 약 40)</span></li>
+        <li><span class="sentence">판정 기준을 지연이 아니라 <strong>RTF 여유</strong>로 잡았다.</span><span class="sentence">코덱 좌측 컨텍스트를 조정해 N30 RTF 0.91 → 0.71 확보, N40은 0.96~1.04로 마진이 사라지는 것을 확인하고 운영값을 실링 -1 티어(36)로 결정</span></li>
+        <li><span class="sentence">자원 축도 함께 쟀다.</span><span class="sentence">per-stage VRAM(stage0 18.9G + stage1 7.2G) · 컨테이너별 CPU/메모리 피크 · GPU 온도와 SM 클럭까지 기록해 열 스로틀링 드리프트를 측정 오염과 구분</span></li>
     </ul>
 
     <h4 class="detail-head">시스템 구조</h4>
@@ -188,12 +188,12 @@ title: 프로젝트
     <ul class="detail-list">
         <li>무중단 롤링 재배포 체계 + 온보딩 가이드·운영 런북·장애복구 절차·성능 명세 문서화로 운영 이관 가능한 수준까지 정비</li>
         <li>배포 직후 활성 음성별 prefill 워밍과 정형 인사말 프리캐시를 자동 실행 — 첫 사용자가 콜드 경로를 밟지 않게</li>
-        <li>스트리밍 품질을 자동 감지해 자가 치유 (위 차별점 ① 참조). 품질 사고가 캐시에 굳는 것을 막는다</li>
+        <li><span class="sentence">스트리밍 품질을 자동 감지해 자가 치유 (위 차별점 ① 참조).</span><span class="sentence">품질 사고가 캐시에 굳는 것을 막는다</span></li>
     </ul>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li>자체 튜닝(FP8·executor)으로 <strong>0.68 → 1.41 rps</strong>, 엔진을 옮긴 뒤 최대 안정치 <strong>3.09 rps</strong>. 측정 조건별 비교는 차별점 ②에 정리</li>
+        <li><span class="sentence">자체 튜닝(FP8·executor)으로 <strong>0.68 → 1.41 rps</strong>, 엔진을 옮긴 뒤 최대 안정치 <strong>3.09 rps</strong>.</span><span class="sentence">측정 조건별 비교는 차별점 ②에 정리</span></li>
         <li>정상 부하에서 <strong>TTFB p50 70ms</strong>, GPU 처리량 8.6 rps. 콜센터 수백 명이 동시에 쓰는 규모다 (2026.07 실측)</li>
         <li>32개 언어 지원 단일 플랫폼 (vLLM 10개 + Supertonic 22개)</li>
         <li>ITN 정규화 정확도 50.1% → 70.9% (검증셋 기준)</li>
@@ -272,7 +272,7 @@ title: 프로젝트
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li><strong>TTFB 2,292ms → 334ms</strong>로 85.4% 단축, 6.85배 개선. 측정 로그를 남겼다</li>
+        <li><span class="sentence"><strong>TTFB 2,292ms → 334ms</strong>로 85.4% 단축, 6.85배 개선.</span><span class="sentence">측정 로그를 남겼다</span></li>
         <li>원인 분석부터 조치·검증·고객 보고까지 단독 수행</li>
         <li>이 경험이 이후 Qwen3-TTS 플랫폼을 저지연 스트리밍 중심으로 설계하는 출발점이 됨</li>
     </ul>
@@ -407,7 +407,7 @@ title: 프로젝트
 
     <p class="repo-link"><a href="https://github.com/ckc5800/visual-search" target="_blank">GitHub 저장소 (데모 GIF·평가 리포트·번역문 전수 기록)</a></p><h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li>한국어 50문항 × 44K 기준 <strong>hit@10 90% → 98%</strong>. 임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 precision@10 0.10)한 뒤, 질의에서 색·성별·용도를 뽑아 메타 필터로 결합해 해소(0.53)</li>
+        <li><span class="sentence">한국어 50문항 × 44K 기준 <strong>hit@10 90% → 98%</strong>.</span><span class="sentence">임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 precision@10 0.10)한 뒤, 질의에서 색·성별·용도를 뽑아 메타 필터로 결합해 해소(0.53)</span></li>
         <li><span class="sentence">같은 이미지 인덱스에서 텍스트 경로만 바꿔 <strong>다국어 전략 6종을 실측 비교</strong>했다.</span><span class="sentence">m-clip 48% &lt; 소형 MT 86% &lt; <strong>LLM(3B)+커머스 용어집 92%</strong>. 번역기는 크기순이 아니었다(NLLB 600M 76% &lt; 8배 작은 opus 86%)</span></li>
         <li><span class="sentence"><strong>대형 멀티링구얼(jina-v2 865M)과는 상보 관계</strong>였다. 지표는 jina-v2가 앞서지만 임베딩 비용이 ko-clip의 약 130배.</span><span class="sentence">실패 문항이 정확히 갈렸다. 외래어는 멀티링구얼이, 콩글리시는 한국어 특화가 강했다</span></li>
         <li><span class="sentence">gold가 넓은 질의는 hit이 자동으로 나온다. 이 <strong>인플레이션</strong>을 구간별 분해·precision@10 병기로 해소.</span><span class="sentence">결과마다 재현 메타(모델 id·시각·top-10 id) 기록</span></li>
@@ -425,7 +425,7 @@ title: 프로젝트
     <p class="project-meta">2026.07 · LLM Agent 시스템 설계 · 구현</p>
     <dl class="ps">
         <dt>문제</dt><dd>RAG 정답률이 낮을 때 검색·청킹·생성 중 어디가 원인인지 분리되지 않음</dd>
-        <dt>해결</dt><dd>층별 단독 평가 체계를 만들어 병목을 정량 규명. 지표를 쓰기 전에 채점기부터 검증</dd>
+        <dt>해결</dt><dd><span class="sentence">층별 단독 평가 체계를 만들어 병목을 정량 규명.</span><span class="sentence">지표를 쓰기 전에 채점기부터 검증</span></dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">68 → 75%</span><span class="metric-label">정답률 (51문항)</span></div>
@@ -457,10 +457,10 @@ title: 프로젝트
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li>51문항 기준 <strong>정답률 68% → 75%</strong>. 실패를 검색·청킹·생성 층으로 나눠 병목이 생성 단계임을 수치로 확인하고 컨텍스트 수를 튜닝했다</li>
-        <li><strong>검색 recall@1 90%, MRR 0.95</strong> (무작위 기준선 3% 병기). 이 과정에서 하이브리드 검색 결함 7건을 찾아 고쳤다</li>
-        <li>채점기가 동의 표기를 오답으로 세고 있었다. <strong>6%p를 정정</strong> — 지표를 쓰기 전에 지표부터 검증한 경우다</li>
-        <li>코퍼스에 답이 없는 거부 문항 10개를 넣어 <strong>환각 측정 지표를 만들었다</strong>. 컨텍스트를 넓힐수록 환각이 느는 트레이드오프를 실측</li>
+        <li><span class="sentence">51문항 기준 <strong>정답률 68% → 75%</strong>.</span><span class="sentence">실패를 검색·청킹·생성 층으로 나눠 병목이 생성 단계임을 수치로 확인하고 컨텍스트 수를 튜닝했다</span></li>
+        <li><span class="sentence"><strong>검색 recall@1 90%, MRR 0.95</strong> (무작위 기준선 3% 병기).</span><span class="sentence">이 과정에서 하이브리드 검색 결함 7건을 찾아 고쳤다</span></li>
+        <li><span class="sentence">채점기가 동의 표기를 오답으로 세고 있었다.</span><span class="sentence"><strong>6%p를 정정</strong> — 지표를 쓰기 전에 지표부터 검증한 경우다</span></li>
+        <li><span class="sentence">코퍼스에 답이 없는 거부 문항 10개를 넣어 <strong>환각 측정 지표를 만들었다</strong>.</span><span class="sentence">컨텍스트를 넓힐수록 환각이 느는 트레이드오프를 실측</span></li>
     </ul>
 
     <h4 class="detail-head">평가 방법론</h4>
@@ -516,7 +516,7 @@ title: 프로젝트
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li>5개 시나리오에 주입한 결함 15건을 전부 탐지했다. 재현율 100%에 오탐 0건이지만, 통제 실험 기준임을 함께 밝힌다</li>
+        <li><span class="sentence">5개 시나리오에 주입한 결함 15건을 전부 탐지했다.</span><span class="sentence">재현율 100%에 오탐 0건이지만, 통제 실험 기준임을 함께 밝힌다</span></li>
         <li>추세 탐지기가 "한계치 도달까지 약 29시간" RUL 추정 산출</li>
         <li>LLM 진단이 탐지 근거만으로 베어링 마모/윤활 불량 원인 후보 도출</li>
     </ul>
@@ -575,7 +575,7 @@ title: 프로젝트
     <ul class="detail-list">
         <li>노션 export의 퍼센트 인코딩 경로가 무의미 토큰으로 쪼개져 길이 정규화 페널티를 유발하던 문제를 원문 정제로 해결 (토큰 7,653 → 6,310개, 18% 감소)</li>
         <li>응답이 오는지만 보던 스모크 테스트를 내용 단언(프로젝트 수·특허 건수)으로 전환, 과정에서 구 사명 미인식 버그 발견·별칭 매칭 추가</li>
-        <li>rag-agent의 에이전트가 이 서버를 클라이언트로 쓴다. 제공자와 소비자 양쪽을 모두 구현했다</li>
+        <li><span class="sentence">rag-agent의 에이전트가 이 서버를 클라이언트로 쓴다.</span><span class="sentence">제공자와 소비자 양쪽을 모두 구현했다</span></li>
     </ul>
 
     <p class="repo-link"><a href="https://github.com/ckc5800/portfolio-mcp" target="_blank">GitHub 저장소</a></p>
@@ -633,7 +633,7 @@ title: 프로젝트
     <p class="project-meta">2024.03 ~ 2025.04 · 3인 인프라 팀 — 관측성 · 스토리지 담당</p>
     <dl class="ps">
         <dt>문제</dt><dd>AI 서비스 20여 개를 수동 배포해 한 번에 수 시간이 걸리고, 장애가 나도 클러스터 어디서 무엇이 터졌는지 볼 수단이 없었음</dd>
-        <dt>해결</dt><dd>3인 인프라 팀으로 사내 첫 K8s 플랫폼 구축. 그중 <strong>관측성 전 계층(지표·경보·로그)과 스토리지(NFS PV/PVC)</strong>를 맡아, 20여 개 모델이 도는 클러스터를 들여다보고 모델·데이터 볼륨을 관리</dd>
+        <dt>해결</dt><dd><span class="sentence">3인 인프라 팀으로 사내 첫 K8s 플랫폼 구축.</span><span class="sentence">그중 <strong>관측성 전 계층(지표·경보·로그)과 스토리지(NFS PV/PVC)</strong>를 맡아, 20여 개 모델이 도는 클러스터를 들여다보고 모델·데이터 볼륨을 관리</span></dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">5종</span><span class="metric-label">직접 구축한 관측 스택</span></div>
@@ -658,7 +658,7 @@ title: 프로젝트
     <p><span class="sentence">AI 서비스·API 20여 개를 수동 배포해 한 번에 수 시간이 소요.</span><span class="sentence">자동화·스케일링·자원 효율 개선이 필요했고, 클러스터로 옮긴 뒤에는 무엇이 어디서 터졌는지 볼 수단도 함께 있어야 했음.</span></p>
 
     <h4 class="detail-head">팀 구성과 담당</h4>
-    <p>인프라 엔지니어 3인이 온프레미스에 사내 첫 Kubernetes 플랫폼을 구축. 아래가 팀이 만든 전체 구성이고, 그중 <strong>관측성 계층이 본인 담당</strong>.</p>
+    <p><span class="sentence">인프라 엔지니어 3인이 온프레미스에 사내 첫 Kubernetes 플랫폼을 구축.</span><span class="sentence">아래가 팀이 만든 전체 구성이고, 그중 <strong>관측성 계층이 본인 담당</strong>.</span></p>
     <ul class="detail-list">
         <li>클러스터·네트워크 — MetalLB LoadBalancer, Ingress-nginx 라우팅 <span class="who">팀</span></li>
         <li><strong>스토리지 — NFS 기반 PV/PVC로 모델·데이터 영속 볼륨 관리</strong> <span class="who mine">본인</span></li>
@@ -724,8 +724,8 @@ title: 프로젝트
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
         <li>로컬 Ollama(CPU) 기준선: 동시성 1에서 TTFT 0.62초, 7.6 tokens/s</li>
-        <li>동시성을 2·4로 올리자 TTFT는 7.9초·12.4초로 악화되는데 처리량은 8.1 tokens/s에 고정. 스케일이 아니라 큐잉이 일어나고 있다는 신호였다</li>
-        <li>원인은 Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화였다. 벤치마크 도구가 병목의 위치를 짚어냈다</li>
+        <li><span class="sentence">동시성을 2·4로 올리자 TTFT는 7.9초·12.4초로 악화되는데 처리량은 8.1 tokens/s에 고정.</span><span class="sentence">스케일이 아니라 큐잉이 일어나고 있다는 신호였다</span></li>
+        <li><span class="sentence">원인은 Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화였다.</span><span class="sentence">벤치마크 도구가 병목의 위치를 짚어냈다</span></li>
         <li><span class="sentence">NUM_PARALLEL=4로 서버 설정만 바꿔 같은 스윕을 재실행하니 TTFT p50이 12.4초에서 0.93초로, 합산 처리량이 8.1에서 22.9 tokens/s로 스케일했다.</span><span class="sentence">진단 → 설정 변경 → 재측정으로 루프를 닫음</span></li>
     </ul>
 
@@ -742,7 +742,7 @@ title: 프로젝트
     <p class="project-meta">2022.08 ~ 2022.12 · 센서 퓨전 기반 자율주행 연구 · 모델 개발</p>
     <dl class="ps">
         <dt>문제</dt><dd>2D 세그멘테이션만으로는 자율주행에 필요한 거리·높이 정보를 얻을 수 없음</dd>
-        <dt>해결</dt><dd>LiDAR와 카메라를 융합하는 Trans-Unet 설계. Transformer의 장거리 의존성에 U-Net의 다중 스케일을 결합</dd>
+        <dt>해결</dt><dd><span class="sentence">LiDAR와 카메라를 융합하는 Trans-Unet 설계.</span><span class="sentence">Transformer의 장거리 의존성에 U-Net의 다중 스케일을 결합</span></dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2편</span><span class="metric-label">논문 (제1저자)</span></div>
@@ -897,7 +897,7 @@ title: 프로젝트
     <p class="project-meta">2021 · 4인 팀 프로젝트 (데이터 어드벤처 팀)</p>
     <dl class="ps">
         <dt>문제</dt><dd>모자이크 비식별화는 정보를 지워버려 Re-ID·행동 인식 같은 후속 태스크에 쓸 수 없음</dd>
-        <dt>해결</dt><dd>얼굴과 랜드마크를 검출한 뒤 생성 모델로 가짜 얼굴을 합성해 대체. 형태는 남기고 신원만 지운다</dd>
+        <dt>해결</dt><dd><span class="sentence">얼굴과 랜드마크를 검출한 뒤 생성 모델로 가짜 얼굴을 합성해 대체.</span><span class="sentence">형태는 남기고 신원만 지운다</span></dd>
     </dl>
     <div class="tech-tags">
         <span class="tech-tag">Computer Vision</span>
