@@ -141,7 +141,7 @@ title: 프로젝트
     <p class="point"><strong>③ 용량 한계 실측</strong> — 동시 몇 명까지 받을 수 있는지를 숫자로 확정.</p>
     <ul class="detail-list">
         <li><span class="sentence">burst 스윕으로 SLA 확립.</span><span class="sentence">TTFB <strong>≤500ms 동시 15 · ≤1000ms 동시 30</strong>, 수용 한계 36 (실링 약 40)</span></li>
-        <li><span class="sentence">판정 기준을 지연이 아니라 <strong>RTF 여유</strong>로 설정.</span><span class="sentence">코덱 좌측 컨텍스트를 조정해 N30 RTF 0.91 → 0.71 확보, N40은 0.96~1.04로 마진이 사라지는 것을 확인하고 운영값을 실링 -1 티어(36)로 결정</span></li>
+        <li><span class="sentence">판정 기준은 지연이 아닌 <strong>RTF 여유</strong>.</span><span class="sentence">코덱 좌측 컨텍스트를 조정해 N30 RTF 0.91 → 0.71 확보, N40은 0.96~1.04로 마진이 사라지는 것을 확인하고 운영값을 실링 -1 티어(36)로 결정</span></li>
         <li><span class="sentence">자원 축도 함께 실측.</span><span class="sentence">per-stage VRAM(stage0 18.9G + stage1 7.2G) · 컨테이너별 CPU/메모리 피크 · GPU 온도와 SM 클럭까지 기록해 열 스로틀링 드리프트를 측정 오염과 구분</span></li>
     </ul>
 
@@ -168,7 +168,7 @@ title: 프로젝트
     <p><span class="sentence"><strong>지연 구조 분해:</strong> 튜닝에 앞서 TTFB가 어느 구간에서 나오는지부터 계측.</span><span class="sentence">엔진 패치에 전처리(prep)와 엔진 첫 청크(큐+prefill+보코더) 지표를 심어 분해.</span></p>
     <ul class="detail-list">
         <li>전처리 3~6ms·API 약 100ms는 고정이고, <strong>동시 요청 수에 선형 비례하는 구간은 엔진 디코드 루프</strong>(동시 +1당 약 +20ms)임을 확인</li>
-        <li>스트림 세마포어를 32→40으로 여는 통상적 처방은 대조 실험 결과 대기 위치만 엔진 안으로 옮길 뿐 SLA는 오히려 악화 — 세마포어를 병목이 아니라 보호막으로 재정의</li>
+        <li>스트림 세마포어를 32→40으로 여는 통상적 처방은 대조 실험 결과 대기 위치만 엔진 안으로 옮길 뿐 SLA는 오히려 악화.</span><span class="sentence">세마포어의 역할을 병목 제거 장치에서 과부하 보호막으로 다시 규정</li>
         <li>실효 레버를 코덱 좌측 컨텍스트(72→25, CUDA graph capture 목록 정합 수정 동반)와 첫 청크 프레임 수(4→2) 둘로 좁혀 확정</li>
         <li>청크 경계 불연속을 z-검정으로 자동 판정하는 품질 게이트를 통과시킨 뒤 채택</li>
     </ul>
@@ -525,7 +525,7 @@ title: 프로젝트
     <ul class="detail-list">
         <li>같은 탐지기를 터보팬 엔진 100대의 run-to-failure 벤치마크에 적용 — 합성에서 튜닝한 4σ 한계는 63/100으로 보수적, 3σ 완화 시 <strong>고장 전 경보 94/100, 조기 경보 0건</strong> (관리한계 트레이드오프를 표로 공개)</li>
         <li>RUL은 보정(엔진 1~50)과 평가(51~100)를 분리해 라벨 누수 차단 — 선형 외삽 MAE 28.5사이클을 지수 열화 모델로 <strong>12.9사이클</strong>까지 절반 이하로 개선 (추정 보류 트레이드오프까지 기록)</li>
-        <li><span class="sentence"><strong>4개 셋 전부로 확장</strong>(통합 CLI) — 운전 조건이 6개인 FD002는 정규화 없이 경보 0/130이었고, 조건별 z-정규화로 104/130 회복.</span><span class="sentence">난이도를 지배한 건 결함 모드 수가 아니라 <strong>운전 조건 수</strong></span></li>
+        <li><span class="sentence"><strong>4개 셋 전부로 확장</strong>(통합 CLI) — 운전 조건이 6개인 FD002는 정규화 없이 경보 0/130이었고, 조건별 z-정규화로 104/130 회복.</span><span class="sentence">난이도는 결함 모드 수보다 <strong>운전 조건 수</strong></span></li>
         <li><span class="sentence">센서 10개를 하나의 health index로 <strong>융합</strong> — 단일 결함 모드 셋은 대폭 개선(FD001 94→<strong>100/100</strong>, FD002 104→<strong>130/130</strong>), 결함 모드가 2개인 셋은 오히려 악화.</span><span class="sentence">평균 융합의 전제가 깨지는 지점까지 그대로 기록</span></li>
     </ul>
 
@@ -724,7 +724,7 @@ title: 프로젝트
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
         <li>로컬 Ollama(CPU) 기준선: 동시성 1에서 TTFT 0.62초, 7.6 tokens/s</li>
-        <li><span class="sentence">동시성을 2·4로 올리자 TTFT는 7.9초·12.4초로 악화되는데 처리량은 8.1 tokens/s에 고정.</span><span class="sentence">스케일이 아니라 큐잉이 일어나고 있다는 신호</span></li>
+        <li><span class="sentence">동시성을 2·4로 올리자 TTFT는 7.9초·12.4초로 악화되는데 처리량은 8.1 tokens/s에 고정.</span><span class="sentence">요청이 병렬로 처리되지 않고 줄을 서고 있다는 신호</span></li>
         <li><span class="sentence">원인은 Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화.</span><span class="sentence">벤치마크 도구가 병목의 위치를 짚어냄</span></li>
         <li><span class="sentence">NUM_PARALLEL=4로 서버 설정만 바꿔 같은 스윕을 재실행하니 TTFT p50이 12.4초에서 0.93초로, 합산 처리량이 8.1에서 22.9 tokens/s로 스케일.</span><span class="sentence">진단 → 설정 변경 → 재측정으로 루프를 닫음</span></li>
     </ul>
