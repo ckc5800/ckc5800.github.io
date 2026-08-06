@@ -1817,3 +1817,15 @@ body.no-scroll {
 .detail-body > .point + .detail-list {
     padding-left: 52px;
 }
+
+
+/* ===== 소제목과 내용의 층위 =====
+   내용을 한 단 들여쓰고 소제목만 왼쪽 끝에 걸어, 절 경계가 선으로 보이게 한다.
+   왼쪽 선: 0 소제목 · 16 본문 · 40 목록 · 44 소주제 본문 · 68 소주제 목록 */
+.detail-body {
+    padding-left: 16px;
+}
+
+.detail-body > .detail-head {
+    margin-left: -16px;
+}
