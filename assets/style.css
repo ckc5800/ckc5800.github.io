@@ -247,7 +247,7 @@ main.container {
 }
 
 .intro .sentence + .sentence {
-    margin-top: 4px;
+    margin-top: 2px;
 }
 
 /* 가장 긴 문장이 816px 라, 본문이 그보다 좁아지면 강제 줄바꿈을 풀고 자연스럽게 흐르게 둔다 */
@@ -619,13 +619,13 @@ h2[id] {
 }
 
 .detail-list li + li {
-    margin-top: 16px;
+    margin-top: 12px;
 }
 
 /* 리드 문장 + 그에 딸린 목록은 한 덩어리다.
    문단 사이(20px)와 같은 간격을 두면 목록이 위 문장에서 떨어져 보인다. */
 .project p + .detail-list {
-    margin-top: -12px;   /* 문단 아래 24px 중 12px 만 남겨 리드에 붙인다 */
+    margin-top: -16px;   /* 문단 아래 24px 중 8px 만 남겨 리드에 바짝 붙인다 */
 }
 
 /* 팀 프로젝트에서 담당 구분 — 무엇이 내 몫인지 흐려지지 않게 */
@@ -653,7 +653,7 @@ h2[id] {
 }
 
 .sentence + .sentence {
-    margin-top: 8px;
+    margin-top: 4px;
 }
 
 /* 문장 스팬이 inline으로 흐르는 컨텍스트(모바일 intro·인쇄)에서 문장 사이 공백 보장
