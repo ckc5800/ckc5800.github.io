@@ -1348,3 +1348,126 @@ mark.search-hit.is-current {
 :root[data-theme="light"] .theme-toggle .i-moon {
     display: block;
 }
+
+/* ===== 지표 미니 막대 =====
+   "2,292 → 334ms" 처럼 전후 값이 있는 지표에만 붙는다. 두 값의 비율을 그대로
+   길이로 옮기므로, 줄어든 것은 짧아지고 늘어난 것은 길어진다. */
+.spark {
+    display: block;
+    margin-top: 7px;
+    width: 100%;
+    min-width: 92px;
+}
+
+.spark i {
+    display: block;
+    height: 3px;
+    border-radius: 2px;
+    background-color: var(--separator);
+}
+
+.spark i + i {
+    margin-top: 3px;
+    background-color: var(--accent);
+}
+
+/* ===== 경력 타임라인 ===== */
+.timeline {
+    list-style: none;
+    position: relative;
+    margin: 0;
+    padding: 4px 0 0 26px;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 12px;
+    bottom: 12px;
+    width: 2px;
+    background: linear-gradient(var(--separator), transparent);
+}
+
+.timeline li {
+    position: relative;
+    padding: 0 0 22px;
+    line-height: 1.6;
+}
+
+.timeline li:last-child {
+    padding-bottom: 0;
+}
+
+.timeline li::before {
+    content: "";
+    position: absolute;
+    left: -25px;
+    top: 8px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--separator);
+}
+
+.timeline li:first-child::before {
+    border-color: var(--accent);
+    background: var(--accent);
+}
+
+.timeline .org {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.timeline .when {
+    display: block;
+    margin-top: 2px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.timeline .what {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* ===== 읽기 진행 바 ===== */
+.progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background: var(--accent);
+    z-index: 200;
+    transition: width 0.08s linear;
+}
+
+/* ===== 스크롤 진입 =====
+   JS 가 붙었을 때만 숨긴다 — 스크립트가 막혀도 내용은 그대로 보인다. */
+@media (prefers-reduced-motion: no-preference) {
+    .js .reveal {
+        opacity: 0;
+        transform: translateY(14px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .js .reveal.in {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media print {
+    .progress {
+        display: none !important;
+    }
+
+    .js .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}

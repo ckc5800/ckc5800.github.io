@@ -1,103 +1,93 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 780" role="img" aria-label="Qwen3-TTS 물리 구조도">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 880" role="img" aria-label="Qwen3-TTS 물리 구조도">
   <title>Qwen3-TTS 물리 구조</title>
   <style>
-    .d { font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif; }
-    .t  { font-size: 21px; font-weight: 700; }
-    .s  { font-size: 15px; fill: #4b5563; }
-    .lg { font-size: 15px; fill: #4b5563; }
-    .on   { fill: #f8e6e6; stroke: #8b2635; stroke-width: 2.5; }
-    .off  { fill: #e9ecf2; stroke: none; }
-    .t-on  { fill: #8b2635; }
-    .t-off { fill: #3f5468; }
-    .flow  { fill: none; stroke: #64748b; stroke-width: 2.5; }
-    .idle  { fill: none; stroke: #e0a061; stroke-width: 2.5; stroke-dasharray: 11 8; }
-    .zone  { fill: none; stroke: #7b9ac4; stroke-width: 2; stroke-dasharray: 9 7; }
+    .d  { font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif; }
+    .t  { font-size: 20px; font-weight: 700; }
+    .s  { font-size: 15px; fill: #4a5260; }
+    .lg { font-size: 15px; fill: #4a5260; }
+    .on    { fill: #f6e2e2; stroke: #8b3a42; stroke-width: 2.5; }
+    .off   { fill: #e7ebf1; stroke: none; }
+    .t-on  { fill: #8b3a42; }
+    .t-off { fill: #2f4a63; }
+    .flow  { fill: none; stroke: #6b7c93; stroke-width: 3; }
+    .idle  { fill: none; stroke: #e8a05c; stroke-width: 3; stroke-dasharray: 12 9; }
+    .zone  { fill: none; stroke: #6b8cba; stroke-width: 2; stroke-dasharray: 10 8; }
   </style>
   <defs>
-    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6b7c93"/>
     </marker>
-    <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#e0a061"/>
+    <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#e8a05c"/>
     </marker>
   </defs>
 
   <g class="d">
-    <rect x="425" y="228" width="1115" height="428" rx="8" class="zone"/>
+    <rect x="330" y="250" width="955" height="545" rx="8" class="zone"/>
 
-    <!-- tts-nginx (idle) -->
-    <rect x="500" y="90" width="280" height="100" rx="5" class="off"/>
-    <text x="518" y="122" class="t t-off">tts-nginx</text>
-    <text x="518" y="146" class="s">:80 / :443</text>
-    <text x="518" y="176" class="s">Ed4 전용</text>
+    <!-- nginx (미기동) -->
+    <rect x="460" y="112" width="235" height="88" rx="4" class="off"/>
+    <text x="478" y="146" class="t t-off">tts-nginx</text>
+    <text x="478" y="174" class="s">:80 / :443</text>
 
-    <!-- client -->
-    <rect x="45" y="250" width="300" height="100" rx="5" class="on"/>
-    <text x="63" y="283" class="t t-on">클라이언트 / SDK</text>
-    <text x="63" y="307" class="s">REST · WS</text>
-    <text x="63" y="329" class="s">OpenAI 호환</text>
+    <!-- 클라이언트 -->
+    <rect x="20" y="268" width="240" height="130" rx="4" class="on"/>
+    <text x="38" y="304" class="t t-on">클라이언트 / SDK</text>
+    <text x="38" y="334" class="s">REST · WS</text>
+    <text x="38" y="360" class="s">OpenAI 호환</text>
 
     <!-- tts-api -->
-    <rect x="497" y="253" width="285" height="100" rx="5" class="on"/>
-    <text x="515" y="284" class="t t-on">tts-api  :11100</text>
-    <text x="515" y="306" class="s">host 8210 → 11100</text>
-    <text x="515" y="326" class="s">uvicorn ×4(Ed2)/×8(Ed4)</text>
-    <text x="515" y="346" class="s">프론트 내장 서빙</text>
+    <rect x="413" y="268" width="235" height="130" rx="4" class="on"/>
+    <text x="431" y="304" class="t t-on">tts-api  :11100</text>
+    <text x="431" y="332" class="s">host 8210 → 11100</text>
+    <text x="431" y="356" class="s">uvicorn ×4</text>
+    <text x="431" y="380" class="s">프론트 내장</text>
 
-    <!-- tts-vllm-a -->
-    <rect x="858" y="253" width="285" height="100" rx="5" class="on"/>
-    <text x="876" y="284" class="t t-on">tts-vllm-a :8400</text>
-    <text x="876" y="307" class="s">vllm-omni v0.24.0</text>
-    <text x="876" y="327" class="s">Qwen3-TTS-12Hz-0.6B</text>
-    <text x="876" y="347" class="s">fp8 Talker · native</text>
+    <!-- vllm-a -->
+    <rect x="713" y="268" width="235" height="130" rx="4" class="on"/>
+    <text x="731" y="304" class="t t-on">tts-vllm-a :8400</text>
 
     <!-- GPU -->
-    <rect x="1222" y="253" width="285" height="100" rx="5" class="on"/>
-    <text x="1240" y="284" class="t t-on">NVIDIA L40S 46GB · GPU0</text>
-    <text x="1240" y="309" class="s">stage0 18.9G + stage1 7.2G (관측)</text>
-    <text x="1240" y="331" class="s">gpu_mem_util 예약 0.40 + 0.52</text>
+    <rect x="1023" y="268" width="235" height="130" rx="4" class="on"/>
+    <text x="1041" y="304" class="t t-on">L40S 48GB</text>
 
-    <!-- tts-redis -->
-    <rect x="497" y="393" width="285" height="100" rx="5" class="on"/>
-    <text x="515" y="424" class="t t-on">tts-redis  :6379</text>
-    <text x="515" y="448" class="s">캐시 · 동시성 카운터</text>
+    <!-- redis -->
+    <rect x="413" y="443" width="235" height="130" rx="4" class="on"/>
+    <text x="431" y="479" class="t t-on">tts-redis  :6379</text>
+    <text x="431" y="509" class="s">캐시 · 동시성 카운터</text>
 
-    <!-- tts-vllm-b (idle) -->
-    <rect x="858" y="393" width="285" height="100" rx="5" class="off"/>
-    <text x="876" y="424" class="t t-off" style="font-size:18px">tts-vllm-b · profile vllm-b</text>
-    <text x="876" y="448" class="s">GPU1 · 부하분산 · 미기동</text>
+    <!-- vllm-b (미기동) -->
+    <rect x="713" y="443" width="235" height="130" rx="4" class="off"/>
+    <text x="731" y="479" class="t t-off">tts-vllm-b</text>
 
-    <!-- tts-postgres (idle) -->
-    <rect x="497" y="533" width="285" height="100" rx="5" class="off"/>
-    <text x="515" y="564" class="t t-off">tts-postgres :5432</text>
-    <text x="515" y="588" class="s">audit / voice DB</text>
-    <text x="515" y="618" class="s">Ed4 전용</text>
+    <!-- postgres (미기동) -->
+    <rect x="413" y="618" width="235" height="130" rx="4" class="off"/>
+    <text x="431" y="654" class="t t-off">tts-postgres :5432</text>
+    <text x="431" y="684" class="s">audit / voice DB</text>
 
-    <!-- tts-fast-a -->
-    <rect x="858" y="533" width="285" height="100" rx="5" class="on"/>
-    <text x="876" y="564" class="t t-on">tts-fast-a :11200</text>
-    <text x="876" y="588" class="s">Supertonic CPU worker</text>
-    <text x="876" y="608" class="s">MAX_CONC 4 · INTRA 2 (8코어)</text>
+    <!-- fast-a -->
+    <rect x="713" y="618" width="235" height="130" rx="4" class="on"/>
+    <text x="731" y="654" class="t t-on">tts-fast-a :11200</text>
 
-    <!-- flows -->
-    <path d="M345,300 H489" class="flow" marker-end="url(#ah)"/>
-    <path d="M195,250 V140 H492" class="idle" marker-end="url(#ao)"/>
-    <path d="M640,198 V245" class="idle" marker-start="url(#ao)" marker-end="url(#ao)"/>
-    <path d="M790,300 H850" class="flow" marker-start="url(#ah)" marker-end="url(#ah)"/>
-    <path d="M1151,300 H1214" class="flow" marker-end="url(#ah)"/>
-    <path d="M640,361 V385" class="flow" marker-start="url(#ah)" marker-end="url(#ah)"/>
-    <path d="M790,323 L851,415" class="idle" marker-end="url(#ao)"/>
-    <path d="M789,345 L852,556" class="flow" marker-start="url(#ah)" marker-end="url(#ah)"/>
-    <path d="M489,332 H462 V583 H489" class="idle" marker-end="url(#ao)"/>
+    <!-- 연결 -->
+    <path d="M260,333 H405" class="flow" marker-end="url(#ah)"/>
+    <path d="M140,268 V152 H452" class="idle" marker-end="url(#ao)"/>
+    <path d="M578,208 V260" class="idle" marker-start="url(#ao)" marker-end="url(#ao)"/>
+    <path d="M656,333 H705" class="flow" marker-start="url(#ah)" marker-end="url(#ah)"/>
+    <path d="M956,333 H1015" class="flow" marker-end="url(#ah)"/>
+    <path d="M530,406 V435" class="flow" marker-start="url(#ah)" marker-end="url(#ah)"/>
+    <path d="M656,352 L706,500" class="idle" marker-end="url(#ao)"/>
+    <path d="M656,360 L722,612" class="flow" marker-end="url(#ah)"/>
+    <path d="M405,352 H378 V683 H405" class="idle" marker-end="url(#ao)"/>
 
-    <!-- legend -->
-    <rect x="1288" y="666" width="28" height="19" rx="3" fill="#e9ecf2"/>
-    <text x="1326" y="681" class="lg">현재 미기동</text>
-    <rect x="1288" y="700" width="28" height="19" rx="3" fill="#f8e6e6" stroke="#8b2635" stroke-width="2" stroke-dasharray="5 4"/>
-    <text x="1326" y="715" class="lg">현재 기동중</text>
-    <path d="M1420,676 H1452" class="idle" marker-end="url(#ao)"/>
-    <text x="1462" y="681" class="lg">현재 미기동</text>
-    <path d="M1420,710 H1452" class="flow" marker-end="url(#ah)"/>
-    <text x="1462" y="715" class="lg">현재 기동중</text>
+    <!-- 범례 -->
+    <rect x="955" y="815" width="30" height="21" rx="3" fill="#e7ebf1"/>
+    <text x="997" y="832" class="lg">현재 미기동</text>
+    <rect x="955" y="850" width="30" height="21" rx="3" fill="#f6e2e2" stroke="#8b3a42" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="997" y="867" class="lg">현재 기동중</text>
+    <path d="M1140,826 H1178" class="idle" marker-end="url(#ao)"/>
+    <text x="1190" y="832" class="lg">현재 미기동</text>
+    <path d="M1140,861 H1178" class="flow" marker-end="url(#ah)"/>
+    <text x="1190" y="867" class="lg">현재 기동중</text>
   </g>
 </svg>

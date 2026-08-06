@@ -18,6 +18,8 @@
     </script>
 </head>
 <body>
+    <div class="progress" id="progress" aria-hidden="true"></div>
+
     <nav class="navbar">
         <div class="container">
             <div class="logo">
@@ -53,6 +55,68 @@
         </div>
         {{ content }}
     </main>
+
+    <script>
+    // 지표 미니 막대 — "2,292 → 334ms" 같은 전후 값을 길이로 옮긴다
+    (function () {
+        var num = function (t) { return parseFloat(t.replace(/,/g, '')); };
+        document.querySelectorAll('.metric-value').forEach(function (el) {
+            var m = el.textContent.match(/([\d.,]+)\s*→\s*([\d.,]+)/);
+            if (!m) return;
+            var a = num(m[1]), b = num(m[2]);
+            if (!isFinite(a) || !isFinite(b) || a <= 0 || b <= 0) return;
+            var max = Math.max(a, b);
+            var bars = document.createElement('span');
+            bars.className = 'spark';
+            bars.setAttribute('aria-hidden', 'true');
+            bars.innerHTML = '<i style="width:' + (a / max * 100).toFixed(1) + '%"></i>'
+                           + '<i style="width:' + (b / max * 100).toFixed(1) + '%"></i>';
+            el.parentNode.appendChild(bars);
+        });
+    })();
+    </script>
+
+    <script>
+    // 읽기 진행 바 — 문서가 한 화면을 넘을 때만 의미가 있다
+    (function () {
+        var bar = document.getElementById('progress');
+        if (!bar) return;
+        var ticking = false;
+        function draw() {
+            ticking = false;
+            var max = document.documentElement.scrollHeight - window.innerHeight;
+            if (max < 400) { bar.style.width = '0'; return; }
+            bar.style.width = Math.min(100, window.scrollY / max * 100) + '%';
+        }
+        addEventListener('scroll', function () {
+            if (!ticking) { ticking = true; requestAnimationFrame(draw); }
+        }, { passive: true });
+        addEventListener('resize', draw);
+        draw();
+    })();
+    </script>
+
+    <script>
+    // 스크롤 진입 — 화면에 들어올 때 한 번만 올라오며 나타난다
+    (function () {
+        var targets = document.querySelectorAll('.project, .project-card, .publication-item');
+        if (!targets.length || !('IntersectionObserver' in window)) return;
+        document.documentElement.classList.add('js');
+        targets.forEach(function (el) { el.classList.add('reveal'); });
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (!e.isIntersecting) return;
+                e.target.classList.add('in');
+                io.unobserve(e.target);
+            });
+        }, { rootMargin: '0px 0px -8% 0px' });
+        targets.forEach(function (el) { io.observe(el); });
+        // 인쇄 시에는 전부 보이도록
+        addEventListener('beforeprint', function () {
+            targets.forEach(function (el) { el.classList.add('in'); });
+        });
+    })();
+    </script>
 
     <script>
     // 테마 전환 — 지금 보이는 색의 반대로 바꾸고 선택을 기억한다
