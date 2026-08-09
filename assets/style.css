@@ -794,6 +794,28 @@ h2[id] {
     border-radius: 4px;
 }
 
+/* 검색 중엔 카테고리 그룹 대신 BM25 관련도순 리스트를 보여준다 */
+.side-nav-ranked {
+    display: none;
+    counter-reset: rank;
+}
+
+.side-nav.is-searching .side-nav-ranked {
+    display: block;
+}
+
+.side-nav.is-searching .side-nav-group {
+    display: none;
+}
+
+.side-nav-ranked a::before {
+    counter-increment: rank;
+    content: counter(rank) "  ";
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    opacity: 0.7;
+}
+
 /* --- 좁은 화면 (<1500px): 우하단 플로팅 버튼 + 오버레이 패널 --- */
 @media (max-width: 1499.98px) {
     .side-nav-toggle {
