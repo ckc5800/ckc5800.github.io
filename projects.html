@@ -1136,6 +1136,71 @@ title: 프로젝트
 
     function hide(el, on) { el.classList.toggle('is-filtered-out', on); }
 
+    // ── BM25 랭킹 — rag-agent의 하이브리드 검색 중 BM25 레이어를 브라우저로 이식 ──
+    // 한국어는 조사·어미 때문에 공백 토큰만으로는 매칭이 어긋나서(예: "스트리밍을"),
+    // 한글 구간은 문자 바이그램으로 쪼개고 영숫자는 단어 단위로 남긴다.
+    function tokenize(text) {
+        var tokens = [], re = /[a-z0-9]+|[가-힣]+/g, m;
+        while ((m = re.exec(text))) {
+            var t = m[0];
+            if (t.charCodeAt(0) < 128 || t.length === 1) { tokens.push(t); continue; }
+            for (var i = 0; i < t.length - 1; i++) tokens.push(t.slice(i, i + 2));
+        }
+        return tokens;
+    }
+
+    var K1 = 1.2, B = 0.75;
+    var docs = entries.map(function (e) {
+        var tf = {}, toks = tokenize(e.text);
+        toks.forEach(function (t) { tf[t] = (tf[t] || 0) + 1; });
+        return { tf: tf, len: toks.length };
+    });
+    var avgLen = docs.reduce(function (s, d) { return s + d.len; }, 0) / (docs.length || 1);
+    var df = {};
+    docs.forEach(function (d) {
+        Object.keys(d.tf).forEach(function (t) { df[t] = (df[t] || 0) + 1; });
+    });
+    function bm25(i, qTokens) {
+        var d = docs[i], s = 0;
+        qTokens.forEach(function (t) {
+            var f = d.tf[t];
+            if (!f) return;
+            var n = df[t] || 0;
+            var idf = Math.log(1 + (docs.length - n + 0.5) / (n + 0.5));
+            s += idf * f * (K1 + 1) / (f + K1 * (1 - B + B * d.len / avgLen));
+        });
+        return s;
+    }
+
+    // 검색 중엔 카테고리 그룹 대신 관련도순 리스트를 보여준다
+    var nav = document.querySelector('.side-nav');
+    var ranked = document.createElement('div');
+    ranked.className = 'side-nav-ranked';
+    var rankedLabel = document.createElement('div');
+    rankedLabel.className = 'side-nav-label';
+    rankedLabel.textContent = '관련도순';
+    document.querySelector('.side-nav-search').insertAdjacentElement('afterend', ranked);
+
+    ranked.addEventListener('click', function (e) {
+        var a = e.target.closest('a');
+        if (!a) return;
+        var el = document.getElementById(a.hash.slice(1));
+        var card = el && el.closest('.project');
+        var hit = card && card.querySelector('mark.search-hit');
+        if (hit) setTimeout(function () { hit.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 0);
+    });
+
+    function renderRanked(scored) {
+        ranked.innerHTML = '';
+        ranked.appendChild(rankedLabel);
+        scored.forEach(function (r) {
+            var a = document.createElement('a');
+            a.href = '#' + r.entry.link.hash.slice(1);
+            a.textContent = r.entry.link.textContent;
+            ranked.appendChild(a);
+        });
+    }
+
     // 검색으로 펼친 상세만 기억했다가, 검색을 지우면 원래대로 되돌린다
     var openedByFilter = [];
 
@@ -1184,22 +1249,26 @@ title: 프로젝트
 
     function apply() {
         var q = input.value.trim().toLowerCase();
-        var shown = 0, hits = 0;
+        var words = q ? q.split(/\s+/) : [];
+        var qTokens = tokenize(q);
+        var shown = 0, hits = 0, scored = [];
 
         // 이전 검색의 강조·펼침 상태를 먼저 되돌린다
         openedByFilter.forEach(function (d) { d.open = false; });
         openedByFilter = [];
 
-        entries.forEach(function (e) {
+        entries.forEach(function (e, idx) {
             clearMarks(e.card);
-            var hit = !q || e.text.indexOf(q) !== -1;
+            // 여러 단어는 AND — 모든 단어가 카드 어딘가에 있어야 남는다
+            var hit = !q || words.every(function (w) { return e.text.indexOf(w) !== -1; });
             hide(e.card, !hit);
             hide(e.link, !hit);
             if (!hit) return;
             shown++;
             if (!q) return;
 
-            hits += markMatches(e.card, q);
+            words.forEach(function (w) { hits += markMatches(e.card, w); });
+            scored.push({ entry: e, score: bm25(idx, qTokens) });
             // 접힌 상세 안에 일치가 있으면 펼쳐서 보이게
             var details = e.card.querySelector('details');
             if (details && !details.open && details.querySelector('mark.search-hit')) {
@@ -1207,6 +1276,12 @@ title: 프로젝트
                 openedByFilter.push(details);
             }
         });
+
+        // 관련도순 정렬 — 검색 중일 때만 그룹 목차를 랭킹 리스트로 교체
+        scored.sort(function (a, b) { return b.score - a.score; });
+        nav.classList.toggle('is-searching', !!q && scored.length > 0);
+        if (q && scored.length) renderRanked(scored);
+        else ranked.innerHTML = '';
 
         // 그룹 패널: 남은 카드가 없으면 통째로 접고, 카드 사이 구분선을 다시 계산
         [].forEach.call(document.querySelectorAll('section.group'), function (group) {
@@ -1237,14 +1312,15 @@ title: 프로젝트
         var misc = document.querySelector('.misc');
         if (misc) {
             clearMarks(misc);
-            var miscHit = !q || (misc.textContent || '').toLowerCase().indexOf(q) !== -1;
+            var miscText = (misc.textContent || '').toLowerCase();
+            var miscHit = !q || words.every(function (w) { return miscText.indexOf(w) !== -1; });
             hide(misc, !miscHit);
             var miscRule = misc.previousElementSibling;
             // 위에 남은 카드가 없으면 구분선이 맨 앞에 오므로 같이 숨긴다
             if (miscRule && miscRule.classList.contains('rule-sub')) hide(miscRule, !miscHit || shown === 0);
             if (miscHit) {
                 shown++;
-                if (q) hits += markMatches(misc, q);
+                if (q) words.forEach(function (w) { hits += markMatches(misc, w); });
             }
         }
 
