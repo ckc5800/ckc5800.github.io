@@ -1257,10 +1257,21 @@ title: 프로젝트
         openedByFilter.forEach(function (d) { d.open = false; });
         openedByFilter = [];
 
+        // 문자열 일치가 없어도 바이그램이 60% 이상 겹치면 매칭 — 조사·어미가 달라도 찾는다
+        function fuzzyHit(idx, w) {
+            var toks = tokenize(w);
+            if (!toks.length) return false;
+            var found = 0;
+            toks.forEach(function (t) { if (docs[idx].tf[t]) found++; });
+            return found / toks.length >= 0.6;
+        }
+
         entries.forEach(function (e, idx) {
             clearMarks(e.card);
             // 여러 단어는 AND — 모든 단어가 카드 어딘가에 있어야 남는다
-            var hit = !q || words.every(function (w) { return e.text.indexOf(w) !== -1; });
+            var hit = !q || words.every(function (w) {
+                return e.text.indexOf(w) !== -1 || fuzzyHit(idx, w);
+            });
             hide(e.card, !hit);
             hide(e.link, !hit);
             if (!hit) return;
