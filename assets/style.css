@@ -802,7 +802,7 @@ h2[id] {
         gap: 7px;
         position: fixed;
         right: 20px;
-        bottom: 20px;
+        top: 72px;   /* 네비게이션 바로 아래 */
         z-index: 120;
         padding: 10px 17px;
         font-family: inherit;
@@ -828,9 +828,9 @@ h2[id] {
         display: block;
         position: fixed;
         right: 20px;
-        bottom: 72px;
+        top: 122px;   /* 토글 버튼 아래로 펼침 */
         width: 248px;
-        max-height: min(480px, calc(100vh - 100px));
+        max-height: min(480px, calc(100vh - 142px));
         overflow-y: auto;
         overscroll-behavior: contain;
         z-index: 120;
@@ -845,11 +845,11 @@ h2[id] {
 @media (prefers-reduced-motion: no-preference) {
     .side-nav.is-open {
         animation: side-nav-pop 0.18s ease;
-        transform-origin: bottom right;
+        transform-origin: top right;
     }
 
     @keyframes side-nav-pop {
-        from { opacity: 0; transform: translateY(6px) scale(0.98); }
+        from { opacity: 0; transform: translateY(-6px) scale(0.98); }
         to { opacity: 1; transform: none; }
     }
 }
