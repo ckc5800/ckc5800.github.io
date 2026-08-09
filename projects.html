@@ -5,7 +5,9 @@ title: 프로젝트
 
 <h2>프로젝트</h2>
 
-<nav class="side-nav" aria-label="프로젝트 목차">
+<button class="side-nav-toggle" type="button" aria-expanded="false" aria-controls="project-nav">☰ 목차 · 검색</button>
+
+<nav class="side-nav" id="project-nav" aria-label="프로젝트 목차">
     <div class="side-nav-search">
         <input type="search" id="project-filter" placeholder="프로젝트 검색"
                aria-label="프로젝트 검색" autocomplete="off"
@@ -1282,5 +1284,45 @@ title: 프로젝트
     });
 
     apply();
+})();
+
+// 좁은 화면(<1500px): 플로팅 버튼으로 목차·검색 패널 열고 닫기
+(function () {
+    var btn = document.querySelector('.side-nav-toggle');
+    var nav = document.querySelector('.side-nav');
+    if (!btn || !nav) return;
+
+    function setOpen(on) {
+        nav.classList.toggle('is-open', on);
+        btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+        if (on) {
+            var input = document.getElementById('project-filter');
+            if (input) input.focus({ preventScroll: true });
+        }
+    }
+
+    btn.addEventListener('click', function () {
+        setOpen(!nav.classList.contains('is-open'));
+    });
+
+    // 링크를 고르면 닫기 (레일 모드에선 is-open이 없어 영향 없음)
+    nav.addEventListener('click', function (e) {
+        if (e.target.closest('a')) setOpen(false);
+    });
+
+    // Esc: 검색어가 있으면 검색 초기화(기존 핸들러)에 양보하고, 비어 있을 때만 패널을 닫는다
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape' || !nav.classList.contains('is-open')) return;
+        var input = document.getElementById('project-filter');
+        if (input && e.target === input && input.value.trim()) return;
+        setOpen(false);
+    }, true);
+
+    // 패널 바깥을 누르면 닫기
+    document.addEventListener('click', function (e) {
+        if (!nav.classList.contains('is-open')) return;
+        if (nav.contains(e.target) || btn.contains(e.target)) return;
+        setOpen(false);
+    });
 })();
 </script>
