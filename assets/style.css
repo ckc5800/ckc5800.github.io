@@ -545,30 +545,62 @@ h2[id] {
     margin-top: 32px;
 }
 
+/* 상세 펼치기 — 카드 하단 전폭 바. 흰 시트 위에서 누르는 물건으로 보이도록
+   배경을 한 단 낮추고 테두리를 준다. 안에 든 소제목을 미리 보여줘 열 이유를 만든다. */
 .project summary {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 7px;
-    padding: 6px 14px;
-    border-radius: 980px;
-    background-color: var(--surface);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-    color: var(--accent);
-    font-size: 13px;
-    font-weight: 500;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px 18px;
+    border-radius: 12px;
+    background-color: var(--bg);
+    border: 1px solid var(--hairline);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
     user-select: none;
     list-style: none;
-    transition: background-color 0.18s ease, color 0.18s ease;
+    transition: background-color 0.18s ease, border-color 0.18s ease;
 }
 
 .project summary::-webkit-details-marker {
     display: none;
 }
 
+.sum-hint {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 열려 있으면 라벨은 '접기'로 바뀌고, 소제목 예고는 본문에 다 보이므로 감춘다 */
+.sum-close {
+    display: none;
+}
+
+.project details[open] .sum-text,
+.project details[open] .sum-hint {
+    display: none;
+}
+
+.project details[open] .sum-close {
+    display: block;
+    flex: 1;
+}
+
 .project summary::after {
     content: "▾";
     font-size: 11px;
+    color: var(--text-secondary);
+    margin-left: auto;
     transition: transform 0.18s ease;
 }
 
@@ -577,8 +609,15 @@ h2[id] {
 }
 
 .project summary:hover {
-    background-color: var(--accent);
-    color: #ffffff;
+    background-color: var(--pill-bg);
+    border-color: var(--separator);
+}
+
+/* 좀은 화면에서는 소제목 예고를 접어 라벨만 남긴다 */
+@media (max-width: 700px) {
+    .sum-hint {
+        display: none;
+    }
 }
 
 .project summary:focus-visible {
