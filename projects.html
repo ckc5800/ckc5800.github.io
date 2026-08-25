@@ -315,7 +315,6 @@ title: 프로젝트
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Whisper-large-v3</span>
-        <span class="tech-tag">WhisperX</span>
         <span class="tech-tag">Faster Whisper</span>
         <span class="tech-tag">Triton (Python Backend)</span>
         <span class="tech-tag">Streaming ASR</span>
@@ -331,7 +330,6 @@ title: 프로젝트
     <h4 class="detail-head">구현</h4>
     <p><span class="sentence"><strong>AIG STT 구조 개선:</strong> Triton Inference Server 기반 음성인식 파이프라인을 전처리·후처리·서비스 계층으로 모듈화해 파일/스트리밍 공통 로직을 통합.</span><span class="sentence">YAML 기반 로그 로테이션·아카이빙 체계와 Docker 구성을 정비하고, 컨테이너 자동 재시작 정책으로 안정성을 보강.</span></p>
     <p><span class="sentence"><strong>엔진 구성:</strong> Triton Python 백엔드로 파일 기반(화자 분리 결합)과 실시간 스트리밍 두 추론 모델을 구성, HTTP와 gRPC 인터페이스를 모두 제공.</span><span class="sentence">화자 분리 결과를 STT에 결합해 화자별 전사를 생성 — 화자 구간을 추론 파라미터(clip timestamps)로 전달해 화자마다 정확한 전사를 얻는 구조를 구현.</span></p>
-    <p><span class="sentence"><strong>사내 회의록 STT:</strong> 회의록 기능에 STT를 탑재 — Whisper 계열 모델별 성능을 조사·정리해 WhisperX 최적 파라미터를 찾고, 파일 기반과 스트리밍 기반 처리를 모두 구현.</span><span class="sentence">엔진-브로커(API-HTTP) 통신 오류 수정과 QA까지 수행.</span></p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
@@ -340,7 +338,6 @@ title: 프로젝트
         <li>Docker 컨테이너화로 배포 자동화 및 안정성 강화</li>
         <li>배치 처리와 스트리밍 처리 모두 지원</li>
         <li>전처리·후처리·서비스 계층 분리로 코드 재사용성 확보</li>
-        <li>사내 회의록 기능에 STT 탑재 (파일/스트리밍 처리, STT-화자분리 연동)</li>
     </ul>
         </div>
     </details>
