@@ -485,7 +485,7 @@ title: 프로젝트
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">68 → 75%</span><span class="metric-label">정답률 (51문항)</span></div>
-        <div class="metric"><span class="metric-value">90% · 0.95</span><span class="metric-label">검색 recall@1 · MRR</span></div>
+        <div class="metric"><span class="metric-value">59% · 83%</span><span class="metric-label">검색 recall@1 · @3 (51문항)</span></div>
         <div class="metric"><span class="metric-value">6%p</span><span class="metric-label">채점기 자체 결함 정정</span></div>
     </div>
     <div class="tech-tags">
@@ -514,7 +514,7 @@ title: 프로젝트
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
         <li><span class="sentence">51문항 기준 <strong>정답률 68% → 75%</strong>.</span><span class="sentence">실패를 검색·청킹·생성 층으로 나눠 병목이 생성 단계임을 수치로 확인하고 컨텍스트 수를 튜닝</span></li>
-        <li><span class="sentence"><strong>검색 recall@1 90%, MRR 0.95</strong> (무작위 기준선 3% 병기).</span><span class="sentence">이 과정에서 하이브리드 검색 결함 7건을 찾아 수정</span></li>
+        <li><span class="sentence"><strong>검색 recall@1 59% · @3 83%</strong> (51문항 기준, 무작위 기준선 병기).</span><span class="sentence">10문항 앵커에서는 90%·MRR 0.95였으나 표본이 작아 생긴 착시임을 확장 평가로 확인 — 결론을 앵커 수치가 아니라 확장본으로 갱신.</span><span class="sentence">이 과정에서 하이브리드 검색 결함 7건을 찾아 수정</span></li>
         <li><span class="sentence">채점기가 동의 표기를 오답으로 세고 있던 것을 발견.</span><span class="sentence"><strong>6%p를 정정</strong> — 지표를 쓰기 전에 지표부터 검증한 경우다</span></li>
         <li><span class="sentence">코퍼스에 답이 없는 거부 문항 10개를 넣어 <strong>환각 측정 지표 신설</strong>.</span><span class="sentence">컨텍스트를 넓힐수록 환각이 느는 트레이드오프를 실측</span></li>
     </ul>
