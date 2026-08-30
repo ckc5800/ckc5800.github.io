@@ -347,7 +347,7 @@ title: 프로젝트
 
 <div class="project">
     <h3 id="diarization">Speaker Diarization with Pyannote <span class="badge">MiCo AI</span></h3>
-    <p class="project-meta">2025.04 ~ 2025.07 · 화자 분할 모델 파인튜닝 · STT 통합</p>
+    <p class="project-meta">2025.04 ~ 2025.07 · 화자 분리 모델 파인튜닝 · STT 통합</p>
     <dl class="ps">
         <dt>문제</dt><dd>STT가 텍스트만 돌려줘 상담사와 고객 발화를 구분할 수 없었고, 그래서 품질 분석이 불가</dd>
         <dt>해결</dt><dd>Pyannote를 파인튜닝(DER 검증)하고 화자 구간을 STT에 넘겨 화자별 전사를 생성</dd>
@@ -366,13 +366,13 @@ title: 프로젝트
     <p><span class="sentence">상담 품질 분석을 위해 발화자 식별 필요.</span><span class="sentence">기존 STT는 음성 인식만 제공하여 상담사/고객 구분 불가.</span></p>
 
     <h4 class="detail-head">구현</h4>
-    <p><strong>모델 파인튜닝:</strong> Pyannote 사전 학습 모델을 공개 화자분할 데이터로 파인튜닝 — 파라미터 튜닝과 학습을 수행하고 DER로 검증.</p>
-    <p><strong>시스템 통합:</strong> 화자 분할 결과를 STT와 연동해 상담사/고객이 구분된 전사 결과를 만드는 파이프라인 작업 수행.</p>
+    <p><strong>모델 파인튜닝:</strong> Pyannote 사전 학습 모델을 공개 화자 분리 데이터로 파인튜닝 — 파라미터 튜닝과 학습을 수행하고 DER로 검증.</p>
+    <p><strong>시스템 통합:</strong> 화자 분리 결과를 STT와 연동해 상담사/고객이 구분된 전사 결과를 만드는 파이프라인 작업 수행.</p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li>공개 화자분할 데이터로 파인튜닝한 모델을 DER로 검증 (데이터 수집 → 파라미터 튜닝 → 학습)</li>
-        <li>화자 분할 결과를 STT에 연동해 상담사·고객이 구분된 전사 파이프라인 완성</li>
+        <li>공개 화자 분리 데이터로 파인튜닝한 모델을 DER로 검증 (데이터 수집 → 파라미터 튜닝 → 학습)</li>
+        <li>화자 분리 결과를 STT에 연동해 상담사·고객이 구분된 전사 파이프라인 완성</li>
     </ul>
         </div>
     </details>
