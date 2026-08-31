@@ -1467,21 +1467,18 @@ title: 프로젝트
     apply();
 })();
 
-// ?print=compact — 인쇄 시 주력 프로젝트만 상세로 내보내는 모드
+// ?print=compact — 상세 대상 없는 그룹 정리 (compact 클래스는 레이아웃에서 부여)
 (function () {
-    if (!/[?&]print=compact\b/.test(location.search)) return;
-    document.body.classList.add('compact');
-    // data-print 는 h3 에 있으므로 상위 카드에 클래스를 옮겨 단다 (:has() 불필요)
+    if (!/[?&]print=compact/.test(location.search)) return;
+    // data-print 는 h3 에 있으므로 상위 카드에 클래스를 옮겨 단다
     [].forEach.call(document.querySelectorAll('[data-print="full"]'), function (h) {
         var card = h.closest('.project');
         if (card) card.classList.add('print-full');
     });
-    // 상세 대상이 하나도 없는 그룹은 제목까지 통째로 숨긴다
     [].forEach.call(document.querySelectorAll('section.group'), function (g) {
         if (!g.querySelector('.print-full')) g.hidden = true;
     });
 })();
-
 // 카드를 접으면 그 카드 머리로 스크롤을 되돌린다.
 // 스크롤을 한참 내린 상태에서 접으면 문서가 짧아져 엉뚱한 위치로 튀기 때문.
 (function () {
