@@ -1332,14 +1332,28 @@ mark.search-hit.is-current {
         padding-left: 12px;
     }
 
-    /* 프로젝트마다 새 쪽에서 시작 — 제목만 쪽 하단에 걸리는 것을 막는다.
-       그룹 첫 카드는 그룹 제목 바로 아래 와야 하므로 제외. */
-    .project {
-        break-before: page;
+    /* 제목만 쪽 하단에 남는 것을 막는다. break-before:page 는 쪽 낭비가 커서
+       (빈 쪽 2건 발생) 쓰지 않고, 앞머리 블록을 뒤 내용과 붙여 둔다. */
+    .project > h3,
+    .project > .project-meta,
+    .project > .ps,
+    .project > .metrics,
+    .project > .tech-tags {
+        break-after: avoid;
     }
 
-    .group-title + .project {
-        break-before: auto;
+    .project {
+        break-inside: auto;
+    }
+
+    /* compact 본에서는 카드 안 2단 접기(구현 세부)를 빼 분량을 줄인다 */
+    .compact details.sub {
+        display: none !important;
+    }
+
+    /* 홈에서 이력서와 겹치는 블록은 compact 본에서 제외 */
+    .compact [data-print="skip"] {
+        display: none !important;
     }
 
     /* compact 본 — 주력 6개만 상세로 내보내고 나머지는 요약 표로 대체 */
