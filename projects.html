@@ -321,6 +321,10 @@ title: 프로젝트
         <dt>문제</dt><dd>대량 상담 전화를 실시간 처리해야 하는데 기존 STT가 채널 부족·추론 지연으로 병목</dd>
         <dt>해결</dt><dd><span class="sentence">Triton 기반으로 전처리·후처리·서비스 계층을 분리하고, 파일 배치와 실시간 스트리밍 두 경로를 모두 지원하도록 정비.</span><span class="sentence">파일 경로에는 외부에서 받은 화자 구간 정보를 붙여 화자별 전사를 생성</span></dd>
     </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">2개</span><span class="metric-label">추론 모델 (파일 · 스트리밍)</span></div>
+        <div class="metric"><span class="metric-value">HTTP · gRPC</span><span class="metric-label">인터페이스 동시 제공</span></div>
+    </div>
     <div class="tech-tags">
         <span class="tech-tag">Whisper-large-v3</span>
         <span class="tech-tag">Faster Whisper</span>
@@ -435,6 +439,10 @@ title: 프로젝트
         <dt>문제</dt><dd>자사 메신저 제품의 영상통화 회의록 기능에 화자 구분이 필요했으나, STT는 텍스트만 돌려줘 누가 말했는지 알 수 없었음</dd>
         <dt>해결</dt><dd><span class="sentence">Pyannote 사전 학습 모델을 평가하고 공개 데이터로 파인튜닝을 시도했으나 DER 개선이 없어 미채택.</span><span class="sentence">STT 결합까지 가지 못하고 종료 — 판단 근거와 회고를 아래 기록</span></dd>
     </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">미채택</span><span class="metric-label">파인튜닝 판정 결과</span></div>
+        <div class="metric"><span class="metric-value">사전 학습 모델</span><span class="metric-label">최종 유지안</span></div>
+    </div>
     <div class="tech-tags">
         <span class="tech-tag">Pyannote</span>
         <span class="tech-tag">Speaker Diarization</span>
@@ -607,6 +615,10 @@ title: 프로젝트
         <dt>문제</dt><dd>정찰·드론 영상을 사람이 일일이 분석해 시간과 비용이 큼</dd>
         <dt>해결</dt><dd>YOLO 기반 탐지 모델에 조도·각도·배경 증강을 더해 환경이 바뀌어도 탐지가 유지되도록 학습</dd>
     </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">YOLOv5 / v8</span><span class="metric-label">탐지 모델</span></div>
+        <div class="metric"><span class="metric-value">조도 · 각도 · 배경</span><span class="metric-label">강건성 증강 축</span></div>
+    </div>
     <div class="tech-tags">
         <span class="tech-tag">YOLO</span>
         <span class="tech-tag">Object Detection</span>
@@ -684,6 +696,9 @@ title: 프로젝트
         <dt>문제</dt><dd>여러 소스에서 모은 금융 데이터를 수동으로 정제·통합하느라 분석까지 시간이 오래 걸림</dd>
         <dt>해결</dt><dd>수집 → 정제 → 검증 → 저장을 자동화한 파이프라인 구축</dd>
     </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">4단계</span><span class="metric-label">수집 · 정제 · 검증 · 저장 자동화</span></div>
+    </div>
     <div class="tech-tags">
         <span class="tech-tag">Python</span>
         <span class="tech-tag">Pandas / NumPy</span>
@@ -1030,6 +1045,10 @@ title: 프로젝트
         <dt>문제</dt><dd>모자이크 비식별화는 정보를 지워버려 Re-ID·행동 인식 같은 후속 태스크에 쓸 수 없음</dd>
         <dt>해결</dt><dd><span class="sentence">얼굴과 랜드마크를 검출한 뒤 생성 모델로 가짜 얼굴을 합성해 대체.</span><span class="sentence">형태는 남기고 신원만 제거</span></dd>
     </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">4인 팀</span><span class="metric-label">데이터 어드벤처 2021</span></div>
+        <div class="metric"><span class="metric-value">생성 대체</span><span class="metric-label">모자이크 아닌 비식별화</span></div>
+    </div>
     <div class="tech-tags">
         <span class="tech-tag">Computer Vision</span>
         <span class="tech-tag">Face Detection</span>
@@ -1062,6 +1081,10 @@ title: 프로젝트
         <dt>문제</dt><dd>심전도 원신호에 기저선 변동·근전도 노이즈가 섞여 그대로 학습하면 판별이 어려움</dd>
         <dt>해결</dt><dd>침식·팽창 연산과 spline 보간으로 기저선을 제거한 뒤, lead I 신호를 1D-CNN으로 이진 분류</dd>
     </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">과기정통부 · NIA</span><span class="metric-label">주최 데이터톤</span></div>
+        <div class="metric"><span class="metric-value">lead I 5,000차원</span><span class="metric-label">1D-CNN 입력</span></div>
+    </div>
     <div class="tech-tags">
         <span class="tech-tag">1D-CNN</span>
         <span class="tech-tag">ECG / Bio-signal</span>
