@@ -431,7 +431,7 @@ title: 프로젝트
     <h3 id="diarization">Speaker Diarization with Pyannote <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2025.04 ~ 2025.07 · 화자 분리 모델 평가 · 파인튜닝 (미채택)</p>
     <dl class="ps">
-        <dt>문제</dt><dd>STT가 텍스트만 돌려줘 상담사와 고객 발화를 구분할 수 없었고, 그래서 품질 분석이 불가</dd>
+        <dt>문제</dt><dd>자사 메신저 제품의 영상통화 회의록 기능에 화자 구분이 필요했으나, STT는 텍스트만 돌려줘 누가 말했는지 알 수 없었음</dd>
         <dt>해결</dt><dd><span class="sentence">Pyannote 사전 학습 모델을 평가하고 공개 데이터로 파인튜닝을 시도했으나 DER 개선이 없어 미채택.</span><span class="sentence">STT 결합까지 가지 못하고 종료 — 판단 근거와 회고를 아래 기록</span></dd>
     </dl>
     <div class="tech-tags">
@@ -445,7 +445,7 @@ title: 프로젝트
         <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">Speaker Diarization with Pyannote — 접기</span></summary>
         <div class="detail-body">
 <h4 class="detail-head">배경</h4>
-    <p><span class="sentence">상담 품질 분석을 위해 발화자 식별 필요.</span><span class="sentence">기존 STT는 음성 인식만 제공하여 상담사/고객 구분 불가.</span></p>
+    <p><span class="sentence">회사가 만드는 메신저·협업 제품에 영상통화 회의록·전사 기능을 넣으려면 발화자 식별이 필요했음.</span><span class="sentence">STT는 음성 인식만 제공해 누가 말했는지 구분할 수단이 없었고, 화자 분리 모델을 검토해 제품에 쓸 수 있는 수준인지 판정하는 것이 과제였음.</span></p>
 
     <h4 class="detail-head">구현</h4>
     <p><span class="sentence"><strong>모델 평가:</strong> Pyannote 사전 학습 모델을 상담 음성에 적용해 DER을 측정하고, 채택 가능한 수준인지 판정하는 것이 1차 목표였음.</span></p>
