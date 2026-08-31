@@ -144,7 +144,31 @@ title: 프로젝트
         <li><span class="sentence">자원 축도 함께 실측.</span><span class="sentence">per-stage VRAM(stage0 18.9G + stage1 7.2G) · 컨테이너별 CPU/메모리 피크 · GPU 온도와 SM 클럭까지 기록해 열 스로틀링 드리프트를 측정 오염과 구분</span></li>
     </ul>
 
-    <h4 class="detail-head">시스템 구조</h4>
+<h4 class="detail-head">성과</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">자체 튜닝(FP8·executor)으로 <strong>0.68 → 1.41 rps</strong>, 엔진을 옮긴 뒤 최대 안정치 <strong>3.09 rps</strong>.</span><span class="sentence">측정 조건별 비교는 차별점 ②에 정리</span></li>
+        <li>정상 부하에서 <strong>TTFB p50 70ms</strong>, GPU 처리량 <strong>8.6 rps</strong> (2026.07 실측)</li>
+        <li>32개 언어 지원 단일 플랫폼 (vLLM 10개 + Supertonic 22개)</li>
+        <li>ITN 정규화 정확도 50.1% → 70.9% (검증셋 기준)</li>
+        <li><span class="sentence">같은 GPU에서 <strong>burst p95 TTFB 1,008ms → 652ms</strong> (동시 20 기준). ≤500ms는 달성 불가에서 동시 15로, ≤1000ms는 20~25에서 30으로 올랐다.</span><span class="sentence">동시 스트림 수용 한계 36 실측 (2026.07 말)</span></li>
+        <li>TTFB 경로의 순차 Redis 왕복을 16회에서 13회로 줄이고, 문장 캐시는 일괄 조회로 바꿔 N왕복을 1왕복으로</li>
+    </ul>
+
+    <h4 class="detail-head">오픈소스 기여 (vLLM-Omni)</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">운영 중 stage0(talker) 프로세스의 호스트 메모리가 선형 증가하고 끝내 플래토에 도달하지 않는 것을 발견.</span><span class="sentence">추론 엔진이 <strong>abort된 요청</strong>의 sender 측 상태(코덱 프레임 이력·참조 텐서·청크 카운터)를 회수하지 않는 것이 원인 — 회수 경로가 "terminal 청크 전송 성공"에만 걸려 있어, 클라이언트가 끊고 나간 요청은 프로세스가 죽을 때까지 남는 구조</span></li>
+        <li><span class="sentence"><strong>인과를 수치로 좁힌 방법</strong> — 부하·메모리 할당자·캐시 설정을 바꾼 4개 구성에서 증가율은 22~296 MiB/h로 <strong>13배</strong> 차이가 나는데, abort 건수로 나누면 <strong>36~56 KB/abort로 일정</strong>했다.</span><span class="sentence">"부하가 높아서"가 아니라 "abort 하나당" 새는 것임을 이 불변량으로 확정하고, memray 스냅샷(10분 vs 20분 창)으로 해당 호출 경로의 미해제 할당이 창 길이에 비례해 늘어나는 것을 교차 확인</span></li>
+        <li><span class="sentence">abort 시점에만 sender 상태를 회수하는 최소 패치로 A/B 검증 — <strong>257 → 60 MiB/h (77% 감소)</strong>, 4.4시간 창 R²≈0.99.</span><span class="sentence">같은 런의 미패치 대조군은 15.2시간 동안 258 MiB/h, R²=1.00</span></li>
+        <li><span class="sentence">고치고 끝내지 않고 <strong>잔여 ~13 KB/abort</strong>가 남는 것까지 측정해, 원인을 save 큐에 이미 적재된 청크가 상태를 되살리는 레이스로 특정.</span><span class="sentence">상위 RFC가 이미 구현해 둔 지연 정리 패턴(<code>_deferred_send_cleanup</code>)을 이식하면 닫힌다는 것까지 이슈에 남겼다</span></li>
+        <li><span class="sentence">이슈로 리포트한 뒤 같은 원인을 다루는 기존 PR을 발견하고, 그쪽에 프로덕션 검증 데이터를 붙였다.</span><span class="sentence">PR 작성자와 리뷰어가 근거로 인용 (2026.08, 머지 대기)</span></li>
+    </ul>
+    <p class="repo-link"><a href="https://github.com/vllm-project/vllm-omni/issues/6352" target="_blank">이슈 #6352 (리포트)</a> &nbsp;·&nbsp; <a href="https://github.com/vllm-project/vllm-omni/pull/4349" target="_blank">PR #4349 (검증 데이터 제공)</a></p>
+        </div>
+
+    <details class="sub">
+        <summary><span class="sum-text">구현 세부 보기</span><span class="sum-hint">시스템 구조 · 구현 · 핵심 엔지니어링 7건 · 운영 대시보드 · 데모 영상</span><span class="sum-close">구현 세부 접기</span></summary>
+        <div class="sub-body">
+<h4 class="detail-head">시스템 구조</h4>
     <div class="diagram-grid">
         <figure class="diagram-fig">
             <img class="diagram" src="/assets/images/tts-physical-architecture.svg" alt="Qwen3-TTS 물리 구조도 — 클라이언트/SDK에서 tts-api를 거쳐 vLLM(GPU)과 Supertonic(CPU) 엔진으로 분기하는 컨테이너 구성">
@@ -190,16 +214,6 @@ title: 프로젝트
         <li><span class="sentence">스트리밍 품질을 자동 감지해 자가 치유 (위 차별점 ① 참조).</span><span class="sentence">품질 사고가 캐시에 굳는 것을 차단</span></li>
     </ul>
 
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">자체 튜닝(FP8·executor)으로 <strong>0.68 → 1.41 rps</strong>, 엔진을 옮긴 뒤 최대 안정치 <strong>3.09 rps</strong>.</span><span class="sentence">측정 조건별 비교는 차별점 ②에 정리</span></li>
-        <li>정상 부하에서 <strong>TTFB p50 70ms</strong>, GPU 처리량 <strong>8.6 rps</strong> (2026.07 실측)</li>
-        <li>32개 언어 지원 단일 플랫폼 (vLLM 10개 + Supertonic 22개)</li>
-        <li>ITN 정규화 정확도 50.1% → 70.9% (검증셋 기준)</li>
-        <li><span class="sentence">같은 GPU에서 <strong>burst p95 TTFB 1,008ms → 652ms</strong> (동시 20 기준). ≤500ms는 달성 불가에서 동시 15로, ≤1000ms는 20~25에서 30으로 올랐다.</span><span class="sentence">동시 스트림 수용 한계 36 실측 (2026.07 말)</span></li>
-        <li>TTFB 경로의 순차 Redis 왕복을 16회에서 13회로 줄이고, 문장 캐시는 일괄 조회로 바꿔 N왕복을 1왕복으로</li>
-    </ul>
-
     <h4 class="detail-head">운영 대시보드</h4>
     <div class="shot-grid">
         <img class="shot" src="/assets/images/image 1.png" alt="TTS Dashboard 1">
@@ -231,18 +245,10 @@ title: 프로젝트
         <li><span class="sentence"><strong>크래시로 오진할 뻔한 스트림 집단 절단</strong> — 고부하 burst 중 스트림이 무더기로 끊기고 수 분간 무응답.</span><span class="sentence">엔진 크래시로 보였으나 컨테이너 재시작 횟수가 0인 것을 확인하고 가설 폐기.</span><span class="sentence">실체는 추론 엔진의 텐서 결합 오류가 집단 발생하자 API 서킷 브레이커가 열려 빈 응답을 반환한 연쇄.</span><span class="sentence">동시 한도를 실링(40)보다 한 티어 낮춰(36) 과부하 진입 자체를 완화</span></li>
         <li><span class="sentence"><strong>HTTP 스트림 tail 지연</strong> — 저지연을 표방하면서 실제로는 tail 버퍼를 문장 끝까지 붙들어, 약 615ms 분량이 모일 때까지 한 바이트도 내보내지 않던 구조.</span><span class="sentence">WebSocket 경로에만 있던 무음 감지 기반 조기 flush를 HTTP에 이식해 단문 TTFB와 문장 경계 끊김을 함께 해소</span></li>
     </ol>
-
-    <h4 class="detail-head">오픈소스 기여 (vLLM-Omni)</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">운영 중 stage0(talker) 프로세스의 호스트 메모리가 선형 증가하고 끝내 플래토에 도달하지 않는 것을 발견.</span><span class="sentence">추론 엔진이 <strong>abort된 요청</strong>의 sender 측 상태(코덱 프레임 이력·참조 텐서·청크 카운터)를 회수하지 않는 것이 원인 — 회수 경로가 "terminal 청크 전송 성공"에만 걸려 있어, 클라이언트가 끊고 나간 요청은 프로세스가 죽을 때까지 남는 구조</span></li>
-        <li><span class="sentence"><strong>인과를 수치로 좁힌 방법</strong> — 부하·메모리 할당자·캐시 설정을 바꾼 4개 구성에서 증가율은 22~296 MiB/h로 <strong>13배</strong> 차이가 나는데, abort 건수로 나누면 <strong>36~56 KB/abort로 일정</strong>했다.</span><span class="sentence">"부하가 높아서"가 아니라 "abort 하나당" 새는 것임을 이 불변량으로 확정하고, memray 스냅샷(10분 vs 20분 창)으로 해당 호출 경로의 미해제 할당이 창 길이에 비례해 늘어나는 것을 교차 확인</span></li>
-        <li><span class="sentence">abort 시점에만 sender 상태를 회수하는 최소 패치로 A/B 검증 — <strong>257 → 60 MiB/h (77% 감소)</strong>, 4.4시간 창 R²≈0.99.</span><span class="sentence">같은 런의 미패치 대조군은 15.2시간 동안 258 MiB/h, R²=1.00</span></li>
-        <li><span class="sentence">고치고 끝내지 않고 <strong>잔여 ~13 KB/abort</strong>가 남는 것까지 측정해, 원인을 save 큐에 이미 적재된 청크가 상태를 되살리는 레이스로 특정.</span><span class="sentence">상위 RFC가 이미 구현해 둔 지연 정리 패턴(<code>_deferred_send_cleanup</code>)을 이식하면 닫힌다는 것까지 이슈에 남겼다</span></li>
-        <li><span class="sentence">이슈로 리포트한 뒤 같은 원인을 다루는 기존 PR을 발견하고, 그쪽에 프로덕션 검증 데이터를 붙였다.</span><span class="sentence">PR 작성자와 리뷰어가 근거로 인용 (2026.08, 머지 대기)</span></li>
-    </ul>
-    <p class="repo-link"><a href="https://github.com/vllm-project/vllm-omni/issues/6352" target="_blank">이슈 #6352 (리포트)</a> &nbsp;·&nbsp; <a href="https://github.com/vllm-project/vllm-omni/pull/4349" target="_blank">PR #4349 (검증 데이터 제공)</a></p>
         </div>
     </details>
+
+</details>
 </div>
 
 <hr class="rule-sub">
@@ -1390,6 +1396,19 @@ title: 프로젝트
     });
 
     apply();
+})();
+
+// 카드를 접으면 그 카드 머리로 스크롤을 되돌린다.
+// 스크롤을 한참 내린 상태에서 접으면 문서가 짧아져 엉뚱한 위치로 튀기 때문.
+(function () {
+    document.addEventListener('toggle', function (e) {
+        var d = e.target;
+        if (d.tagName !== 'DETAILS' || d.open) return;
+        var anchor = d.classList.contains('sub') ? d : d.closest('.project');
+        if (!anchor) return;
+        var top = anchor.getBoundingClientRect().top + window.scrollY - 80;
+        if (window.scrollY > top) window.scrollTo({ top: top });
+    }, true);
 })();
 
 // 좁은 화면(<1500px): 플로팅 버튼으로 목차·검색 패널 열고 닫기
