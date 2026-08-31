@@ -773,8 +773,8 @@ title: 프로젝트
         <dt>해결</dt><dd><span class="sentence">층별 단독 평가 체계를 만들어 병목을 정량 규명.</span><span class="sentence">지표를 쓰기 전에 채점기부터 검증</span></dd>
     </dl>
     <div class="metrics">
-        <div class="metric"><span class="metric-value">68 → 75%</span><span class="metric-label">정답률 (51문항)</span></div>
-        <div class="metric"><span class="metric-value">59% · 83%</span><span class="metric-label">검색 recall@1 · @3 (51문항)</span></div>
+        <div class="metric"><span class="metric-value">84.3%</span><span class="metric-label">정답률 (140문항)</span></div>
+        <div class="metric"><span class="metric-value">54 → 842청크</span><span class="metric-label">코퍼스 15.6배 확장 후 재검증</span></div>
         <div class="metric"><span class="metric-value">6%p</span><span class="metric-label">채점기 자체 결함 정정</span></div>
     </div>
     <div class="tech-tags">
@@ -802,9 +802,9 @@ title: 프로젝트
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li><span class="sentence">51문항 기준 <strong>정답률 68% → 75%</strong>.</span><span class="sentence">실패를 검색·청킹·생성 층으로 나눠 병목이 생성 단계임을 수치로 확인하고 컨텍스트 수를 튜닝</span></li>
-        <li><span class="sentence"><strong>검색 recall@1 59% · @3 83%</strong> (51문항 기준, 무작위 기준선 병기).</span><span class="sentence">10문항 앵커에서는 90%·MRR 0.95였으나 표본이 작아 생긴 착시임을 확장 평가로 확인 — 결론을 앵커 수치가 아니라 확장본으로 갱신.</span><span class="sentence">이 과정에서 하이브리드 검색 결함 7건을 찾아 수정</span></li>
-        <li><span class="sentence">채점기가 동의 표기를 오답으로 세고 있던 것을 발견.</span><span class="sentence"><strong>6%p를 정정</strong> — 지표를 쓰기 전에 지표부터 검증한 경우다</span></li>
+        <li><span class="sentence">평가셋을 10 → 51 → 140문항으로 늘려가며 재측정 — 현재 <strong>140문항 84.3%</strong> (포트폴리오 100문항 83% · TTS 40문항 88%).</span><span class="sentence">실패를 검색·청킹·생성 층으로 나눠 병목이 생성 단계임을 수치로 확인하고 컨텍스트 수를 튜닝</span></li>
+        <li><span class="sentence">코퍼스를 <strong>54 → 842청크(15.6배)</strong>로 늘린 뒤 튜닝값을 전수 재검증 — 작은 코퍼스에서 정한 청크 크기·top-N·HyDE 판정이 그대로 유지됨을 확인.</span><span class="sentence">"코퍼스가 작아서 기각했다"던 유보를 실제로 시험한 결과.</span><span class="sentence">검색 지표는 10문항 앵커의 recall@1 90%가 확장 평가에서 착시로 드러나, 결론을 확장본 기준으로 갱신하고 하이브리드 검색 결함 7건을 수정</span></li>
+        <li><span class="sentence">채점기가 동의 표기를 오답으로 세고 있던 것을 발견.</span><span class="sentence"><strong>6%p를 정정</strong> — 지표를 쓰기 전에 지표부터 검증한 경우.</span><span class="sentence">기본 모델도 3B → 7B로 전환해 <strong>+8%p(77 → 85%)</strong>를 지연 비용 없이 얻고, 재작성률이 67~76%에서 16%로 떨어지는 것까지 재측정</span></li>
         <li><span class="sentence">코퍼스에 답이 없는 거부 문항 10개를 넣어 <strong>환각 측정 지표 신설</strong>.</span><span class="sentence">컨텍스트를 넓힐수록 환각이 느는 트레이드오프를 실측</span></li>
     </ul>
 
