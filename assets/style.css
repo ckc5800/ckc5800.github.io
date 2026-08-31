@@ -643,7 +643,9 @@ h2[id] {
     z-index: 40;
 }
 
-/* 카드 안 2단 접기 — 구현 세부처럼 분량이 큰 덩어리를 한 겹 더 감춘다 */
+/* 카드 안 2단 접기 — 구현 세부처럼 분량이 큰 덩어리를 한 겹 더 감춘다.
+   안쪽 요약 바는 sticky 를 걸지 않는다 — 상위 바와 겹쳐 상단을 두 줄 차지하면
+   본문 가용 영역이 오히려 줄어든다(실측: 85% → 정상 동작 불가). */
 .project details.sub {
     margin-top: 28px;
 }
@@ -654,12 +656,6 @@ h2[id] {
     background-color: var(--surface);
     border: 1px dashed var(--separator);
     color: var(--text-secondary);
-}
-
-.project details.sub[open] > summary {
-    position: sticky;
-    top: 120px;              /* 상위 요약 바 아래에 겹쳐 붙는다 */
-    z-index: 39;
 }
 
 .sub-body {
