@@ -114,7 +114,7 @@ title: 프로젝트
     <div class="metrics">
         <div class="metric"><span class="metric-value">1,008 → 652ms</span><span class="metric-label">burst p95 TTFB</span></div>
         <div class="metric"><span class="metric-value">0.68 → 3.09rps</span><span class="metric-label">엔진 처리량</span></div>
-        <div class="metric"><span class="metric-value">36</span><span class="metric-label">동시 스트림 수용</span></div>
+        <div class="metric"><span class="metric-value">동시 256건</span><span class="metric-label">실패 없이 수용 (부하 테스트)</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Python 3.12</span>
@@ -157,7 +157,7 @@ title: 프로젝트
 <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
         <li><span class="sentence">자체 튜닝(FP8·executor)으로 <strong>0.68 → 1.41 rps</strong>, 엔진을 옮긴 뒤 최대 안정치 <strong>3.09 rps</strong>.</span><span class="sentence">측정 조건별 비교는 차별점 ②에 정리</span></li>
-        <li>정상 부하에서 <strong>TTFB p50 70ms</strong>, GPU 처리량 <strong>8.6 rps</strong> (2026.07 실측)</li>
+        <li><span class="sentence">부하 테스트를 3층으로 설계 — 스모크(생사 확인) → 순간 폭주(동시 4~256 워커가 같은 순간 도착) → 지속 부하(Poisson 도착 모사, 텍스트 길이 3종·화자 5명·캐시 히트 30% 반영, 시나리오별 3분).</span><span class="sentence">Stream 기준 <strong>동시 256건까지 실패 없이 수용</strong>, 정상 부하 <strong>TTFB p50 70ms</strong>(p95 219 · p99 292ms), 최대 처리량 <strong>8.7 rps</strong> (2026.07 실측)</span></li>
         <li>32개 언어 지원 단일 플랫폼 (vLLM 10개 + Supertonic 22개)</li>
         <li>ITN 정규화 정확도 50.1% → 70.9% (검증셋 기준)</li>
         <li><span class="sentence">같은 GPU에서 <strong>burst p95 TTFB 1,008ms → 652ms</strong> (동시 20 기준). ≤500ms는 달성 불가에서 동시 15로, ≤1000ms는 20~25에서 30으로 올랐다.</span><span class="sentence">동시 스트림 수용 한계 36 실측 (2026.07 말)</span></li>
