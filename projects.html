@@ -28,7 +28,6 @@ title: 프로젝트
         <a href="#seg3d">3D Segmentation</a>
         <a href="#latent">생성모델 연구</a>
         <a href="#tank">전차 탐지</a>
-        <a href="#deid">Face De-ID</a>
     </div>
     <div class="side-nav-group">
         <div class="side-nav-label">데이터 · 도구</div>
@@ -43,6 +42,10 @@ title: 프로젝트
         <a href="#visual">멀티모달 상품 검색</a>
         <a href="#forecast">수요 예측</a>
         <a href="#mcp">MCP Server</a>
+    </div>
+    <div class="side-nav-group">
+        <div class="side-nav-label">대회 · 대외 팀 프로젝트</div>
+        <a href="#deid">Face De-ID</a>
         <a href="#ecg">심전도 진단</a>
     </div>
 </nav>
@@ -65,7 +68,6 @@ title: 프로젝트
             <a class="toc-link" href="#seg3d">3D Segmentation</a>
             <a class="toc-link" href="#latent">생성모델 연구</a>
             <a class="toc-link" href="#tank">전차 탐지</a>
-            <a class="toc-link" href="#deid">Face De-ID</a>
         </div>
     </div>
     <div>
@@ -84,10 +86,18 @@ title: 프로젝트
             <a class="toc-link" href="#visual">멀티모달 상품 검색</a>
             <a class="toc-link" href="#forecast">수요 예측</a>
             <a class="toc-link" href="#mcp">MCP Server</a>
+        </div>
+    </div>
+    <div>
+        <div class="toc-label">대회 · 대외 팀 프로젝트</div>
+        <div class="toc-links">
+            <a class="toc-link" href="#deid">Face De-ID</a>
             <a class="toc-link" href="#ecg">심전도 진단</a>
         </div>
     </div>
 </div>
+
+<h2 class="section-title">실무 경력</h2>
 
 <h2 class="section-title">실무 경력</h2>
 
@@ -419,7 +429,7 @@ title: 프로젝트
 </section>
 
 <section class="group">
-<h2 class="group-title" id="g-model">모델 개발 · 연구<span class="group-count">6</span></h2>
+<h2 class="group-title" id="g-model">모델 개발 · 연구<span class="group-count">5</span></h2>
 
 <div class="project">
     <h3 id="diarization">Speaker Diarization with Pyannote <span class="badge">MiCo AI</span></h3>
@@ -625,38 +635,6 @@ title: 프로젝트
     </details>
 </div>
 
-<hr class="rule-sub">
-
-<div class="project">
-    <h3 id="deid">AI Face De-ID (얼굴 정보 자동 비식별화) <span class="badge">팀 프로젝트</span></h3>
-    <p class="project-meta">2021 · 4인 팀 프로젝트 (데이터 어드벤처 팀)</p>
-    <dl class="ps">
-        <dt>문제</dt><dd>모자이크 비식별화는 정보를 지워버려 Re-ID·행동 인식 같은 후속 태스크에 쓸 수 없음</dd>
-        <dt>해결</dt><dd><span class="sentence">얼굴과 랜드마크를 검출한 뒤 생성 모델로 가짜 얼굴을 합성해 대체.</span><span class="sentence">형태는 남기고 신원만 제거</span></dd>
-    </dl>
-    <div class="tech-tags">
-        <span class="tech-tag">Computer Vision</span>
-        <span class="tech-tag">Face Detection</span>
-        <span class="tech-tag">Generative Model</span>
-        <span class="tech-tag">Privacy / De-ID</span>
-    </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현</span><span class="sum-close">AI Face De-ID (얼굴 정보 자동 비식별화) — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">공공 데이터 비식별화에 쓰이는 모자이크 처리는 원본 데이터의 정보 손실을 일으켜, Re-ID·행동 인식 등 얼굴 데이터가 필요한 후속 태스크에 활용하기 어려움.</span><span class="sentence">이를 해결하기 위해 <strong>AI로 생성한 가짜 얼굴로 원본 얼굴을 대체</strong>하는 비식별화 기법을 제안.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p>거리 영상에서 보행자 얼굴 영역 검출 및 랜드마크 검출 → 생성 모델 기반 가짜 얼굴 합성으로 정보 손실을 최소화하면서 개인정보를 보호하는 라벨링 파이프라인.</p>
-
-    <div class="shot-grid">
-        <img class="shot" src="/assets/images/deid-overview.png" alt="Face De-ID 개요">
-        <img class="shot" src="/assets/images/deid-result.png" alt="Face Detection 결과">
-    </div>
-        </div>
-    </details>
-</div>
-
 </section>
 
 <section class="group">
@@ -740,7 +718,7 @@ title: 프로젝트
 <h2 class="section-title">기술 검증 · 개인 연구</h2>
 
 <section class="group">
-<h2 class="group-title" id="g-personal">개인 프로젝트<span class="group-count">7</span></h2>
+<h2 class="group-title" id="g-personal">개인 프로젝트<span class="group-count">6</span></h2>
 
 <div class="project">
     <h3 id="llmbench">llm-bench <span class="badge">개인 프로젝트</span></h3>
@@ -1039,6 +1017,41 @@ title: 프로젝트
     </ul>
 
     <p class="repo-link"><a href="https://github.com/ckc5800/portfolio-mcp" target="_blank">GitHub 저장소</a></p>
+        </div>
+    </details>
+</div>
+
+</section>
+
+<section class="group">
+<h2 class="group-title" id="g-extern">대회 · 대외 팀 프로젝트<span class="group-count">2</span></h2>
+
+<div class="project">
+    <h3 id="deid">AI Face De-ID (얼굴 정보 자동 비식별화) <span class="badge">팀 프로젝트</span></h3>
+    <p class="project-meta">2021 · 4인 팀 프로젝트 (데이터 어드벤처 팀)</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>모자이크 비식별화는 정보를 지워버려 Re-ID·행동 인식 같은 후속 태스크에 쓸 수 없음</dd>
+        <dt>해결</dt><dd><span class="sentence">얼굴과 랜드마크를 검출한 뒤 생성 모델로 가짜 얼굴을 합성해 대체.</span><span class="sentence">형태는 남기고 신원만 제거</span></dd>
+    </dl>
+    <div class="tech-tags">
+        <span class="tech-tag">Computer Vision</span>
+        <span class="tech-tag">Face Detection</span>
+        <span class="tech-tag">Generative Model</span>
+        <span class="tech-tag">Privacy / De-ID</span>
+    </div>
+    <details>
+        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현</span><span class="sum-close">AI Face De-ID (얼굴 정보 자동 비식별화) — 접기</span></summary>
+        <div class="detail-body">
+<h4 class="detail-head">배경</h4>
+    <p><span class="sentence">공공 데이터 비식별화에 쓰이는 모자이크 처리는 원본 데이터의 정보 손실을 일으켜, Re-ID·행동 인식 등 얼굴 데이터가 필요한 후속 태스크에 활용하기 어려움.</span><span class="sentence">이를 해결하기 위해 <strong>AI로 생성한 가짜 얼굴로 원본 얼굴을 대체</strong>하는 비식별화 기법을 제안.</span></p>
+
+    <h4 class="detail-head">구현</h4>
+    <p>거리 영상에서 보행자 얼굴 영역 검출 및 랜드마크 검출 → 생성 모델 기반 가짜 얼굴 합성으로 정보 손실을 최소화하면서 개인정보를 보호하는 라벨링 파이프라인.</p>
+
+    <div class="shot-grid">
+        <img class="shot" src="/assets/images/deid-overview.png" alt="Face De-ID 개요">
+        <img class="shot" src="/assets/images/deid-result.png" alt="Face Detection 결과">
+    </div>
         </div>
     </details>
 </div>
