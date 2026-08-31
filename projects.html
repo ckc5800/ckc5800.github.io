@@ -319,7 +319,7 @@ title: 프로젝트
     <p class="project-meta">2025.07 ~ 2025.09 · STT 배포 · 서빙 담당 (팀 협업)</p>
     <dl class="ps">
         <dt>문제</dt><dd>대량 상담 전화를 실시간 처리해야 하는데 기존 STT가 채널 부족·추론 지연으로 병목</dd>
-        <dt>해결</dt><dd>Triton 기반으로 전처리·후처리·서비스 계층을 분리하고, 파일·스트리밍 두 경로에 화자 분리 결합</dd>
+        <dt>해결</dt><dd>Triton 기반으로 전처리·후처리·서비스 계층을 분리하고, 파일 배치와 실시간 스트리밍 두 경로를 모두 지원하도록 정비</dd>
     </dl>
     <div class="tech-tags">
         <span class="tech-tag">Whisper-large-v3</span>
@@ -337,7 +337,7 @@ title: 프로젝트
 
     <h4 class="detail-head">구현</h4>
     <p><span class="sentence"><strong>AIG STT 구조 개선:</strong> Triton Inference Server 기반 음성인식 파이프라인을 전처리·후처리·서비스 계층으로 모듈화해 파일/스트리밍 공통 로직을 통합.</span><span class="sentence">YAML 기반 로그 로테이션·아카이빙 체계와 Docker 구성을 정비하고, 컨테이너 자동 재시작 정책으로 안정성을 보강.</span></p>
-    <p><span class="sentence"><strong>엔진 구성:</strong> Triton Python 백엔드로 파일 기반(화자 분리 결합)과 실시간 스트리밍 두 추론 모델을 구성, HTTP와 gRPC 인터페이스를 모두 제공.</span><span class="sentence">화자 분리 결과를 STT에 결합해 화자별 전사를 생성 — 화자 구간을 추론 파라미터(clip timestamps)로 전달해 화자마다 정확한 전사를 얻는 구조를 구현.</span></p>
+    <p><span class="sentence"><strong>엔진 구성:</strong> Triton Python 백엔드로 파일 기반과 실시간 스트리밍 두 추론 모델을 구성하고, HTTP와 gRPC 인터페이스를 모두 제공.</span></p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
@@ -429,10 +429,10 @@ title: 프로젝트
 
 <div class="project">
     <h3 id="diarization">Speaker Diarization with Pyannote <span class="badge">MiCo AI</span></h3>
-    <p class="project-meta">2025.04 ~ 2025.07 · 화자 분리 모델 파인튜닝 · STT 통합</p>
+    <p class="project-meta">2025.04 ~ 2025.07 · 화자 분리 모델 평가 · 파인튜닝 (미채택)</p>
     <dl class="ps">
         <dt>문제</dt><dd>STT가 텍스트만 돌려줘 상담사와 고객 발화를 구분할 수 없었고, 그래서 품질 분석이 불가</dd>
-        <dt>해결</dt><dd><span class="sentence">Pyannote 사전 학습 모델의 화자 구간을 STT에 넘겨 화자별 전사 파이프라인을 완성.</span><span class="sentence">파인튜닝도 시도했으나 개선이 없어 미채택 — 판단 근거를 아래 기록</span></dd>
+        <dt>해결</dt><dd><span class="sentence">Pyannote 사전 학습 모델을 평가하고 공개 데이터로 파인튜닝을 시도했으나 DER 개선이 없어 미채택.</span><span class="sentence">STT 결합까지 가지 못하고 종료 — 판단 근거와 회고를 아래 기록</span></dd>
     </dl>
     <div class="tech-tags">
         <span class="tech-tag">Pyannote</span>
@@ -448,12 +448,12 @@ title: 프로젝트
     <p><span class="sentence">상담 품질 분석을 위해 발화자 식별 필요.</span><span class="sentence">기존 STT는 음성 인식만 제공하여 상담사/고객 구분 불가.</span></p>
 
     <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>시스템 통합:</strong> Pyannote 사전 학습 모델의 화자 구간을 STT에 파라미터로 넘겨, 상담사와 고객이 구분된 전사를 만드는 파이프라인을 구성.</span><span class="sentence">이 파이프라인이 실제 산출물이고, 이후 STT 배포 과제에서 파일 기반 추론 경로에 결합됨.</span></p>
+    <p><span class="sentence"><strong>모델 평가:</strong> Pyannote 사전 학습 모델을 상담 음성에 적용해 DER을 측정하고, 채택 가능한 수준인지 판정하는 것이 1차 목표였음.</span></p>
     <p><span class="sentence"><strong>파인튜닝 시도:</strong> 상담 도메인에 맞추려 공개 화자 분리 데이터를 모아 파라미터 튜닝과 학습을 수행하고 DER로 평가.</span></p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li>화자 분리 결과를 STT에 연동해 상담사·고객이 구분된 전사 파이프라인 완성 — 후속 STT 배포에 그대로 사용</li>
+        <li><span class="sentence">모델 평가와 파인튜닝 파이프라인(데이터 수집 → 학습 → DER 측정)을 구축해 <strong>채택 여부를 판정할 근거를 만듦</strong>.</span><span class="sentence">결론은 미채택이었고, STT 결합까지 진행되지 못한 채 종료</span></li>
         <li>파인튜닝은 <strong>사전 학습 모델 대비 DER 개선이 없어 미채택</strong>. 결과를 포장하지 않고 그대로 기록</li>
     </ul>
 
