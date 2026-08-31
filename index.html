@@ -18,7 +18,7 @@ title: 홈
 </section>
 
 <section class="block">
-    <p class="intro"><span class="sentence">음성(TTS/STT), LLM, 비전, 검색 등 다양한 AI 영역에서 모델 개발부터 서비스 운영까지 경험했습니다.</span><span class="sentence">추론 서버 구축, API 설계, 배포 환경 구성 등 안정적인 서비스 시스템을 만들어왔습니다.</span><span class="sentence">Kubernetes 기반 AI 플랫폼 구축과 GPU/CPU 듀얼 엔진 TTS 서빙 플랫폼 설계·운영을 맡았습니다.</span><span class="sentence">논문 7편 게재와 특허 2건 등록으로 연구 성과도 쌓았습니다.</span></p>
+    <p class="intro"><span class="sentence">모델을 서비스로 만드는 구간에서 병목을 계측으로 찾아 지연과 처리량을 바꾸는 일을 합니다.</span><span class="sentence">TTS 스트리밍의 첫 응답을 절반으로 줄이고, 신규 서빙 플랫폼의 엔진 처리량을 4.5배로 끌어올렸습니다.</span><span class="sentence">20여 개 모델이 도는 Kubernetes 클러스터의 관측 스택 5종도 직접 구축해, 병목을 눈으로 볼 수 있게 만들었습니다.</span><span class="sentence">음성·LLM·비전 도메인을 거치며 모델 개발부터 서빙·인프라까지 다뤘고, 논문 7편과 특허 2건을 썼습니다.</span></p>
 </section>
 
 <section class="block">
@@ -27,7 +27,7 @@ title: 홈
     <div class="projects-grid">
         <a class="project-card" href="/projects.html#tts">
             <h3>실시간 TTS 서빙</h3>
-            <p><span class="sentence">레거시 스트리밍 API 응답 단축부터 신규 듀얼 엔진 플랫폼 단독 구축까지.</span><span class="sentence">병목을 구간 계측으로 특정해 지연·처리량 동시 개선.</span></p>
+            <p><span class="sentence">구간 계측으로 병목을 엔진 디코드 루프로 좁힌 뒤, 문장 단위 스트리밍으로 첫 응답을 줄이고 FP8 양자화·executor 백엔드 교체로 처리량을 올림.</span></p>
             <div class="metrics">
                 <div class="metric"><span class="metric-value">1,943 → 985ms</span><span class="metric-label">레거시 API TTFB</span></div>
                 <div class="metric"><span class="metric-value">0.68 → 3.09 rps</span><span class="metric-label">플랫폼 엔진 처리량</span></div>
@@ -41,7 +41,7 @@ title: 홈
 
         <a class="project-card" href="/projects.html#k8s">
             <h3>MLOps 인프라</h3>
-            <p><span class="sentence">3인 인프라 팀으로 사내 첫 Kubernetes 플랫폼 구축.</span><span class="sentence">그중 관측성 전 계층과 스토리지를 맡아 20여 개 모델을 지표·로그로 들여다보고 볼륨을 관리.</span></p>
+            <p><span class="sentence">3인 팀의 사내 첫 Kubernetes 구축에서 관측성 전 계층을 맡음.</span><span class="sentence">Prometheus·Grafana·AlertManager로 지표와 경보를, 온프레미스라 Elasticsearch·Loki를 직접 설치해 로그를 세움.</span></p>
             <div class="metrics">
                 <div class="metric"><span class="metric-value">5종</span><span class="metric-label">직접 구축한 관측 스택</span></div>
                 <div class="metric"><span class="metric-value">20개 이상</span><span class="metric-label">관측 대상 ML 모델</span></div>
