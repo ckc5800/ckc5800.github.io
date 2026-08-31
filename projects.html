@@ -271,7 +271,7 @@ title: 프로젝트
     <p><span class="sentence">사내에서 쓰던 기존 TTS 엔진(ZipVoice)의 스트리밍 API가 담당 대상.</span><span class="sentence">전체 합성이 끝나야 첫 청크가 나가는 구조라 텍스트가 길수록 첫 응답이 비례해 늦어졌고, 실시간 상담에 쓰기 어려웠음.</span><span class="sentence">기존 담당자에게 인계받아 리팩토링을 맡음.</span></p>
 
     <h4 class="detail-head">구현</h4>
-    <p><strong>SSE 청크 디코딩 실패 해결:</strong> 브라우저 <code>decodeAudioData()</code>가 두 번째 청크부터 실패한다는 고객 이슈를 추적.</p>
+    <p><strong>SSE 청크 디코딩 실패 해결:</strong> 브라우저 <code>decodeAudioData()</code>가 두 번째 청크부터 실패한다는 사내 사용 부서(API 호출측)의 제보를 추적.</p>
     <ul class="detail-list">
         <li>원인 — 엔진이 첫 청크에만 RIFF WAV 헤더를 붙이고 이후는 raw PCM만 반환</li>
         <li>조치 — 첫 청크 헤더에서 샘플레이트·채널을 파싱해 모든 SSE 청크에 독립 헤더를 재생성, 청크 단위 독립 디코딩 가능하게</li>
