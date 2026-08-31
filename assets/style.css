@@ -440,7 +440,7 @@ h2[id] {
 }
 
 .group-title {
-    font-size: 24px;
+    font-size: 19px;
     font-weight: 700;
     letter-spacing: -0.5px;
     color: var(--text-secondary);
@@ -632,6 +632,38 @@ h2[id] {
 .project summary:hover {
     background-color: var(--pill-bg);
     border-color: var(--separator);
+}
+
+/* 펼쳐진 동안 요약 바를 상단에 고정 — 긴 카드를 읽다가 접으려고 다시
+   위로 스크롤하는 왕복을 없앤다. 지금 무슨 프로젝트를 읽는지도 같이 보인다.
+   navbar(67px) 바로 아래. z-index는 목차 플로팅 버튼(120)보다 낮게 둔다. */
+.project details[open] > summary {
+    position: sticky;
+    top: 67px;
+    z-index: 40;
+}
+
+/* 카드 안 2단 접기 — 구현 세부처럼 분량이 큰 덩어리를 한 겹 더 감춘다 */
+.project details.sub {
+    margin-top: 28px;
+}
+
+.project details.sub > summary {
+    font-size: 13px;
+    padding: 10px 16px;
+    background-color: var(--surface);
+    border: 1px dashed var(--separator);
+    color: var(--text-secondary);
+}
+
+.project details.sub[open] > summary {
+    position: sticky;
+    top: 120px;              /* 상위 요약 바 아래에 겹쳐 붙는다 */
+    z-index: 39;
+}
+
+.sub-body {
+    padding-top: 8px;
 }
 
 /* 좀은 화면에서는 소제목 예고를 접어 라벨만 남긴다 */
