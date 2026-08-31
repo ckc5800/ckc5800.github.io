@@ -1469,7 +1469,7 @@ title: 프로젝트
 
 // ?print=compact — 상세 대상 없는 그룹 정리 (compact 클래스는 레이아웃에서 부여)
 (function () {
-    if (!/[?&]print=compact/.test(location.search)) return;
+    if (!/[?&]print=compact\b/.test(location.search)) return;
     // data-print 는 h3 에 있으므로 상위 카드에 클래스를 옮겨 단다
     [].forEach.call(document.querySelectorAll('[data-print="full"]'), function (h) {
         var card = h.closest('.project');

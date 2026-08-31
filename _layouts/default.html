@@ -216,7 +216,7 @@
 <script>
 // ?print=compact — 제출용 축약 인쇄 모드. 두 페이지 공통이라 레이아웃에 둔다.
 (function () {
-    if (!/[?&]print=compact/.test(location.search)) return;
+    if (!/[?&]print=compact\b/.test(location.search)) return;
     document.documentElement.classList.add('compact');
     document.addEventListener('DOMContentLoaded', function () {
         document.body.classList.add('compact');
