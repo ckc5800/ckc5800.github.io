@@ -268,7 +268,7 @@ title: 프로젝트
         <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과 · 데모 페이지</span><span class="sum-close">접기</span></summary>
         <div class="detail-body">
 <h4 class="detail-head">배경</h4>
-    <p><span class="sentence">고객 상담 센터용 기존 TTS(ZipVoice 기반)의 응답 지연(TTFB 2.3초)이 심각해 실시간 상담에 부적합했음.</span><span class="sentence">신규 플랫폼 구축에 앞서 기존 서비스의 응답성부터 개선 필요.</span></p>
+    <p><span class="sentence">사내에서 쓰던 기존 TTS 엔진(ZipVoice)의 스트리밍 API가 담당 대상.</span><span class="sentence">전체 합성이 끝나야 첫 청크가 나가는 구조라 텍스트가 길수록 첫 응답이 비례해 늦어졌고, 실시간 상담에 쓰기 어려웠음.</span><span class="sentence">기존 담당자에게 인계받아 리팩토링을 맡음.</span></p>
 
     <h4 class="detail-head">구현</h4>
     <p><strong>SSE 청크 디코딩 실패 해결:</strong> 브라우저 <code>decodeAudioData()</code>가 두 번째 청크부터 실패한다는 고객 이슈를 추적.</p>
