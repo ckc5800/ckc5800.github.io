@@ -1361,6 +1361,19 @@ mark.search-hit.is-current {
         display: none !important;
     }
 
+    /* 숨긴 카드 사이의 구분선이 남으면 빈 쪽이 생긴다 (실측 3쪽 낭비) */
+    .compact hr.rule-sub {
+        display: none !important;
+    }
+
+    /* 홈 기술 스택 격자와 카드 안 이미지 블록이 쪽 경계에 걸리지 않게 */
+    .toc,
+    .detail-body > figure,
+    .detail-body > .shot,
+    .detail-body > p > .shot {
+        break-inside: avoid;
+    }
+
     .compact .print-summary {
         display: block;
         break-before: page;
