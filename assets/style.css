@@ -1368,10 +1368,16 @@ mark.search-hit.is-current {
 
     /* 홈 기술 스택 격자와 카드 안 이미지 블록이 쪽 경계에 걸리지 않게 */
     .toc,
+    .shot-grid,
     .detail-body > figure,
     .detail-body > .shot,
     .detail-body > p > .shot {
         break-inside: avoid;
+    }
+
+    /* 소제목이 이미지와 갈라지면 제목만 남은 쪽이 생긴다 */
+    .detail-head + .shot-grid {
+        break-before: avoid;
     }
 
     .compact .print-summary {
