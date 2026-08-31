@@ -419,11 +419,32 @@ h2[id] {
     margin-bottom: 48px;
 }
 
-.group-title {
-    font-size: 28px;
+/* 대섹션 — 실무 경력 / 기술 검증·개인 연구.
+   둘을 갈라 놓는 것이 이 페이지의 첫 번째 정보라, 그룹 제목보다 크고
+   위쪽에 여백을 크게 둬서 스크롤 중에도 경계가 보이게 한다. */
+.section-title {
+    font-size: 34px;
     font-weight: 700;
-    letter-spacing: -0.6px;
-    margin: 0 0 32px;
+    letter-spacing: -0.9px;
+    margin: 0 0 8px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--text);
+}
+
+.section-title + .group {
+    margin-top: 28px;
+}
+
+.group + .section-title {
+    margin-top: 88px;
+}
+
+.group-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-secondary);
+    margin: 0 0 28px;
 }
 
 .project {
