@@ -991,6 +991,13 @@ h2[id] {
     }
 }
 
+
+/* 인쇄 전용 요약 표 — 화면에서는 숨긴다.
+   compact 인쇄본에서 상세를 빼는 13개 프로젝트를 한 쪽으로 정리한 것. */
+.print-summary {
+    display: none;
+}
+
 /* ===== Skills Section ===== */
 .skills-grid {
     display: grid;
@@ -1323,6 +1330,58 @@ mark.search-hit.is-current {
         margin-bottom: 16px;
         border-left: 2px solid #ddd;
         padding-left: 12px;
+    }
+
+    /* 프로젝트마다 새 쪽에서 시작 — 제목만 쪽 하단에 걸리는 것을 막는다.
+       그룹 첫 카드는 그룹 제목 바로 아래 와야 하므로 제외. */
+    .project {
+        break-before: page;
+    }
+
+    .group-title + .project {
+        break-before: auto;
+    }
+
+    /* compact 본 — 주력 6개만 상세로 내보내고 나머지는 요약 표로 대체 */
+    .compact .project:not(.print-full) {
+        display: none !important;
+    }
+
+    .compact .print-summary {
+        display: block;
+        break-before: page;
+    }
+
+    .print-summary table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 9pt;
+        margin-top: 10px;
+    }
+
+    .print-summary th,
+    .print-summary td {
+        border-bottom: 1px solid #ddd;
+        padding: 6px 8px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .print-summary th {
+        border-bottom: 1.5px solid #1d1d1f;
+        font-size: 8.5pt;
+        color: #555;
+    }
+
+    .print-summary td:nth-child(2),
+    .print-summary td:nth-child(3) {
+        white-space: nowrap;
+        color: #555;
+    }
+
+    .print-summary-note {
+        font-size: 9pt;
+        color: #555;
     }
 
     /* 조각나면 안 되는 단위 */

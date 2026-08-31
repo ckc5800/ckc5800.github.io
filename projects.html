@@ -103,7 +103,7 @@ title: 프로젝트
 <h2 class="group-title" id="g-serving">추론 서빙 · 성능 엔지니어링<span class="group-count">4</span></h2>
 
 <div class="project">
-    <h3 id="tts">Qwen3-TTS 플랫폼 구축 <span class="badge">MiCo AI</span></h3>
+    <h3 id="tts" data-print="full">Qwen3-TTS 플랫폼 구축 <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2026.03 ~ 현재 · PM · 풀스택 단독 개발 (백엔드 · 프론트 · 인프라)</p>
     <dl class="ps">
         <dt>문제</dt><dd>상담센터에 제안할 자사 TTS 솔루션이 없었음. 실시간 상담에 쓰려면 응답 속도와 음성 선택지를 갖춘 제품을 새로 만들어야 했음</dd>
@@ -262,7 +262,7 @@ title: 프로젝트
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="tts-api">TTS 스트리밍 API 리팩토링 (ZipVoice 기반) <span class="badge">MiCo AI</span></h3>
+    <h3 id="tts-api" data-print="full">TTS 스트리밍 API 리팩토링 (ZipVoice 기반) <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2025.09 ~ 2025.10 · 스트리밍 API 담당 (인수인계, 기여도 100%)</p>
     <dl class="ps">
         <dt>문제</dt><dd>전체 텍스트를 다 합성한 뒤 전송하는 구조라, 문장이 길수록 첫 응답이 비례해 늦어짐</dd>
@@ -313,7 +313,7 @@ title: 프로젝트
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="stt">STT 배포 <span class="badge">MiCo AI</span></h3>
+    <h3 id="stt" data-print="full">STT 배포 <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2025.07 ~ 2025.09 · STT 배포 · 서빙 담당 (팀 협업)</p>
     <dl class="ps">
         <dt>문제</dt><dd>대량 상담 전화를 실시간 처리해야 하는데 기존 STT가 채널 부족·추론 지연으로 병목</dd>
@@ -356,7 +356,7 @@ title: 프로젝트
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="k8s">Kubernetes-based AI Infrastructure <span class="badge">인피닉</span></h3>
+    <h3 id="k8s" data-print="full">Kubernetes-based AI Infrastructure <span class="badge">인피닉</span></h3>
     <p class="project-meta">2024.03 ~ 2025.04 · 3인 인프라 팀 — 관측성 · 스토리지 담당</p>
     <dl class="ps">
         <dt>문제</dt><dd>AI 서비스 20여 개를 수동 배포해 한 번에 수 시간이 걸리고, 장애가 나도 클러스터 어디서 무엇이 터졌는지 볼 수단이 없었음</dd>
@@ -731,7 +731,7 @@ title: 프로젝트
 <h2 class="group-title" id="g-personal">개인 프로젝트<span class="group-count">6</span></h2>
 
 <div class="project">
-    <h3 id="llmbench">llm-bench <span class="badge">개인 프로젝트</span></h3>
+    <h3 id="llmbench" data-print="full">llm-bench <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.07 · LLM 추론 벤치마크 CLI 설계 · 구현</p>
     <dl class="ps">
         <dt>문제</dt><dd>추론 서버 성능을 손으로 재다 보니 병목이 큐잉인지 연산인지 구분되지 않음</dd>
@@ -773,7 +773,7 @@ title: 프로젝트
 <hr class="rule-sub">
 
 <div class="project">
-    <h3 id="rag">LangGraph 기반 Corrective-RAG Agent <span class="badge">개인 프로젝트</span></h3>
+    <h3 id="rag" data-print="full">LangGraph 기반 Corrective-RAG Agent <span class="badge">개인 프로젝트</span></h3>
     <p class="project-meta">2026.07 · LLM Agent 시스템 설계 · 구현</p>
     <dl class="ps">
         <dt>문제</dt><dd>RAG 정답률이 낮을 때 검색·청킹·생성 중 어디가 원인인지 분리되지 않음</dd>
@@ -1109,6 +1109,31 @@ title: 프로젝트
 
 </section>
 
+<section class="print-summary">
+<h2 class="section-title">그 외 프로젝트 13건</h2>
+<p class="print-summary-note">아래 항목의 상세 기록(배경 · 구현 · 성과 · 회고)은
+포트폴리오 사이트 <strong>ckc5800.github.io/projects.html</strong> 에 있습니다.</p>
+<table>
+    <thead><tr><th>프로젝트</th><th>소속</th><th>기간</th><th>내용</th></tr></thead>
+    <tbody>
+        <tr><td>Speaker Diarization</td><td>MiCo AI</td><td>2025.04 ~ 07</td><td>Pyannote 평가·파인튜닝 — DER 개선 없어 미채택, 판정 근거 기록</td></tr>
+        <tr><td>NLP 문서·대화 요약</td><td>인피닉</td><td>2024.01 ~ 07</td><td>BART·T5 파인튜닝(R3F)해 사내 메신저 전사 배포 (약 300명)</td></tr>
+        <tr><td>3D Semantic Segmentation</td><td>인피닉</td><td>2022.08 ~ 12</td><td>LiDAR·카메라 융합 Trans-Unet — 제1저자 논문 2편·특허 2건</td></tr>
+        <tr><td>Latent Diffusion 합성 데이터</td><td>인피닉</td><td>2023.01 ~ 12</td><td>조건부 생성·LoRA로 국방 데이터 확보 — 우수논문상 (2023.11)</td></tr>
+        <tr><td>전차 탐지 모델</td><td>인피닉</td><td>2023.01 ~ 08</td><td>YOLO 기반, 조도·각도·배경 증강으로 환경 변화에 강건하게</td></tr>
+        <tr><td>OCR 데이터 생성 도구</td><td>이든티앤에스</td><td>2022.04 ~ 08</td><td>PyQt 주석 도구 단독 개발로 자동화 — 프로젝트 성과금 수령</td></tr>
+        <tr><td>금융 데이터 파이프라인</td><td>큐헷지</td><td>2020.09 ~ 2021.09</td><td>수집 → 정제 → 검증 → 저장 자동화로 수작업 대체</td></tr>
+        <tr><td>예지보전 Agent</td><td>개인</td><td>2026.07</td><td>결정적 신호처리로 탐지, LLM은 해석만 — NASA C-MAPSS 검증</td></tr>
+        <tr><td>한국어 멀티모달 상품 검색</td><td>개인</td><td>2026.08</td><td>CLIP 인덱스 44,072개, 실패를 구간별로 분해해 원인 규명</td></tr>
+        <tr><td>수요 예측 × 파운데이션 모델</td><td>개인</td><td>2026.08</td><td>M5 3만 시리즈 롤링 백테스트 — 집계 레벨에 따라 판정이 갈림을 실측</td></tr>
+        <tr><td>Portfolio MCP Server</td><td>개인</td><td>2026.07</td><td>MCP 서버·클라이언트 양쪽 구현, 서버는 결정적으로 유지</td></tr>
+        <tr><td>AI Face De-ID</td><td>대외 4인 팀</td><td>2021</td><td>생성 얼굴로 대체하는 비식별화 — 형태 보존, 신원만 제거</td></tr>
+        <tr><td>심전도 부정맥 진단</td><td>대회</td><td>2021</td><td>과기정통부·NIA 데이터톤 — 기저선 제거 후 1D-CNN 분류</td></tr>
+    </tbody>
+</table>
+</section>
+
+
 <script>
 // 좌측 목차: 현재 보고 있는 프로젝트를 표시
 (function () {
@@ -1440,6 +1465,21 @@ title: 프로젝트
     });
 
     apply();
+})();
+
+// ?print=compact — 인쇄 시 주력 프로젝트만 상세로 내보내는 모드
+(function () {
+    if (!/[?&]print=compact\b/.test(location.search)) return;
+    document.body.classList.add('compact');
+    // data-print 는 h3 에 있으므로 상위 카드에 클래스를 옮겨 단다 (:has() 불필요)
+    [].forEach.call(document.querySelectorAll('[data-print="full"]'), function (h) {
+        var card = h.closest('.project');
+        if (card) card.classList.add('print-full');
+    });
+    // 상세 대상이 하나도 없는 그룹은 제목까지 통째로 숨긴다
+    [].forEach.call(document.querySelectorAll('section.group'), function (g) {
+        if (!g.querySelector('.print-full')) g.hidden = true;
+    });
 })();
 
 // 카드를 접으면 그 카드 머리로 스크롤을 되돌린다.
