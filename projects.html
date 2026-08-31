@@ -370,7 +370,7 @@ title: 프로젝트
         <span class="tech-tag">ArgoCD</span>
     </div>
     <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 팀 구성과 담당 · 구현 · 성과 · 시스템 구조</span><span class="sum-close">Kubernetes-based AI Infrastructure — 접기</span></summary>
+        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 팀 구성과 담당 · 구현 · 성과 · 돌아보면 · 시스템 구조</span><span class="sum-close">Kubernetes-based AI Infrastructure — 접기</span></summary>
         <div class="detail-body">
 <h4 class="detail-head">배경</h4>
     <p><span class="sentence">AI 서비스·API 20여 개를 수동 배포해 한 번에 수 시간이 소요.</span><span class="sentence">자동화·스케일링·자원 효율 개선이 필요했고, 클러스터로 옮긴 뒤에는 무엇이 어디서 터졌는지 볼 수단도 함께 있어야 했음.</span></p>
@@ -390,7 +390,7 @@ title: 프로젝트
         <li>Prometheus로 클러스터·노드·워크로드 지표를 수집하고, Grafana 대시보드로 20여 개 모델의 상태를 한 화면에서 보게 구성</li>
         <li>AlertManager 경보 규칙을 세워 장애를 사람이 발견하기 전에 알리도록 전환</li>
         <li>로그는 관리형 서비스 없이 클러스터에 Elasticsearch·Loki를 직접 설치·운영 — 온프레미스라 외부 로깅 SaaS를 쓸 수 없는 조건</li>
-        <li>NFS 기반 PV/PVC로 모델 가중치·데이터 볼륨의 영속 저장을 구성 — 파드가 재시작돼도 모델을 다시 받지 않게</li>
+        <li><span class="sentence">스토리지 — 용도별로 나뉘어 있던 서버들(모델 가중치 보관, DB 등)을 클러스터로 통합하는 과정이라 저장소가 한 곳이 아니었음.</span><span class="sentence">각 저장소를 NFS로 노출하고 용도별 PV를 만들어 워크로드가 PVC로 바인딩하도록 구성 — 파드가 재시작돼도 모델 가중치를 다시 받지 않게 됨</span></li>
         <li>구축 이후 클러스터 장애 대응과 리소스 관리에 팀의 일원으로 참여</li>
     </ul>
 
@@ -400,6 +400,12 @@ title: 프로젝트
         <li>지표와 대시보드, 경보, 로그까지 <strong>관측성 5종을 혼자 구축</strong> (Prometheus, Grafana, AlertManager, Elasticsearch, Loki)</li>
         <li>NFS 기반 PV/PVC로 20여 개 모델의 가중치와 데이터 볼륨을 영속 관리</li>
         <li>20개 이상 ML 모델이 도는 클러스터를 지표와 로그로 들여다볼 수 있게 만들어, 장애 원인 추적이 가능해짐</li>
+    </ul>
+
+    <h4 class="detail-head">돌아보면</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">사내 첫 도입이라 참고할 선례가 없었고, 온프레미스에서 여러 NFS를 용도별로 붙이는 구성은 자료가 드물어 PV·PVC 바인딩 관계를 잡는 데 시행착오가 있었음.</span><span class="sentence">문서와 검색으로 메우는 데 시간을 썼고, 그만큼 남이 읽을 문서를 남기는 습관이 생김</span></li>
+        <li><span class="sentence">관측 스택은 세웠지만 SLO를 정의하지 못했음.</span><span class="sentence">경보를 리소스 임계값에 걸어 둬서, 사용자가 체감하는 장애와 어긋나는 경우가 있었음.</span><span class="sentence">지금이라면 모델별 지연·에러율로 목표를 먼저 정하고 경보를 거기 걸었을 것</span></li>
     </ul>
 
     <h4 class="detail-head">시스템 구조</h4>
