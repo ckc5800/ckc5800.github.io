@@ -122,21 +122,22 @@ main.container {
 /* ===== Hero ===== */
 .hero {
     text-align: center;
-    padding: 60px 0 50px;
+    /* 첫 화면을 hero 가 통째로 먹지 않도록 — 핵심 성과가 스크롤 없이 보여야 한다 */
+    padding: 24px 0 20px;
     background: transparent;
     color: var(--text);
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .hero h1 {
-    font-size: 56px;
+    font-size: 42px;
     margin-bottom: 14px;
     font-weight: 700;
-    letter-spacing: -1.8px;
+    letter-spacing: -1.4px;
 }
 
 .hero p {
-    font-size: 23px;
+    font-size: 20px;
     margin-bottom: 8px;
     color: var(--text-secondary);
     opacity: 1;
@@ -996,6 +997,79 @@ h2[id] {
    compact 인쇄본에서 상세를 빼는 13개 프로젝트를 한 쪽으로 정리한 것. */
 .print-summary {
     display: none;
+}
+
+/* 대표 프로젝트 — 19개 목록 앞에서 볼 것 3개를 먼저 고정한다 */
+.pick {
+    margin: 0 0 28px;
+}
+
+.pick-label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.pick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.pick-card {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 16px 18px;
+    border: 1px solid var(--separator);
+    border-radius: 14px;
+    background: var(--surface);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .15s ease, transform .15s ease;
+}
+
+.pick-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.pick-num {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--accent);
+}
+
+.pick-name {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.pick-note {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.pick-more {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 760px) {
+    .pick-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    .pick {
+        display: none;
+    }
 }
 
 /* ===== Skills Section ===== */
