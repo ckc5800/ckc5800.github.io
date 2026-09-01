@@ -1303,6 +1303,19 @@ mark.search-hit.is-current {
         display: block !important;
     }
 
+    /* Chrome 131+ 은 닫힌 details 안을 content-visibility 로 숨긴다.
+       자식에 display 를 줘도 뚫리지 않아, 인쇄에서 상세가 통째로 빠졌다.
+       (Chrome 152 부터는 beforeprint 로 펼치는 방식도 인쇄 레이아웃에 반영되지 않음) */
+    details::details-content {
+        content-visibility: visible !important;
+        block-size: auto !important;
+    }
+
+    /* 대섹션 제목만 쪽 하단에 남고 내용이 다음 장으로 넘어가는 것을 막는다 */
+    .section-title {
+        break-after: avoid;
+    }
+
     /* 배경색 대신 테두리로 — 배경 그래픽 옵션을 꺼도 형태가 남는다 */
     .metric,
     .badge,
