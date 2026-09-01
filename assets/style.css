@@ -1282,11 +1282,6 @@ mark.search-hit.is-current {
         break-after: avoid;
     }
 
-    /* 대섹션 제목만 남고 내용은 다음 장으로 넘어가는 쪽이 생긴다 */
-    .section-title {
-        break-after: avoid;
-    }
-
     h2 {
         font-size: 18pt;
         margin-bottom: 16px;
