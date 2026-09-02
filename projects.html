@@ -340,11 +340,11 @@ title: 프로젝트
     <p class="project-meta">2025.07 ~ 2025.09 · STT 배포 · 서빙 담당 (팀 협업)</p>
     <dl class="ps">
         <dt>문제</dt><dd>대량 상담 전화를 실시간 처리해야 하는데 기존 STT가 채널 부족·추론 지연으로 병목</dd>
-        <dt>해결</dt><dd><span class="sentence">Triton 기반으로 전처리·후처리·서비스 계층을 분리하고, 파일 배치와 실시간 스트리밍 두 경로를 모두 지원하도록 정비.</span><span class="sentence">파일 경로에는 외부에서 받은 화자 구간 정보를 붙여 화자별 전사를 생성</span></dd>
+        <dt>해결</dt><dd><span class="sentence">팀이 구성한 Triton 기반 파일·스트리밍 두 모델을 배포·운영하면서, 그 위의 전처리·후처리·서비스 계층을 모듈화해 두 경로가 공통 로직을 쓰도록 정비</span></dd>
     </dl>
     <div class="metrics">
-        <div class="metric"><span class="metric-value">2개</span><span class="metric-label">추론 모델 (파일 · 스트리밍)</span></div>
-        <div class="metric"><span class="metric-value">HTTP · gRPC</span><span class="metric-label">인터페이스 동시 제공</span></div>
+        <div class="metric"><span class="metric-value">3계층</span><span class="metric-label">전처리 · 후처리 · 서비스 모듈화</span></div>
+        <div class="metric"><span class="metric-value">2경로</span><span class="metric-label">파일 · 스트리밍 공통 로직 통합</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Whisper-large-v3</span>
@@ -362,15 +362,15 @@ title: 프로젝트
 
     <h4 class="detail-head">구현</h4>
     <p><span class="sentence"><strong>AIG STT 구조 개선:</strong> Triton Inference Server 기반 음성인식 파이프라인을 전처리·후처리·서비스 계층으로 모듈화해 파일/스트리밍 공통 로직을 통합.</span><span class="sentence">YAML 기반 로그 로테이션·아카이빙 체계와 Docker 구성을 정비하고, 컨테이너 자동 재시작 정책으로 안정성을 보강.</span></p>
-    <p><span class="sentence"><strong>엔진 구성:</strong> Triton Python 백엔드로 파일 기반과 실시간 스트리밍 두 추론 모델을 구성하고, HTTP와 gRPC 인터페이스를 모두 제공.</span></p>
-    <p><span class="sentence"><strong>화자별 전사:</strong> 요청에 담겨 오는 화자 구간(<code>diarization_data</code>)을 Faster Whisper의 <code>clip_timestamps</code> 형식으로 변환해 화자마다 따로 전사를 돌리고, 결과를 화자별로 묶어 반환.</span><span class="sentence">어느 화자에도 명확히 귀속되지 않는 구간은 <code>Ambiguous</code>로 분리해 오귀속을 막음.</span><span class="sentence">화자 구간 자체는 외부 입력이며, 별도 과제였던 Pyannote 파인튜닝 모델은 채택되지 않아 여기에 연결되지 않았음</span></p>
+    <p><span class="sentence"><strong>담당 경계:</strong> Triton Python 백엔드로 파일 기반과 실시간 스트리밍 두 추론 모델을 구성하고 HTTP·gRPC를 제공하는 구조는 <strong>팀이 만든 것</strong>이며, 본인은 그 배포·운영과 위 계층 정비를 담당.</span></p>
+    <p><span class="sentence"><strong>화자별 전사 (구현했으나 미적용):</strong> 요청에 담겨 오는 화자 구간을 Faster Whisper의 <code>clip_timestamps</code> 형식으로 변환해 화자마다 따로 전사를 돌리고, 귀속이 모호한 구간은 별도로 분리하는 기능을 구현.</span><span class="sentence">결과 품질이 쓸 만한 수준에 못 미쳐 <strong>실제 서비스에는 적용되지 않았음</strong>.</span><span class="sentence">화자 구간 자체는 외부 입력이며, 별도 과제였던 Pyannote 파인튜닝(<a href="#diarization">화자 분리</a>)과는 무관한 작업</span></p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li>Triton Inference Server 기반 배포 - 고성능 음성인식 파이프라인</li>
-        <li>Docker 컨테이너화로 배포 자동화 및 안정성 강화</li>
-        <li>배치 처리와 스트리밍 처리 모두 지원</li>
-        <li>전처리·후처리·서비스 계층 분리로 코드 재사용성 확보</li>
+        <li>전처리·후처리·서비스 계층 분리로 파일·스트리밍 공통 로직 통합 — 코드 재사용성 확보</li>
+        <li>YAML 기반 로그 로테이션·아카이빙 체계와 Docker 구성 정비</li>
+        <li>컨테이너 자동 재시작 정책으로 운영 안정성 보강</li>
+        <li>팀이 구성한 Triton 기반 파이프라인의 배포·운영 담당 (구성 자체는 팀 성과)</li>
     </ul>
         </div>
     </details>
