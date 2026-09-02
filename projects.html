@@ -135,7 +135,7 @@ title: 프로젝트
     <div class="metrics">
         <div class="metric"><span class="metric-value">1,008 → 652ms</span><span class="metric-label">burst p95 TTFB</span></div>
         <div class="metric"><span class="metric-value">0.73 → 3.09 rps</span><span class="metric-label">엔진 처리량</span></div>
-        <div class="metric"><span class="metric-value">동시 256건</span><span class="metric-label">실패 없이 수용 (부하 테스트)</span></div>
+        <div class="metric"><span class="metric-value">동시 256건</span><span class="metric-label">Stream 부하 테스트 무오류 (실시간 운영값은 36)</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Python 3.12</span>
@@ -712,7 +712,7 @@ title: 프로젝트
 
 <div class="project">
     <h3 id="quhedge">Data Collection & Preprocessing <span class="badge">큐헷지</span></h3>
-    <p class="project-meta">2020.09 ~ 2021.09 · 인턴 — 데이터 수집 · 전처리 파이프라인 구축</p>
+    <p class="project-meta">2020.09 ~ 2021.09 · 계약직 — 데이터 수집 · 전처리 파이프라인 구축</p>
     <dl class="ps">
         <dt>문제</dt><dd>여러 소스에서 모은 금융 데이터를 수동으로 정제·통합하느라 분석까지 시간이 오래 걸림</dd>
         <dt>해결</dt><dd>수집 → 정제 → 검증 → 저장을 자동화한 파이프라인 구축</dd>
@@ -775,7 +775,7 @@ title: 프로젝트
         <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">llm-bench — 접기</span></summary>
         <div class="detail-body">
 <h4 class="detail-head">배경</h4>
-    <p><span class="sentence">TTS 게이트웨이 TTFB를 절반 이하로 줄이며 손으로 하던 측정을 도구화.</span><span class="sentence">OpenAI 호환 엔드포인트(Ollama, vLLM 등)에 동시 부하를 걸어 TTFT·지연 percentile·처리량을 측정하는 CLI.</span></p>
+    <p><span class="sentence">TTS 게이트웨이 TTFB를 절반 가까이 줄이며 손으로 하던 측정을 도구화.</span><span class="sentence">OpenAI 호환 엔드포인트(Ollama, vLLM 등)에 동시 부하를 걸어 TTFT·지연 percentile·처리량을 측정하는 CLI.</span></p>
 
     <h4 class="detail-head">구현</h4>
     <p><span class="sentence"><strong>측정 설계:</strong> asyncio + httpx로 동시성 수준별 스윕.</span><span class="sentence">스트리밍 청크 단위로 TTFT(첫 토큰까지 시간)와 tokens/s를 요청별 기록, p50/p95 집계.</span><span class="sentence">예열 요청으로 모델 로드 시간을 측정에서 분리.</span><span class="sentence">의존성은 httpx 하나, 차트는 SVG 직접 생성.</span></p>
