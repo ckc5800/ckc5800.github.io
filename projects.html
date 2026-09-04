@@ -17,6 +17,7 @@ title: 프로젝트
     <div class="side-nav-group">
         <div class="side-nav-label">추론 서빙 · 성능 엔지니어링</div>
         <a href="#tts">Qwen3-TTS 플랫폼</a>
+        <a href="#tts-ops">TTS 운영·품질</a>
         <a href="#tts-api">TTS API 리팩토링</a>
         <a href="#stt">STT 배포</a>
         <a href="#k8s">Kubernetes 인프라</a>
@@ -78,6 +79,7 @@ title: 프로젝트
         <div class="toc-label">추론 서빙 · 성능 엔지니어링</div>
         <div class="toc-links">
             <a class="toc-link" href="#tts">Qwen3-TTS 플랫폼</a>
+            <a class="toc-link" href="#tts-ops">TTS 운영·품질</a>
             <a class="toc-link" href="#tts-api">TTS API 리팩토링</a>
             <a class="toc-link" href="#stt">STT 배포</a>
             <a class="toc-link" href="#k8s">Kubernetes 인프라</a>
@@ -123,7 +125,7 @@ title: 프로젝트
 <h2 class="section-title">실무 경력</h2>
 
 <section class="group">
-<h2 class="group-title" id="g-serving">추론 서빙 · 성능 엔지니어링<span class="group-count">4</span></h2>
+<h2 class="group-title" id="g-serving">추론 서빙 · 성능 엔지니어링<span class="group-count">5</span></h2>
 
 <div class="project">
     <h3 id="tts" data-print="full">Qwen3-TTS 플랫폼 구축 <span class="badge">MiCo AI</span></h3>
@@ -280,6 +282,27 @@ title: 프로젝트
     </details>
 
 </details>
+</div>
+
+<hr class="rule-sub">
+
+<div class="project">
+    <h3 id="tts-ops">TTS 운영 · 품질 관리 <span class="badge">MiCo AI</span></h3>
+    <p class="project-meta">2025.10 ~ 2026.02 · 기존 TTS 서비스 운영 · 품질 담당</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>스트리밍 API 리팩토링 이후, 기존 TTS 서비스를 실제로 굴리면서 품질을 유지하고 다음 플랫폼에 필요한 요구사항을 찾아내야 했음</dd>
+        <dt>해결</dt><dd><span class="sentence">합성 결과 QA·검수, 학습용 음성 데이터 정제, 사내 운영 테스트를 맡아 운영을 이어감.</span><span class="sentence">이 기간에 확인한 한계가 뒤이은 Qwen3-TTS 플랫폼의 설계 요구사항이 됨</span></dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">QA · 데이터 정제</span><span class="metric-label">담당 범위</span></div>
+        <div class="metric"><span class="metric-value">Qwen3-TTS</span><span class="metric-label">요구사항으로 이어짐</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">TTS</span>
+        <span class="tech-tag">QA</span>
+        <span class="tech-tag">Data Curation</span>
+        <span class="tech-tag">Service Operation</span>
+    </div>
 </div>
 
 <hr class="rule-sub">
@@ -583,7 +606,7 @@ title: 프로젝트
 
 <div class="project">
     <h3 id="latent">Synthetic Data Generation with Latent Diffusion <span class="badge">인피닉</span></h3>
-    <p class="project-meta">2023.01 ~ 2023.12 · 생성 모델 기반 국방 데이터 확보 연구</p>
+    <p class="project-meta">2023.09 ~ 2023.12 · 생성 모델 기반 국방 데이터 확보 연구</p>
     <dl class="ps">
         <dt>문제</dt><dd>국방 도메인은 보안 제약으로 학습 데이터 수집이 어렵고, GAN은 모드 붕괴로 대안이 못 됨</dd>
         <dt>해결</dt><dd>Latent Diffusion에 조건부 생성과 LoRA를 얹어 도메인 특성을 학습시키고 합성 데이터 생성</dd>
