@@ -39,6 +39,7 @@ title: 프로젝트
         <div class="side-nav-label">개인 프로젝트</div>
         <a href="#llmbench">llm-bench</a>
         <a href="#rag">RAG Agent</a>
+        <a href="#ragbench">PDF 전처리 벤치마크</a>
         <a href="#pdm">예지보전 Agent</a>
         <a href="#visual">멀티모달 상품 검색</a>
         <a href="#forecast">수요 예측</a>
@@ -71,7 +72,7 @@ title: 프로젝트
             <span class="pick-note">20여 개 모델이 도는 클러스터의 지표·경보·로그 단독 구축</span>
         </a>
     </div>
-    <p class="pick-more">아래는 전체 19건 — 실무 12건 · 기술 검증 7건</p>
+    <p class="pick-more">아래는 전체 21건 — 실무 12건 · 기술 검증 · 개인 연구 9건</p>
 </div>
 
 <div class="toc toc-projects">
@@ -107,6 +108,7 @@ title: 프로젝트
         <div class="toc-links">
             <a class="toc-link" href="#llmbench">llm-bench</a>
             <a class="toc-link" href="#rag">RAG Agent</a>
+            <a class="toc-link" href="#ragbench">PDF 전처리 벤치마크</a>
             <a class="toc-link" href="#pdm">예지보전 Agent</a>
             <a class="toc-link" href="#visual">멀티모달 상품 검색</a>
             <a class="toc-link" href="#forecast">수요 예측</a>
@@ -242,7 +244,7 @@ title: 프로젝트
     </ul>
     <p><strong>운영:</strong> vLLM(GPU)과 Supertonic(CPU) 듀얼 엔진 구성 — 장애 시 Circuit Breaker가 CPU 엔진으로 자동 폴백.</p>
     <ul class="detail-list">
-        <li>무중단 롤링 재배포 체계 + 온보딩 가이드·운영 런북·장애복구 절차·성능 명세 문서화로 운영 이관 가능한 수준까지 정비</li>
+        <li>무중단 롤링 재배포 체계 + 온보딩 가이드·운영 런북·장애복구 절차·성능 명세 문서화로 다른 담당자가 이어받을 수 있도록 정리</li>
         <li>배포 직후 활성 음성별 prefill 워밍과 정형 인사말 프리캐시를 자동 실행 — 첫 사용자가 콜드 경로를 밟지 않게</li>
         <li><span class="sentence">스트리밍 품질을 자동 감지해 자가 치유 (위 차별점 ① 참조).</span><span class="sentence">품질 사고가 캐시에 굳는 것을 차단</span></li>
     </ul>
@@ -291,7 +293,7 @@ title: 프로젝트
     <p class="project-meta">2025.10 ~ 2026.02 · 기존 TTS 서비스 운영 · 품질 담당</p>
     <dl class="ps">
         <dt>문제</dt><dd>스트리밍 API 리팩토링 이후, 기존 TTS 서비스를 실제로 굴리면서 품질을 유지하고 다음 플랫폼에 필요한 요구사항을 찾아내야 했음</dd>
-        <dt>해결</dt><dd><span class="sentence">합성 결과 QA·검수, 학습용 음성 데이터 정제, 사내 운영 테스트를 맡아 운영을 이어감.</span><span class="sentence">이 기간에 확인한 한계가 뒤이은 Qwen3-TTS 플랫폼의 설계 요구사항이 됨</span></dd>
+        <dt>해결</dt><dd><span class="sentence">합성 결과 QA·검수, 학습용 음성 데이터 정제, 사내 운영 테스트를 맡아 운영을 이어감.</span><span class="sentence">이 기간에 확인한 품질 문제를 뒤이은 Qwen3-TTS 플랫폼 설계에 반영</span></dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">QA · 데이터 정제</span><span class="metric-label">담당 범위</span></div>
@@ -774,7 +776,7 @@ title: 프로젝트
 <h2 class="section-title">기술 검증 · 개인 연구</h2>
 
 <section class="group">
-<h2 class="group-title" id="g-personal">개인 프로젝트<span class="group-count">6</span></h2>
+<h2 class="group-title" id="g-personal">개인 프로젝트<span class="group-count">7</span></h2>
 
 <div class="project">
     <h3 id="llmbench" data-print="full">llm-bench <span class="badge">개인 프로젝트</span></h3>
@@ -808,7 +810,7 @@ title: 프로젝트
         <li>로컬 Ollama(CPU) 기준선: 동시성 1에서 TTFT 0.62초, 7.6 tokens/s</li>
         <li><span class="sentence">동시성을 2·4로 올리자 TTFT는 7.9초·12.4초로 악화되는데 처리량은 8.1 tokens/s에 고정.</span><span class="sentence">요청이 병렬로 처리되지 않고 줄을 서고 있다는 신호</span></li>
         <li><span class="sentence">원인은 Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화.</span><span class="sentence">벤치마크 도구가 병목의 위치를 짚어냄</span></li>
-        <li><span class="sentence">NUM_PARALLEL=4로 서버 설정만 바꿔 같은 스윕을 재실행하니 TTFT p50이 12.4초에서 0.93초로, 합산 처리량이 8.1에서 22.9 tokens/s로 스케일.</span><span class="sentence">진단 → 설정 변경 → 재측정으로 루프를 닫음</span></li>
+        <li><span class="sentence">NUM_PARALLEL=4로 서버 설정만 바꿔 같은 스윕을 재실행하니 TTFT p50이 12.4초에서 0.93초로, 합산 처리량이 8.1에서 22.9 tokens/s로 스케일.</span><span class="sentence">진단 → 설정 변경 → 재측정까지 한 번에 확인</span></li>
     </ul>
 
     <p class="repo-link"><a href="https://github.com/ckc5800/llm-bench" target="_blank">GitHub 저장소</a></p>
@@ -873,11 +875,75 @@ title: 프로젝트
     <ul class="detail-list">
         <li><span class="sentence">Parent-Child 청킹 — 초기엔 유일하게 풀던 집계 질문을 base의 top-N 확장이 함께 해결했고 child recall@1도 열위(78% vs 89%)라 미채택.</span><span class="sentence">판단 근거를 코드 주석에 기록</span></li>
         <li>시맨틱 청킹(임베딩 유사도 breakpoint, 직접 구현) — 동일 조건 비교에서 base가 전 지표 우위로 미채택</li>
-        <li>격리 단일 호출의 판단이 전체 파이프라인 반복 측정에서 뒤집힌 사례 확보 — n=1 실험의 함정을 실측으로 문서화</li>
+        <li>격리 단일 호출의 판단이 전체 파이프라인 반복 측정에서 뒤집힌 사례 확보 — n=1 실험의 함정을 직접 측정해 문서화</li>
         <li>이 사이트의 프로젝트 검색이 살아있는 데모 — BM25 레이어를 순수 브라우저 JS로 이식 (다중 단어 AND, 한글 바이그램으로 조사·어미 대응, 관련도순 정렬). 목차의 검색창에서 바로 체험 가능</li>
     </ul>
 
     <p class="repo-link"><a href="https://github.com/ckc5800/rag-agent" target="_blank">GitHub 저장소 (코드 및 개선 히스토리)</a></p>
+        </div>
+    </details>
+</div>
+
+<hr class="rule-sub">
+
+<div class="project">
+    <h3 id="ragbench" data-print="full">한국어 PDF 전처리 × RAG 검색 품질 벤치마크 (rag-preprocess-bench) <span class="badge">개인 프로젝트</span></h3>
+    <p class="project-meta">2026.08 · 문서 파싱 · 청킹 파이프라인 실측 설계</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>한국어 PDF의 파서·청킹·정제 선택이 관행으로 정해질 뿐, 검색 품질을 실제로 얼마나 바꾸는지 근거가 없음</dd>
+        <dt>해결</dt><dd><span class="sentence">채점기부터 고정한 뒤 한 번에 한 축만 바꿔 14개 구성을 실측.</span><span class="sentence">채택안뿐 아니라 기각안과 기각 사유를 전부 수치와 함께 남김</span></dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">73.0 → 85.3%</span><span class="metric-label">page-level hit@10 (+12.3pp)</span></div>
+        <div class="metric"><span class="metric-value">채택 4 · 기각 10</span><span class="metric-label">기각이 더 많았고 전부 기록</span></div>
+        <div class="metric"><span class="metric-value">문서 64개 · 1,450p</span><span class="metric-label">사람이 만든 질문 300개</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">pymupdf</span>
+        <span class="tech-tag">EasyOCR</span>
+        <span class="tech-tag">Kiwi</span>
+        <span class="tech-tag">BM25</span>
+        <span class="tech-tag">Chunking</span>
+        <span class="tech-tag">Benchmark Design</span>
+    </div>
+    <details>
+        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 측정 설계 · 채택 · 기각 · 남긴 것</span><span class="sum-close">한국어 PDF 전처리 × RAG 검색 품질 벤치마크 — 접기</span></summary>
+        <div class="detail-body">
+    <h4 class="detail-head">배경</h4>
+    <p><span class="sentence">RAG 파이프라인에서 전처리는 "이렇게 하면 좋다"는 관행만 있고 근거 수치가 드뭅니다.</span><span class="sentence">무엇이 실제로 검색을 바꾸는지 가려내려고 전처리 축 하나만 남기고 리트리버를 Kiwi + BM25로 고정했습니다.</span></p>
+
+    <h4 class="detail-head">측정 도구를 먼저 고정</h4>
+    <ul class="detail-list">
+        <li>LLM 채점 없이 정답 페이지 매칭으로 결정적 채점 — 채점기 흔들림이 전처리 효과로 잘못 귀속되는 것을 차단</li>
+        <li>랜덤 검색 하한을 해석적(0.687%)·경험적(0.78%) 두 방식으로 구해 일치를 확인 — 하네스 자체의 검증</li>
+        <li>전체 평균만 보고하는 것을 금지하고 context_type(paragraph · table · image)과 도메인 슬라이스를 항상 병기</li>
+        <li>데이터셋 메타를 믿지 않음 — 실제 PDF 1,450페이지 vs 메타 합 1,388에서 4개 문서의 오류를 찾아, 평가 기준을 항상 실제 파일로 고정</li>
+    </ul>
+
+    <h4 class="detail-head">채택 4건 — 73.0 → 85.3%</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">파서를 pypdf → <strong>pymupdf</strong>로 교체해 76.0% (이득 9 / 손실 0).</span><span class="sentence">CID 인코딩을 못 풀어 깨진 문자를 내던 문서가 정상 복원되며 law 도메인이 0.650 → 0.783으로 올랐고, 이득 9건 중 8건이 그 한 문서에 몰려 있었음</span></li>
+        <li><span class="sentence"><strong>1024자 + 256 오버랩</strong> 청킹으로 80.7%.</span><span class="sentence">멀티페이지 청크는 top-10의 페이지 커버리지를 2.12배로 늘려 비교가 불공정해지므로, 커버리지를 맞춘 대조(top-5 vs top-10)로 재판정 — 그러고도 표 질문 <strong>+8pp</strong>가 남아 실질 개선으로 판정</span></li>
+        <li><span class="sentence">빈 페이지에만 <strong>EasyOCR(ko)</strong> 폴백을 붙여 84.7% (이득 12 / 손실 0).</span><span class="sentence">스캔 페이지가 정답인 14문항이 전패에서 12건 정답으로 전환</span></li>
+        <li>청크에 <strong>문서 제목 주입</strong>으로 85.3% — 이득 2 / 손실 0, 공동 정답 문항 안에서도 순위 개선 19 vs 악화 9</li>
+    </ul>
+
+    <h4 class="detail-head">기각 10건 — 여기가 본론</h4>
+    <ul class="detail-list">
+        <li><span class="sentence"><strong>docling 전면 교체</strong> — hit@10 80.7 → 72.7%(−8pp), 추출 22초 → 약 3시간(약 500배).</span><span class="sentence">표·이미지 슬라이스도 전패.</span><span class="sentence">손실 26문항 중 17개가 두 문서에 몰렸고 한 문서는 404자, 다른 하나는 0자로 추출이 붕괴 — 무거운 파서는 평균보다 꼬리 위험이 치명적이라는 결론</span></li>
+        <li><span class="sentence"><strong>RapidOCR 폴백</strong> — flip 0/0 완전 무효.</span><span class="sentence">원인은 구조가 아니라 언어였음: 기본 설정이 한국어 스캔을 중국어 모델로 읽어 한자 쓰레기를 출력하고 있었음.</span><span class="sentence">"OCR이 텍스트를 냈다"와 "그 언어를 읽었다"는 다른 말</span></li>
+        <li>표면 정제 5종(NFKC · 개행 처리 2종 · 헤더/푸터 제거 · 숫자 정규화) 전부 무효~역효과 — 개행→공백은 Kiwi가 이미 공백으로 취급해 완전 no-op</li>
+        <li>문장 경계 청킹 무효 — 절단 손실을 256자 오버랩이 이미 흡수하고 있었음</li>
+        <li>표 텍스트 덧붙이기는 전체 동률인데 표 질문이 80.0 → 78.0%로 하락 (중복 추가 + 청크 증가로 BM25 희석), pdfplumber는 같은 품질에 23배 느림, 블록 청킹은 평균 387자로 과분할</li>
+    </ul>
+
+    <h4 class="detail-head">결론과 남긴 것</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">검색 품질을 움직인 것은 <strong>깨진 것을 고치는 전처리</strong>(인코딩 깨짐 · 스캔 · 페이지 경계 절단)뿐이었고, <strong>정상 텍스트를 다듬는 전처리</strong>는 전부 무효였음.</span><span class="sentence">단 이 결론은 "Kiwi + BM25 한정"이라고 README에 못 박아 뒀음 — 임베딩에서는 달라질 수 있음</span></li>
+        <li>실무였다면 docling을 전면 교체가 아니라 품질 게이트 기반 폴백으로 붙였을 것 — 추출 0자·CID 깨짐을 탐지해 그 문서만 무거운 경로로 보내는 라우팅</li>
+    </ul>
+
+    <p class="repo-link"><a href="https://github.com/ckc5800/rag-preprocess-bench" target="_blank">GitHub 저장소 (실험 기록 및 기각 사유)</a></p>
         </div>
     </details>
 </div>
