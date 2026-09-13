@@ -1224,7 +1224,7 @@ title: 프로젝트
 <section class="print-summary">
 <h2 class="section-title">그 외 프로젝트 14건</h2>
 <p class="print-summary-note">아래 항목의 상세 기록(배경 · 구현 · 성과 · 회고)은
-포트폴리오 사이트 <strong>ckc5800.github.io/projects.html</strong> 에 있습니다.</p>
+포트폴리오 사이트 <strong>ckc5800.github.io/projects.html</strong>에 있습니다.</p>
 <table>
     <thead><tr><th>프로젝트</th><th>소속</th><th>기간</th><th>내용</th></tr></thead>
     <tbody>
@@ -1583,7 +1583,7 @@ title: 프로젝트
 // ?print=compact — 상세 대상 없는 그룹 정리 (compact 클래스는 레이아웃에서 부여)
 (function () {
     if (!/[?&]print=compact\b/.test(location.search)) return;
-    // data-print 는 h3 에 있으므로 상위 카드에 클래스를 옮겨 단다
+    // data-print는 h3에 있으므로 상위 카드에 클래스를 옮겨 단다
     [].forEach.call(document.querySelectorAll('[data-print="full"]'), function (h) {
         var card = h.closest('.project');
         if (card) card.classList.add('print-full');
