@@ -207,7 +207,7 @@ title: 프로젝트
     <div class="diagram-grid">
         <figure class="diagram-fig">
             <img class="diagram" src="/assets/images/tts-physical-architecture.svg" alt="Qwen3-TTS 물리 구조도 — 클라이언트/SDK에서 tts-api를 거쳐 vLLM(GPU)과 Supertonic(CPU) 엔진으로 분기하는 컨테이너 구성">
-            <figcaption class="caption"><span class="sentence">물리 구조 — 컨테이너 단위 배치.</span><span class="sentence">실선이 기동 중인 경로, 점선은 미기동(nginx·PostgreSQL·vllm-b).</span></figcaption>
+            <figcaption class="caption"><span class="sentence">물리 구조 — 컨테이너 단위 배치.</span><span class="sentence">실선이 기동 중인 경로, 점선은 미기동(nginx, PostgreSQL, vllm-b).</span></figcaption>
         </figure>
         <figure class="diagram-fig">
             <img class="diagram" src="/assets/images/tts-logical-architecture.svg" alt="Qwen3-TTS 논리 구조도 — 입력·인증·텍스트 처리·음성 합성·품질 캐시를 거쳐 스트리밍/배치로 출력되는 6개 계층">
@@ -446,7 +446,7 @@ title: 프로젝트
     <ul class="detail-list">
         <li>Prometheus로 클러스터·노드·워크로드 지표를 수집하고, Grafana 대시보드로 20여 개 모델의 상태를 한 화면에서 보게 구성</li>
         <li>AlertManager 경보 규칙을 세워 장애를 사람이 발견하기 전에 알리도록 전환</li>
-        <li>로그는 관리형 서비스 없이 클러스터에 Elasticsearch·Loki를 직접 설치·운영 — 온프레미스라 외부 로깅 SaaS를 쓸 수 없는 조건</li>
+        <li>로그는 관리형 서비스 없이 클러스터에 Elasticsearch, Loki를 직접 설치·운영 — 온프레미스라 외부 로깅 SaaS를 쓸 수 없는 조건</li>
         <li><span class="sentence">스토리지 — 용도별로 나뉘어 있던 서버들(모델 가중치 보관, DB 등)을 클러스터로 통합하는 과정이라 저장소가 한 곳이 아니었음.</span><span class="sentence">각 저장소를 NFS로 노출하고 용도별 PV를 만들어 워크로드가 PVC로 바인딩하도록 구성 — 파드가 재시작돼도 모델 가중치를 다시 받지 않게 됨</span></li>
         <li>구축 이후 클러스터 장애 대응과 리소스 관리에 팀의 일원으로 참여</li>
     </ul>
