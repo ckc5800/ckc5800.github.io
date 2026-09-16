@@ -249,7 +249,7 @@ title: 프로젝트
     <ul class="detail-list">
         <li>전처리 3~6ms·API 약 100ms는 고정이고, <strong>동시 요청 수에 선형 비례하는 구간은 엔진 디코드 루프</strong>(동시 +1당 약 +20ms)임을 확인</li>
         <li><span class="sentence">스트림 세마포어를 32→40으로 여는 통상적 처방은 대조 실험 결과 대기 위치만 엔진 안으로 옮길 뿐 SLA는 오히려 악화.</span><span class="sentence">세마포어의 역할을 병목 제거 장치에서 과부하 보호막으로 다시 규정</span></li>
-        <li>실효 레버를 코덱 좌측 컨텍스트(72→25, CUDA graph capture 목록 정합 수정 동반)와 첫 청크 프레임 수(4→2) 둘로 좁혀 확정</li>
+        <li>실효 레버를 코덱 좌측 컨텍스트(72→25, CUDA graph capture 목록 정합 수정 동반)와 첫 청크 프레임 수(4→2) 둘로 좁혀 확정. 첫 청크 프레임은 이후 첫 재생 시점 기준으로 다시 재서 5로 조정 — 첫 방출이 재생 판정선을 바로 넘어 첫 재생 383→121ms</li>
         <li>청크 경계 불연속을 z-검정으로 자동 판정하는 품질 게이트를 통과시킨 뒤 채택</li>
     </ul>
     <p><strong>측정 하네스:</strong> 성능 스윕을 도구화하던 중 "0.6B 라벨로 1.7B를 측정"한 오라벨 사고를 겪고, 측정 자체를 믿을 수 있게 만드는 안전장치를 하네스에 내장.</p>
@@ -299,7 +299,7 @@ title: 프로젝트
         <li><span class="sentence"><strong>CPU 스파이크 (ReDoS 가드 오버헤드)</strong> — 정규식 치환의 ReDoS 방어용 ThreadPoolExecutor(max_workers=1) 가드가 치환마다 새로 인스턴스화되어 다수 합성 시 CPU 스파이크와 지연을 유발.</span><span class="sentence">오버엔지니어링된 가드를 철거하고 네이티브 C 구현체(re.sub) 동기 호출로 교체해 핫 패스 병목 제거</span></li>
         <li><span class="sentence"><strong>전면 백색소음 장애</strong> — vLLM 0.24 전환 직후 모든 합성이 백색소음으로 재생되는 문제를 추적해, 엔진의 SSE(JSON) 응답이 그대로 PCM으로 재생된 것이 원인임을 확인.</span><span class="sentence">응답 포맷을 오디오로 강제해 해결</span></li>
         <li><span class="sentence"><strong>스트리밍 WAV 헤더 정리</strong> — 엔진이 문장마다 RIFF 헤더를 붙여 보내 클라이언트 디코딩이 어긋나는 문제.</span><span class="sentence">문장별 헤더를 걷어내고 세션 전체에 스트리밍 WAV 헤더를 한 번만 내보내는 구조로 정리해 해결</span></li>
-        <li><span class="sentence"><strong>크래시로 오진할 뻔한 스트림 집단 절단</strong> — 고부하 burst 중 스트림이 무더기로 끊기고 수 분간 무응답.</span><span class="sentence">엔진 크래시로 보였으나 컨테이너 재시작 횟수가 0인 것을 확인하고 가설 폐기.</span><span class="sentence">실체는 추론 엔진의 텐서 결합 오류가 집단 발생하자 API 서킷 브레이커가 열려 빈 응답을 반환한 연쇄.</span><span class="sentence">동시 한도를 실링(40)보다 한 티어 낮춰(36) 과부하 진입 자체를 완화</span></li>
+        <li><span class="sentence"><strong>크래시로 오진할 뻔한 스트림 집단 절단</strong> — 고부하 burst 중 스트림이 무더기로 끊기고 수 분간 무응답.</span><span class="sentence">엔진 크래시로 보였으나 컨테이너 재시작 횟수가 0인 것을 확인하고 가설 폐기.</span><span class="sentence">실체는 과부하 구간에서 엔진의 "sr concat" 경고(업스트림이 인정한 무해한 로그)가 무더기로 뜨는 사이 API의 vLLM 서킷이 열리고, 폴백이 빈 응답을 반환한 연쇄.</span><span class="sentence">동시 한도를 실링(40)보다 한 티어 낮춰(36) 과부하 진입 자체를 완화</span></li>
         <li><span class="sentence"><strong>HTTP 스트림 tail 지연</strong> — 저지연을 표방하면서 실제로는 tail 버퍼를 문장 끝까지 붙들어, 약 615ms 분량이 모일 때까지 한 바이트도 내보내지 않던 구조.</span><span class="sentence">WebSocket 경로에만 있던 무음 감지 기반 조기 flush를 HTTP에 이식해 단문 TTFB와 문장 경계 끊김을 함께 해소</span></li>
     </ol>
         </div>
@@ -455,7 +455,7 @@ title: 프로젝트
     <p><span class="sentence">AI 서비스·API 20여 개를 수동 배포해 한 번에 수 시간이 소요.</span><span class="sentence">자동화·스케일링·자원 효율 개선이 필요했고, 클러스터로 옮긴 뒤에는 무엇이 어디서 터졌는지 볼 수단도 함께 있어야 했음.</span></p>
 
     <h4 class="detail-head">팀 구성과 담당</h4>
-    <p><span class="sentence">인프라 엔지니어 3인이 온프레미스에 사내 첫 Kubernetes 플랫폼을 구축.</span><span class="sentence">아래가 팀이 만든 전체 구성이고, 그중 <strong>관측성 계층이 본인 담당</strong>.</span></p>
+    <p><span class="sentence">인프라 엔지니어 3인이 온프레미스에 사내 첫 Kubernetes 플랫폼을 구축.</span><span class="sentence">아래가 팀이 만든 전체 구성이고, 그중 <strong>관측성 계층과 스토리지가 본인 담당</strong>.</span></p>
     <ul class="detail-list">
         <li>클러스터·네트워크 — MetalLB LoadBalancer, Ingress-nginx 라우팅 <span class="who">팀</span></li>
         <li><strong>스토리지 — NFS 기반 PV/PVC로 모델·데이터 영속 볼륨 관리</strong> <span class="who mine">본인</span></li>
@@ -505,7 +505,7 @@ title: 프로젝트
     <p class="project-meta">2025.04 ~ 2025.07 · 화자 분리 모델 평가 · 파인튜닝 (미채택)</p>
     <dl class="ps">
         <dt>문제</dt><dd>자사 메신저 제품의 영상통화 회의록 기능에 화자 구분이 필요했으나, STT는 텍스트만 돌려줘 누가 말했는지 알 수 없었음</dd>
-        <dt>해결</dt><dd><span class="sentence">Pyannote 사전 학습 모델을 평가하고 공개 데이터로 파인튜닝을 시도했으나 DER 개선이 없어 미채택.</span><span class="sentence">STT 결합까지 가지 못하고 종료 — 판단 근거와 회고를 아래 기록</span></dd>
+        <dt>해결</dt><dd><span class="sentence">Pyannote 사전 학습 모델을 평가하고 공개 데이터로 파인튜닝을 시도했으나 DER 개선이 없어 미채택 — 판단 근거와 회고를 아래 기록</span></dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">미채택</span><span class="metric-label">파인튜닝 판정 결과</span></div>
@@ -525,20 +525,20 @@ title: 프로젝트
     <p><span class="sentence">회사가 만드는 메신저·협업 제품에 영상통화 회의록·전사 기능을 넣으려면 발화자 식별이 필요했음.</span><span class="sentence">STT는 음성 인식만 제공해 누가 말했는지 구분할 수단이 없었고, 화자 분리 모델을 검토해 제품에 쓸 수 있는 수준인지 판정하는 것이 과제였음.</span></p>
 
     <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>모델 평가:</strong> Pyannote 사전 학습 모델을 상담 음성에 적용해 DER을 측정하고, 채택 가능한 수준인지 판정하는 것이 1차 목표였음.</span></p>
-    <p><span class="sentence"><strong>파인튜닝 시도:</strong> 상담 도메인에 맞추려 공개 화자 분리 데이터를 모아 파라미터 튜닝과 학습을 수행하고 DER로 평가.</span></p>
+    <p><span class="sentence"><strong>모델 평가:</strong> Pyannote 사전 학습 모델의 DER을 측정하고, 채택 가능한 수준인지 판정하는 것이 1차 목표였음.</span></p>
+    <p><span class="sentence"><strong>파인튜닝 시도:</strong> 공개 화자 분리 데이터를 모아 파라미터 튜닝과 학습을 수행하고 DER로 평가.</span></p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li><span class="sentence">모델 평가와 파인튜닝 파이프라인(데이터 수집 → 학습 → DER 측정)을 구축해 <strong>채택 여부를 판정할 근거를 만듦</strong>.</span><span class="sentence">결론은 미채택이었고, STT 결합까지 진행되지 못한 채 종료</span></li>
+        <li><span class="sentence">모델 평가와 파인튜닝 파이프라인(데이터 수집 → 학습 → DER 측정)을 구축해 <strong>채택 여부를 판정할 근거를 만듦</strong>.</span><span class="sentence">결론은 미채택. 화자 분리는 이후 사내 회의록 STT 작업(2025.07 ~ 09)에서 STT와 연동</span></li>
         <li>파인튜닝은 <strong>사전 학습 모델 대비 DER 개선이 없어 미채택</strong>. 결과를 포장하지 않고 그대로 기록</li>
     </ul>
 
     <h4 class="detail-head">미채택 기록과 회고</h4>
     <ul class="detail-list">
         <li><span class="sentence">확보한 학습 데이터의 양과 라벨이 파인튜닝을 지탱할 수준이 아니었음.</span><span class="sentence">공개 데이터를 모으는 것으로 시작한 시점에 이미 데이터 규모·품질 점검이 선행됐어야 했다고 봄</span></li>
-        <li><span class="sentence">지금이라면 학습부터 하지 않음.</span><span class="sentence">사전 학습 모델의 DER을 먼저 재고, 상담 음성 몇십 건이라도 직접 라벨링해 실패 유형(중첩 발화·짧은 맞장구·채널 특성)을 분류한 뒤, 그 유형이 학습으로 풀리는 문제인지부터 판정했을 것</span></li>
-        <li><span class="sentence">모델을 바꾸는 대신 후처리로 접근하는 선택지도 검증하지 않았음.</span><span class="sentence">상담 통화는 2인 대화라는 사전 지식이 강하게 주어지는데, 화자 수를 2로 고정하고 짧은 구간을 병합하는 규칙만으로도 얼마나 좁혀지는지 재봤어야 했음</span></li>
+        <li><span class="sentence">지금이라면 학습부터 하지 않음.</span><span class="sentence">사전 학습 모델의 DER을 먼저 재고, 실제 사용 음성 몇십 건이라도 직접 라벨링해 실패 유형(중첩 발화·짧은 맞장구·채널 특성)을 분류한 뒤, 그 유형이 학습으로 풀리는 문제인지부터 판정했을 것</span></li>
+        <li><span class="sentence">모델을 바꾸는 대신 후처리로 접근하는 선택지도 검증하지 않았음.</span><span class="sentence">화자 수를 고정하거나 짧은 구간을 병합하는 규칙만으로도 얼마나 좁혀지는지 재봤어야 했음</span></li>
     </ul>
         </div>
     </details>
@@ -654,7 +654,7 @@ title: 프로젝트
 
     <h4 class="detail-head">구현</h4>
     <p><span class="sentence"><strong>모델 개발:</strong> Latent Diffusion 노이즈 스케줄 + 조건부 생성 + LoRA 파인튜닝.</span><span class="sentence">국방 이미지의 스타일, 배경, 객체 특성 학습으로 현실성 높은 합성 데이터 생성.</span></p>
-    <p><strong>검증 및 평가:</strong> 합성 데이터를 실제 모델 학습에 적용하여 유효성 검증.</p>
+    <p><strong>검증 및 평가:</strong> 웹에서 모은 전차 이미지 7,586장으로 학습해 새 전차 이미지를 생성하고 실제 데이터와 비교 — 상당 부분 유사하나 아직 실제 데이터를 대체할 수준은 아님을 확인. 후속으로 UNet 대신 UNet++·UNet3+ 구조 적용을 제시.</p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
@@ -890,7 +890,7 @@ title: 프로젝트
         <li>검색/생성 분리 평가 — recall@k(LLM 불필요)와 E2E 정답률을 분리해 실패 원인 귀속</li>
         <li>gold 라벨을 청크 md5·앵커 문자열로 고정 — 재청킹 시 자동 무효화, 전 지표에 무작위 기준선 병기</li>
         <li>3B 모델의 런 간 편차 ±6%p 실측 — 모든 A/B는 반복 측정, 1~2문항 차이로 결론 내지 않는 원칙</li>
-        <li>RAGAS 도입 검토 후 보류 — 로컬 3B 심판의 일치율 45~50%로 정보량이 없음을 실측하고, 재도입 조건(7B 이상·일치율 90%)을 코드에 명시</li>
+        <li>RAGAS 도입 검토 후 보류 — 로컬 3B 심판의 일치율 45~50%로 정보량이 없음을 실측. 도입 조건을 "7B 이상·일치율 90%"로 정했다가, 아무것도 판정하지 않는 상수 심판도 90%가 나오는 것을 확인하고 "상수 심판 대비 순증" 기준으로 재정의</li>
     </ul>
 
     <h4 class="detail-head">실험 기록</h4>
@@ -1083,7 +1083,7 @@ title: 프로젝트
     <div class="metrics">
         <div class="metric"><span class="metric-value">역전</span><span class="metric-label">바닥(이동평균 1위) ↔ 집계(Chronos 1위)</span></div>
         <div class="metric"><span class="metric-value">0.675</span><span class="metric-label">전사 RMSSE — 제로샷 전 레벨 1위</span></div>
-        <div class="metric"><span class="metric-value">학습 0초</span><span class="metric-label">CPU 28초에 1,500회 예측</span></div>
+        <div class="metric"><span class="metric-value">학습 0초</span><span class="metric-label">CPU 28.6초에 1,500회 예측</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Time Series Forecasting</span>
@@ -1123,7 +1123,7 @@ title: 프로젝트
     <p class="project-meta">2026.07 · MCP 서버 설계 · 구현</p>
     <dl class="ps">
         <dt>문제</dt><dd>포트폴리오가 문서로만 있어 AI 도구가 경력·프로젝트를 직접 조회할 수 없음</dd>
-        <dt>해결</dt><dd>MCP 표준 서버로 read-only 도구 4종을 제공하고, 추론은 클라이언트 LLM에 위임해 서버는 결정적으로 유지</dd>
+        <dt>해결</dt><dd>MCP 표준 서버로 read-only 도구 7종을 제공하고, 추론은 클라이언트 LLM에 위임해 서버는 결정적으로 유지</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2개</span><span class="metric-label">의존성 · clone 후 30초 내 동작</span></div>
@@ -1143,7 +1143,7 @@ title: 프로젝트
     <p>포트폴리오를 AI 도구 생태계에 연결 — Claude Desktop/Claude Code 등 MCP 클라이언트가 경력·프로젝트·논문 정보를 도구로 조회할 수 있도록 표준 프로토콜 서버 구현.</p>
 
     <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>도구 설계:</strong> read-only 도구 4개 — 구조화 조회(프로필/프로젝트/논문·특허) + BM25 문서 검색.</span><span class="sentence">검색 실패 시 다음 행동을 안내하는 actionable 오류 응답 설계.</span></p>
+    <p><span class="sentence"><strong>도구 설계:</strong> read-only 도구 7개 — 구조화 조회(프로필/프로젝트/논문·특허) + BM25 문서 검색 + 실시간 조회(GitHub 활동·블로그·회사 공식 정보).</span><span class="sentence">검색 실패 시 다음 행동을 안내하는 actionable 오류 응답 설계.</span></p>
     <p><span class="sentence"><strong>경량 아키텍처:</strong> 의존성 2개(MCP SDK + rank_bm25)만으로 구성 — 임베딩 서버·외부 API·GPU 불필요, clone 후 30초 내 동작.</span><span class="sentence">추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지.</span></p>
 
     <ul class="detail-list">
@@ -1254,7 +1254,7 @@ title: 프로젝트
         <tr><td>Speaker Diarization</td><td>MiCo AI</td><td>2025.04 ~ 07</td><td>Pyannote 평가·파인튜닝 — DER 개선 없어 미채택, 판정 근거 기록</td></tr>
         <tr><td>NLP 문서·대화 요약</td><td>인피닉</td><td>2024.01 ~ 07</td><td>BART·T5 파인튜닝(R3F)해 사내 메신저 전사 배포 (약 300명)</td></tr>
         <tr><td>3D Semantic Segmentation</td><td>인피닉</td><td>2022.08 ~ 12</td><td>LiDAR·카메라 융합 Trans-Unet — 제1저자 논문 2편·특허 등록 2건</td></tr>
-        <tr><td>Latent Diffusion 합성 데이터</td><td>인피닉</td><td>2023.01 ~ 12</td><td>조건부 생성·LoRA로 국방 데이터 확보 — 우수논문상 (2023.11)</td></tr>
+        <tr><td>Latent Diffusion 합성 데이터</td><td>인피닉</td><td>2023.09 ~ 12</td><td>조건부 생성·LoRA로 국방 데이터 확보 — 우수논문상 (2023.11)</td></tr>
         <tr><td>전차 탐지 모델</td><td>인피닉</td><td>2023.01 ~ 08</td><td>YOLO 기반, 조도·각도·배경 증강으로 환경 변화에 강건하게</td></tr>
         <tr><td>OCR 데이터 생성 도구</td><td>이든티앤에스</td><td>2022.04 ~ 08</td><td>PyQt 주석 도구 단독 개발로 자동화 — 프로젝트 성과금 수령</td></tr>
         <tr><td>금융 데이터 파이프라인</td><td>큐헷지</td><td>2020.09 ~ 2021.09</td><td>수집 → 정제 → 검증 → 저장 자동화로 수작업 대체</td></tr>
