@@ -197,7 +197,7 @@ title: 프로젝트
         <li><span class="sentence"><strong>③ SHM 커넥터 키 장부</strong> — 키 추가는 송신 프로세스에, 삭제는 수신 프로세스에만 있어 송신측 set이 토큰당 ~26 B씩 자람.</span><span class="sentence">첫 수정은 미소비 세그먼트까지 지워 전송 중인 청크를 파괴(중단율 87%)해 롤백하고, "보냈다 ≠ 읽혔다"를 교훈으로 키만 지우는 방식으로 재수정</span></li>
         <li><span class="sentence"><strong>④ jemalloc 미연결</strong> — 이미지에 라이브러리는 있었지만 <code>LD_PRELOAD</code>가 빠져 glibc arena가 메모리를 반납하지 않음.</span><span class="sentence">연결 후 <strong>+1.51 → +0.33 MiB/h</strong>, 선형성 R² 0.90 → 0.22</span></li>
         <li><span class="sentence"><strong>⑤ 취소 요청 장부</strong> — <code>_cancelled_load_reqs</code>에 추가만 되고 삭제 경로 두 곳이 모두 도달 불가 (요청당 108 B).</span><span class="sentence">tracemalloc에서 객체 1개가 128 KiB로 커진 것을 set 해시테이블 리사이즈로 읽고, 슬롯 수(8,192)와 요청 수(2,894)가 맞는 것으로 확인</span></li>
-        <li><span class="sentence"><strong>⑥ torch stable ABI 문자열 unbox (남은 누수의 ~89%)</strong> — 파이썬 객체, GC, 단편화를 모두 배제한 뒤 jemalloc 힙 프로파일로 추적.</span><span class="sentence">표집 편향 보정을 넣자 설명률이 10%에서 84%로 올라, <code>stableivalue_conversions.h:766</code>의 <code>new std::string</code>이 해제되지 않는 것을 특정 — 20만 회 최소재현에서 호출당 +31.9 B, 대조군 0.0 B.</span><span class="sentence">prebuilt wheel이라 헤더를 고칠 수 없어 해당 op의 eager 호출을 순수 torch 스캐터로 우회하고, 18개 형상 동치 검증과 통제 A/B 성능 중립을 확인한 뒤 적용</span></li>
+        <li><span class="sentence"><strong>⑥ torch stable ABI 문자열 unbox (남은 누수의 ~89%)</strong> — 파이썬 객체, GC, 단편화를 모두 배제한 뒤 jemalloc 힙 프로파일로 추적.</span><span class="sentence">표집 편향 보정을 넣자 설명률이 10%에서 84%로 올라, <code>stableivalue_conversions.h:766</code>의 <code>new std::string</code>이 해제되지 않는 것을 특정 — 20만 회 최소재현에서 호출당 +31.9 B, 대조군 0.0 B.</span><span class="sentence">prebuilt wheel이라 헤더를 고칠 수 없어 해당 op의 eager 호출을 순수 torch 스캐터로 우회하고, 6개 형상 × 3개 헤드 구성 18건 동치 검증과 통제 A/B 성능 중립을 확인한 뒤 적용</span></li>
     </ul>
 
     <h4 class="detail-head">누수 조사 결과</h4>
@@ -365,7 +365,7 @@ title: 프로젝트
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li><span class="sentence"><strong>TTFB 1,943ms → 985ms</strong> — 같은 텍스트를 양쪽 엔드포인트로 완주시킨 비교(58.0초 342청크 / 59.4초 364청크), 데모 페이지 콘솔 로그 그대로.</span><span class="sentence">첫 문장이 짧은 런에서는 334ms까지 측정됐으나 단일 런이라 대표값으로 쓰지 않음</span></li>
+        <li><span class="sentence"><strong>TTFB 1,943ms → 985ms</strong> — 같은 텍스트를 양쪽 엔드포인트로 완주시킨 비교(58.0초 342청크 / 59.4초 364청크), 데모 페이지 콘솔 로그 그대로.</span><span class="sentence">다른 런에서 334ms도 찍혔으나 첫 청크만 받고 중지한 단일 런이라 대표값으로 쓰지 않음</span></li>
         <li>원인 분석부터 조치·검증·사내 사용 부서 공유까지 단독 수행</li>
         <li>이 경험이 이후 Qwen3-TTS 플랫폼을 저지연 스트리밍 중심으로 설계하는 출발점이 됨</li>
     </ul>
@@ -572,7 +572,7 @@ title: 프로젝트
 
     <h4 class="detail-head">구현</h4>
     <p><span class="sentence"><strong>모델 설계:</strong> 대화 요약은 BART, 문서 요약은 T5로 나눠 개발.</span><span class="sentence">후속으로 사전 학습 표현을 훼손하지 않는 R3F 정규화 파인튜닝을 설계하고 적용을 계획.</span></p>
-    <p><span class="sentence"><strong>데이터 파이프라인:</strong> 한국어 대화-요약 쌍 데이터 수집과 전처리, 임베딩 모델 선정까지 학습 파이프라인을 직접 구축.</span><span class="sentence">ROUGE 점수와 사내 인원 휴먼 평가를 품질 지표로 사용.</span></p>
+    <p><span class="sentence"><strong>연구 계획:</strong> 한국어 대화-요약 쌍 데이터 수집·전처리와 한국어 임베딩 모델 선택을 1단계로 잡고, ROUGE 점수와 사내 인원 휴먼 평가를 평가 지표로 설정.</span></p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
@@ -959,9 +959,9 @@ title: 프로젝트
         <dt>해결</dt><dd>탐지는 결정적 신호처리(z-score·EWMA·추세 회귀)가 맡고, LLM은 탐지 근거 해석만 하도록 역할 분리</dd>
     </dl>
     <div class="metrics">
-        <div class="metric"><span class="metric-value">15/15</span><span class="metric-label">주입 결함 탐지 (오탐 0)</span></div>
-        <div class="metric"><span class="metric-value">28.5 → 12.9</span><span class="metric-label">RUL MAE (사이클)</span></div>
-        <div class="metric"><span class="metric-value">4개</span><span class="metric-label">NASA C-MAPSS 전체 셋</span></div>
+        <div class="metric"><span class="metric-value">93.6~98.0%</span><span class="metric-label">경보 유효율 (오탐 0~0.9%, 대조군 0~1%)</span></div>
+        <div class="metric"><span class="metric-value">15.8~23.0</span><span class="metric-label">공식 test 셋 RUL MAE (사이클)</span></div>
+        <div class="metric"><span class="metric-value">5번</span><span class="metric-label">뒤집힌 결론을 대조군으로 기록</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Time Series</span>
@@ -989,10 +989,11 @@ title: 프로젝트
 
     <h4 class="detail-head">실데이터 검증 (NASA C-MAPSS)</h4>
     <ul class="detail-list">
-        <li>같은 탐지기를 터보팬 엔진 100대의 run-to-failure 벤치마크에 적용 — 합성에서 튜닝한 4σ 한계는 63/100으로 보수적, 3σ 완화 시 <strong>고장 전 경보 94/100, 조기 경보 0건</strong> (관리한계 트레이드오프를 표로 공개)</li>
-        <li>RUL은 보정(엔진 1~50)과 평가(51~100)를 분리해 라벨 누수 차단 — 선형 외삽 MAE 28.5사이클을 지수 열화 모델로 <strong>12.9사이클</strong>까지 절반 이하로 개선 (추정 보류 트레이드오프까지 기록)</li>
-        <li><span class="sentence"><strong>4개 셋 전부로 확장</strong>(통합 CLI) — 운전 조건이 6개인 FD002는 정규화 없이 경보 0/130이었고, 조건별 z-정규화로 104/130 회복.</span><span class="sentence">난이도는 결함 모드 수보다 <strong>운전 조건 수</strong></span></li>
-        <li><span class="sentence">센서 10개를 하나의 health index로 <strong>융합</strong> — 단일 결함 모드 셋은 대폭 개선(FD001 94→<strong>100/100</strong>, FD002 104→<strong>130/130</strong>), 결함 모드가 2개인 셋은 오히려 악화.</span><span class="sentence">평균 융합의 전제가 깨지는 지점까지 그대로 기록</span></li>
+        <li><span class="sentence">같은 탐지기를 터보팬 엔진 run-to-failure 벤치마크 4개 셋(FD001~FD004)에 적용.</span><span class="sentence">운전 조건이 6개인 FD002·FD004는 조건별 z-정규화가 없으면 k를 0.5까지 낮춰도 유효 경보율 14%에 그침</span></li>
+        <li><span class="sentence"><strong>경보 지표 재설계</strong> — 탐지율·리드타임만 보면 무조건 경보하는 상수 예측기가 만점을 받음.</span><span class="sentence">예고 20~100사이클만 유효로 치는 4분류로 바꾸자 상수 대조군은 0~1%로 무너지고, 권장 구성(전처리 없음, k=2.0)은 <strong>유효율 93.6~98.0%·오탐 0~0.9%</strong></span></li>
+        <li><span class="sentence"><strong>공식 test 셋 RUL</strong> — MAE 15.8~23.0사이클·응답률 75~86%로 상수·생존시간 대조군을 전 구성에서 이김.</span><span class="sentence">학습 기반 모델(FD001 RMSE 15~18.5)에는 응답률·정확도 모두 뒤짐 — 이 접근의 가치는 정확도가 아니라 라벨·학습 없이 바로 배치할 수 있다는 점</span></li>
+        <li><span class="sentence"><strong>뒤집힌 결론 5건을 기록</strong> — 센서 융합·평활·센서 선택이 경보를 개선한다던 결론은 ROC로 보니 k 하나로 얻어지는 것이었음.</span><span class="sentence">고장 30사이클 전 시점의 RUL MAE(선형 28.5 → 지수 12.9)도 정답이 상수라 "항상 30"이 0.0을 받는 지표여서, 두 모델의 상대 비교로만 사용</span></li>
+        <li><span class="sentence"><strong>LLM 진단 접지 검증</strong> — 3B의 미접지 0%는 10회 중 6회를 숫자 없이 서술해 얻은 값이었고, 7B는 수치 109개 중 2개(1.8%)를 지어냄.</span><span class="sentence">탐지는 결정적 알고리즘, LLM은 서술만 맡기는 분리가 필요한 실측 사례</span></li>
     </ul>
 
     <p class="repo-link"><a href="https://github.com/ckc5800/pdm-agent" target="_blank">GitHub 저장소</a></p>
@@ -1039,7 +1040,7 @@ title: 프로젝트
 
     <p class="repo-link"><a href="https://github.com/ckc5800/visual-search" target="_blank">GitHub 저장소 (데모 GIF·평가 리포트·번역문 전수 기록)</a></p><h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li><span class="sentence">한국어 50문항 × 44K 기준 <strong>hit@10 90% → 98%</strong>.</span><span class="sentence">임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 precision@10 0.10)한 뒤, 질의에서 색·성별·용도를 뽑아 메타 필터로 결합해 해소(0.53)</span></li>
+        <li><span class="sentence">한국어 50문항 × 44K 기준 <strong>hit@10 90% → 98%</strong>.</span><span class="sentence">임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 3문항, precision@10 0.10)한 뒤, 질의에서 색·성별·용도를 뽑아 메타 필터로 결합해 해소(0.53).</span><span class="sentence">gold와 필터가 같은 메타데이터 어휘를 쓰므로 추출이 정확할 때의 상한에 가까운 값임을 함께 기록</span></li>
         <li><span class="sentence">같은 이미지 인덱스에서 텍스트 경로만 바꿔 <strong>다국어 전략 6종을 실측 비교</strong>.</span><span class="sentence">m-clip 48% &lt; 소형 MT 86% &lt; <strong>LLM(3B)+커머스 용어집 92%</strong>. 번역기는 크기순이 아님(NLLB 600M 76% &lt; 8배 작은 opus 86%)</span></li>
         <li><span class="sentence"><strong>대형 멀티링구얼(jina-v2 865M)과는 상보 관계</strong>. 지표는 jina-v2가 앞서지만 임베딩 비용이 ko-clip의 약 130배.</span><span class="sentence">실패 문항도 정확히 갈림. 외래어는 멀티링구얼이, 콩글리시는 한국어 특화가 강세</span></li>
         <li><span class="sentence">gold가 넓은 질의는 hit이 자동으로 나온다. 이 <strong>인플레이션</strong>을 구간별 분해·precision@10 병기로 해소.</span><span class="sentence">결과마다 재현 메타(모델 id·시각·top-10 id) 기록</span></li>
@@ -1057,11 +1058,11 @@ title: 프로젝트
     <p class="project-meta">2026.08 · M5 수요 예측 백테스트·모델 비교 E2E 단독 구축</p>
     <dl class="ps">
         <dt>문제</dt><dd>"제로샷 시계열 파운데이션 모델이 튜닝된 베이스라인을 이기는가"에 대한 실측 근거 부재 — 간헐 수요에선 지표 함정까지 겹침</dd>
-        <dt>해결</dt><dd>M5 3만 시리즈 롤링 백테스트로 베이스라인·LightGBM·Chronos를 6라운드 비교 — 판정이 집계 레벨과 지표 선택에 따라 갈림을 실측</dd>
+        <dt>해결</dt><dd>M5 계통 샘플 500개와 전체 30,490 시리즈 합산 집계 레벨에서 베이스라인·LightGBM·Chronos를 롤링 백테스트로 비교(5라운드 + 감사·검증) — 판정이 집계 레벨과 지표 선택에 따라 갈림을 실측</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">역전</span><span class="metric-label">바닥(이동평균 1위) ↔ 집계(Chronos 1위)</span></div>
-        <div class="metric"><span class="metric-value">0.675</span><span class="metric-label">전사 RMSSE — 제로샷 전 레벨 1위</span></div>
+        <div class="metric"><span class="metric-value">0.675</span><span class="metric-label">전사 RMSSE — 제로샷이 집계 레벨 전부 1위</span></div>
         <div class="metric"><span class="metric-value">학습 0초</span><span class="metric-label">CPU 28.6초에 1,500회 예측</span></div>
     </div>
     <div class="tech-tags">
@@ -1075,7 +1076,7 @@ title: 프로젝트
         <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">수요 예측 × 시계열 파운데이션 모델 검증 (demand-forecast) — 접기</span></summary>
         <div class="detail-body">
 <h4 class="detail-head">배경</h4>
-    <p><span class="sentence">시계열 파운데이션 모델(Chronos)의 제로샷 성능 주장을 커머스 수요 데이터에서 직접 검증.</span><span class="sentence">월마트 일별 판매 30,490 시리즈(M5)에 h=28 롤링 오리진 백테스트를 구축하고, 오염 검증(M5가 Chronos 학습 코퍼스가 아닌 공식 제로샷 평가셋임을 확인)부터 선행.</span></p>
+    <p><span class="sentence">시계열 파운데이션 모델(Chronos)의 제로샷 성능 주장을 커머스 수요 데이터에서 직접 검증.</span><span class="sentence">월마트 일별 판매 30,490 시리즈(M5)에서 계통 샘플 500개(바닥 레벨)와 전체 합산 집계 레벨로 h=28 롤링 오리진 백테스트를 구축하고, 오염 검증(M5가 Chronos 학습 코퍼스가 아닌 공식 제로샷 평가셋임을 확인)부터 선행.</span></p>
 
     <h4 class="detail-head">구현</h4>
     <ul class="detail-list">
@@ -1086,7 +1087,7 @@ title: 프로젝트
 
     <p class="repo-link"><a href="https://github.com/ckc5800/demand-forecast" target="_blank">GitHub 저장소 (라운드별 실측 기록·검증 리포트)</a></p><h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li><span class="sentence"><strong>계층 레벨에서 판정 역전 실측</strong>.</span><span class="sentence">판매 0이 55%인 바닥 레벨은 28일 이동평균이 RMSSE 1위(0.741), 집계 레벨(0 비율 ~0%)은 제로샷 Chronos가 전 레벨 1위(store 0.717·전사 0.675) — 파운데이션 모델의 가치는 "신호가 있는 곳"에서 크다</span></li>
+        <li><span class="sentence"><strong>계층 레벨에서 판정 역전 실측</strong>.</span><span class="sentence">판매 0이 55%인 바닥 레벨은 28일 이동평균이 RMSSE 1위(0.741), 집계 레벨(0 비율 ~0%)은 제로샷 Chronos가 집계 3개 레벨 모두 1위(store 0.717·전사 0.675) — 파운데이션 모델의 가치는 "신호가 있는 곳"에서 크다</span></li>
         <li><span class="sentence"><strong>지표·집계 방식이 결론을 바꾸는 지점 문서화</strong>.</span><span class="sentence">"전부 0 예측"이 naive를 이기는 간헐 수요 함정, MASE/RMSSE 승자 분화, 판매량 가중 시 이동평균-Chronos 동률(0.718 vs 0.720)</span></li>
         <li><span class="sentence"><strong>반론 봉쇄</strong> — LightGBM 스윕 6구성 전수 기록·달력 공변량·집계 레벨별 재설계까지 측정.</span><span class="sentence">학습 모델이 학습 0초 제로샷을 평균에서 못 넘는 구도 확인(시리즈별 승수 4/10 한계 병기)</span></li>
         <li><span class="sentence"><strong>강건성 검증</strong> — 겹치지 않는 대체 샘플·6폴드 확장에서 순위 재현, 컨텍스트 길이 민감도 ±0.5%.</span><span class="sentence">코드 감사로 잠재 버그 4건 수정, 회귀 테스트 10개</span></li>
@@ -1123,7 +1124,7 @@ title: 프로젝트
 
     <h4 class="detail-head">구현</h4>
     <p><span class="sentence"><strong>도구 설계:</strong> read-only 도구 7개 — 구조화 조회(프로필/프로젝트/논문·특허) + BM25 문서 검색 + 실시간 조회(GitHub 활동·블로그·회사 공식 정보).</span><span class="sentence">검색 실패 시 다음 행동을 안내하는 actionable 오류 응답 설계.</span></p>
-    <p><span class="sentence"><strong>경량 아키텍처:</strong> 의존성 2개(MCP SDK + rank_bm25)만으로 구성 — 임베딩 서버·외부 API·GPU 불필요, clone 후 30초 내 동작.</span><span class="sentence">추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지.</span></p>
+    <p><span class="sentence"><strong>경량 아키텍처:</strong> 의존성 2개(MCP SDK + rank_bm25)만으로 구성 — 임베딩 서버·GPU 불필요, clone 후 30초 내 동작.</span><span class="sentence">실시간 조회는 표준 라이브러리(urllib)만 쓰고, 조회 실패 시 정적 데이터로 답하도록 안내.</span><span class="sentence">추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지.</span></p>
 
     <ul class="detail-list">
         <li>FastMCP 기반 stdio 서버, Pydantic 입력 검증, read-only 어노테이션</li>
@@ -1237,9 +1238,9 @@ title: 프로젝트
         <tr><td>전차 탐지 모델</td><td>인피닉</td><td>2023.01 ~ 08</td><td>국방 도메인 전차 탐지 모델 개발</td></tr>
         <tr><td>OCR 데이터 생성 도구</td><td>이든티앤에스</td><td>2022.04 ~ 08</td><td>PyQt 주석 도구 단독 개발로 자동화 — 프로젝트 성과금 수령</td></tr>
         <tr><td>금융 데이터 파이프라인</td><td>큐헷지</td><td>2020.09 ~ 2021.09</td><td>수집 → 정제 → 검증 → 저장 자동화로 수작업 대체</td></tr>
-        <tr><td>예지보전 Agent</td><td>개인</td><td>2026.07</td><td>결정적 신호처리로 탐지, LLM은 해석만 — NASA C-MAPSS 검증</td></tr>
+        <tr><td>예지보전 Agent</td><td>개인</td><td>2026.07</td><td>결정적 신호처리로 탐지, LLM은 해석만 — NASA C-MAPSS에서 자명한 대조군과 비교 검증</td></tr>
         <tr><td>한국어 멀티모달 상품 검색</td><td>개인</td><td>2026.08</td><td>CLIP 인덱스 44,072개, 실패를 구간별로 분해해 원인 규명</td></tr>
-        <tr><td>수요 예측 × 파운데이션 모델</td><td>개인</td><td>2026.08</td><td>M5 3만 시리즈 롤링 백테스트 — 집계 레벨에 따라 판정이 갈림을 실측</td></tr>
+        <tr><td>수요 예측 × 파운데이션 모델</td><td>개인</td><td>2026.08</td><td>M5 롤링 백테스트 — 집계 레벨에 따라 판정이 갈림을 실측</td></tr>
         <tr><td>Portfolio MCP Server</td><td>개인</td><td>2026.07</td><td>MCP 서버·클라이언트 양쪽 구현, 서버는 결정적으로 유지</td></tr>
         <tr><td>AI Face De-ID</td><td>대외 4인 팀</td><td>2021</td><td>생성 얼굴로 대체하는 비식별화 — 형태 보존, 신원만 제거</td></tr>
         <tr><td>심전도 부정맥 진단</td><td>대회</td><td>2021</td><td>과기정통부·NIA 데이터톤 — 기저선 제거 후 1D-CNN 분류</td></tr>
