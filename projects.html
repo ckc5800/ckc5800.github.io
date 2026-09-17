@@ -314,12 +314,12 @@ title: 프로젝트
     <h3 id="tts-ops">TTS 운영 · 품질 관리 <span class="badge">MiCo AI</span></h3>
     <p class="project-meta">2025.10 ~ 2026.02 · 기존 TTS 서비스 운영 · 품질 담당</p>
     <dl class="ps">
-        <dt>문제</dt><dd>스트리밍 API 리팩토링 이후, 기존 TTS 서비스를 실제로 굴리면서 품질을 유지하고 다음 플랫폼에 필요한 요구사항을 찾아내야 했음</dd>
-        <dt>해결</dt><dd><span class="sentence">합성 결과 QA·검수, 학습용 음성 데이터 정제, 사내 운영 테스트를 맡아 운영을 이어감.</span><span class="sentence">이 기간에 확인한 품질 문제를 뒤이은 Qwen3-TTS 플랫폼 설계에 반영</span></dd>
+        <dt>문제</dt><dd>스트리밍 API 리팩토링 이후, 기존 TTS(ZipVoice) 서비스의 합성 품질을 검수하고 데이터·모델을 계속 손봐야 했음</dd>
+        <dt>해결</dt><dd>합성 결과 QA, TTS 학습 데이터 정제, ZipVoice 모델 학습, 사내 운영 테스트를 맡아 운영을 이어감</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">QA · 데이터 정제</span><span class="metric-label">담당 범위</span></div>
-        <div class="metric"><span class="metric-value">Qwen3-TTS</span><span class="metric-label">요구사항으로 이어짐</span></div>
+        <div class="metric"><span class="metric-value">ZipVoice</span><span class="metric-label">모델 학습 · 음성 샘플 기록</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">TTS</span>
@@ -1230,7 +1230,7 @@ title: 프로젝트
 <table>
     <thead><tr><th>프로젝트</th><th>소속</th><th>기간</th><th>내용</th></tr></thead>
     <tbody>
-        <tr><td>TTS 운영 · 품질 관리</td><td>MiCo AI</td><td>2025.10 ~ 2026.02</td><td>기존 TTS 서비스의 QA·데이터 정제·운영 테스트 담당</td></tr>
+        <tr><td>TTS 운영 · 품질 관리</td><td>MiCo AI</td><td>2025.10 ~ 2026.02</td><td>기존 TTS 서비스의 QA·데이터 정제·ZipVoice 모델 학습·운영 테스트 담당</td></tr>
         <tr><td>Speaker Diarization</td><td>MiCo AI</td><td>2025.04 ~ 07</td><td>Pyannote 평가·파인튜닝 — DER 개선 없어 미채택, 판정 근거 기록</td></tr>
         <tr><td>NLP 문서·대화 요약</td><td>인피닉</td><td>2024.01 ~ 07</td><td>BART·T5 요약 모델을 사내 메신저 전사 배포 (약 300명)</td></tr>
         <tr><td>3D Semantic Segmentation</td><td>인피닉</td><td>2022.08 ~ 12</td><td>LiDAR·카메라 융합 Trans-Unet — 제1저자 논문 2편·특허 등록 2건</td></tr>
