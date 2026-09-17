@@ -176,7 +176,7 @@ title: 프로젝트
     <ul class="detail-list">
         <li><span class="sentence">burst 스윕으로 SLA 확립.</span><span class="sentence">TTFB <strong>≤500ms 동시 15 · ≤1000ms 동시 30</strong>, 수용 한계 36 (실링 약 40)</span></li>
         <li><span class="sentence">판정 기준은 지연이 아닌 <strong>RTF 여유</strong>.</span><span class="sentence">코덱 좌측 컨텍스트를 조정해 N30 RTF 0.91 → 0.71 확보, N40은 0.96~1.04로 마진이 사라지는 것을 확인하고 운영값을 실링 -1 티어(36)로 결정</span></li>
-        <li><span class="sentence">자원 축도 함께 실측.</span><span class="sentence">per-stage VRAM(stage0 18.9G + stage1 7.2G) · 컨테이너별 CPU/메모리 피크 · GPU 온도와 SM 클럭까지 기록해 열 스로틀링 드리프트를 측정 오염과 구분</span></li>
+        <li><span class="sentence">자원 축도 함께 실측.</span><span class="sentence">per-stage VRAM · 컨테이너별 CPU/메모리 피크 · GPU 온도와 SM 클럭까지 기록해 열 스로틀링 드리프트를 측정 오염과 구분</span></li>
     </ul>
 
 <h4 class="detail-head">성과</h4>
@@ -366,7 +366,7 @@ title: 프로젝트
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
         <li><span class="sentence"><strong>TTFB 1,943ms → 985ms</strong> — 같은 텍스트를 양쪽 엔드포인트로 완주시킨 비교(58.0초 342청크 / 59.4초 364청크), 데모 페이지 콘솔 로그 그대로.</span><span class="sentence">첫 문장이 짧은 런에서는 334ms까지 측정됐으나 단일 런이라 대표값으로 쓰지 않음</span></li>
-        <li>원인 분석부터 조치·검증·고객 보고까지 단독 수행</li>
+        <li>원인 분석부터 조치·검증·사내 사용 부서 공유까지 단독 수행</li>
         <li>이 경험이 이후 Qwen3-TTS 플랫폼을 저지연 스트리밍 중심으로 설계하는 출발점이 됨</li>
     </ul>
 
@@ -375,7 +375,7 @@ title: 프로젝트
         <img class="shot" src="/assets/images/zipvoice-demo-compare.png" alt="구버전 vs 신버전 TTFB 직접 비교 데모">
         <img class="shot" src="/assets/images/zipvoice-demo-form.png" alt="TTS API 샘플 데모 폼">
     </div>
-    <p class="caption">고객 안내용으로 제공한 데모 페이지 — 동일 텍스트로 구버전(/sse)과 신버전(/sse-realtime)의 TTFB를 직접 비교 체험할 수 있게 구성 (스크린샷의 예시 런: 1943ms → 985ms, 내부 서버 주소는 가림 처리)</p>
+    <p class="caption">사내 사용 부서에 제공한 비교 데모 페이지 — 동일 텍스트로 구버전(/sse)과 신버전(/sse-realtime)의 TTFB를 직접 비교 체험할 수 있게 구성 (스크린샷의 예시 런: 1943ms → 985ms, 내부 서버 주소는 가림 처리)</p>
         </div>
     </details>
 </div>
@@ -394,7 +394,7 @@ title: 프로젝트
         <div class="metric"><span class="metric-value">2경로</span><span class="metric-label">파일 · 스트리밍 공통 로직 통합</span></div>
     </div>
     <div class="tech-tags">
-        <span class="tech-tag">Whisper-large-v3</span>
+        <span class="tech-tag">Whisper-large-v3-turbo</span>
         <span class="tech-tag">Faster Whisper</span>
         <span class="tech-tag">Triton (Python Backend)</span>
         <span class="tech-tag">Streaming ASR</span>
@@ -505,7 +505,7 @@ title: 프로젝트
     <p class="project-meta">2025.04 ~ 2025.07 · 화자 분리 모델 평가 · 파인튜닝 (미채택)</p>
     <dl class="ps">
         <dt>문제</dt><dd>자사 메신저 제품의 영상통화 회의록 기능에 화자 구분이 필요했으나, STT는 텍스트만 돌려줘 누가 말했는지 알 수 없었음</dd>
-        <dt>해결</dt><dd><span class="sentence">Pyannote 사전 학습 모델을 평가하고 공개 데이터로 파인튜닝을 시도했으나 DER 개선이 없어 미채택 — 판단 근거와 회고를 아래 기록</span></dd>
+        <dt>해결</dt><dd><span class="sentence">Pyannote 사전 학습 모델을 평가하고 데이터를 모아 파인튜닝을 시도했으나 DER 개선이 없어 미채택 — 판단 근거와 회고를 아래 기록</span></dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">미채택</span><span class="metric-label">파인튜닝 판정 결과</span></div>
@@ -526,7 +526,7 @@ title: 프로젝트
 
     <h4 class="detail-head">구현</h4>
     <p><span class="sentence"><strong>모델 평가:</strong> Pyannote 사전 학습 모델의 DER을 측정하고, 채택 가능한 수준인지 판정하는 것이 1차 목표였음.</span></p>
-    <p><span class="sentence"><strong>파인튜닝 시도:</strong> 공개 화자 분리 데이터를 모아 파라미터 튜닝과 학습을 수행하고 DER로 평가.</span></p>
+    <p><span class="sentence"><strong>파인튜닝 시도:</strong> 화자 분리 데이터를 모아 파라미터 튜닝과 학습을 수행하고 DER로 평가.</span></p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
@@ -536,7 +536,7 @@ title: 프로젝트
 
     <h4 class="detail-head">미채택 기록과 회고</h4>
     <ul class="detail-list">
-        <li><span class="sentence">확보한 학습 데이터의 양과 라벨이 파인튜닝을 지탱할 수준이 아니었음.</span><span class="sentence">공개 데이터를 모으는 것으로 시작한 시점에 이미 데이터 규모·품질 점검이 선행됐어야 했다고 봄</span></li>
+        <li><span class="sentence">학습에 들어가기 전에 확보한 데이터의 규모·품질이 파인튜닝을 지탱할 수준인지부터 점검했어야 했다고 봄</span></li>
         <li><span class="sentence">지금이라면 학습부터 하지 않음.</span><span class="sentence">사전 학습 모델의 DER을 먼저 재고, 실제 사용 음성 몇십 건이라도 직접 라벨링해 실패 유형(중첩 발화·짧은 맞장구·채널 특성)을 분류한 뒤, 그 유형이 학습으로 풀리는 문제인지부터 판정했을 것</span></li>
         <li><span class="sentence">모델을 바꾸는 대신 후처리로 접근하는 선택지도 검증하지 않았음.</span><span class="sentence">화자 수를 고정하거나 짧은 구간을 병합하는 규칙만으로도 얼마나 좁혀지는지 재봤어야 했음</span></li>
     </ul>
@@ -551,7 +551,7 @@ title: 프로젝트
     <p class="project-meta">2024.01 ~ 2024.07 · 사내 지식 관리 · 요약 시스템 개발</p>
     <dl class="ps">
         <dt>문제</dt><dd>휴가·부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 시간이 오래 걸림</dd>
-        <dt>해결</dt><dd>대화는 BART, 문서는 T5로 나눠 파인튜닝(R3F 정규화)하고 사내 메신저에 탑재</dd>
+        <dt>해결</dt><dd>대화는 BART, 문서는 T5로 나눠 개발하고 사내 메신저에 탑재</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2초대</span><span class="metric-label">업무 대화 요약</span></div>
@@ -560,7 +560,6 @@ title: 프로젝트
     <div class="tech-tags">
         <span class="tech-tag">BART</span>
         <span class="tech-tag">T5</span>
-        <span class="tech-tag">R3F Fine-tuning</span>
         <span class="tech-tag">Hugging Face</span>
         <span class="tech-tag">NLP</span>
         <span class="tech-tag">PyTorch</span>
@@ -572,7 +571,7 @@ title: 프로젝트
     <p><span class="sentence">휴가나 부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 오랜 시간이 걸린다는 문제에서 출발.</span><span class="sentence">사내 메신저에 넣을 한국어 요약 모델 개발이 목표.</span></p>
 
     <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>모델 설계:</strong> 대화 요약은 BART, 문서 요약은 T5로 나눠 개발.</span><span class="sentence">대화 요약 파인튜닝에는 사전 학습 표현을 훼손하지 않는 R3F 정규화 기법을 적용.</span></p>
+    <p><span class="sentence"><strong>모델 설계:</strong> 대화 요약은 BART, 문서 요약은 T5로 나눠 개발.</span><span class="sentence">후속으로 사전 학습 표현을 훼손하지 않는 R3F 정규화 파인튜닝을 설계하고 적용을 계획.</span></p>
     <p><span class="sentence"><strong>데이터 파이프라인:</strong> 한국어 대화-요약 쌍 데이터 수집과 전처리, 임베딩 모델 선정까지 학습 파이프라인을 직접 구축.</span><span class="sentence">ROUGE 점수와 사내 인원 휴먼 평가를 품질 지표로 사용.</span></p>
 
     <h4 class="detail-head">성과</h4>
@@ -633,7 +632,7 @@ title: 프로젝트
     <p class="project-meta">2023.09 ~ 2023.12 · 생성 모델 기반 국방 데이터 확보 연구</p>
     <dl class="ps">
         <dt>문제</dt><dd>국방 도메인은 보안 제약으로 학습 데이터 수집이 어렵고, GAN은 모드 붕괴로 대안이 못 됨</dd>
-        <dt>해결</dt><dd>Latent Diffusion에 조건부 생성과 LoRA를 얹어 도메인 특성을 학습시키고 합성 데이터 생성</dd>
+        <dt>해결</dt><dd>웹에서 모은 전차 이미지 7,586장으로 Latent Diffusion을 학습해 새 전차 이미지를 생성하고 실제 데이터와 비교</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">우수 논문상</span><span class="metric-label">한국국방기술학회 2023</span></div>
@@ -643,7 +642,6 @@ title: 프로젝트
         <span class="tech-tag">Latent Diffusion</span>
         <span class="tech-tag">Generative Model</span>
         <span class="tech-tag">PyTorch</span>
-        <span class="tech-tag">LoRA Fine-tuning</span>
         <span class="tech-tag">Data Augmentation</span>
     </div>
     <details>
@@ -653,13 +651,12 @@ title: 프로젝트
     <p><span class="sentence">국방 도메인 AI 모델 개발의 학습 데이터 부족 (보안 제약으로 수집 어려움).</span><span class="sentence">GAN 모드 붕괴 문제 및 범용 생성 모델의 도메인 불일치.</span></p>
 
     <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>모델 개발:</strong> Latent Diffusion 노이즈 스케줄 + 조건부 생성 + LoRA 파인튜닝.</span><span class="sentence">국방 이미지의 스타일, 배경, 객체 특성 학습으로 현실성 높은 합성 데이터 생성.</span></p>
+    <p><span class="sentence"><strong>진행:</strong> 선행 연구를 인수인계받아 Latent Diffusion 기반 전차 이미지 생성 실험을 이어서 진행.</span></p>
     <p><strong>검증 및 평가:</strong> 웹에서 모은 전차 이미지 7,586장으로 학습해 새 전차 이미지를 생성하고 실제 데이터와 비교 — 상당 부분 유사하나 아직 실제 데이터를 대체할 수준은 아님을 확인. 후속으로 UNet 대신 UNet++·UNet3+ 구조 적용을 제시.</p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
         <li><strong>우수 논문상 수상:</strong> "국방 데이터 확보를 위한 생성모델 Latent Diffusion 실험" (한국국방기술학회 2023.11)</li>
-        <li>합성 데이터 생성 자동화 파이프라인 구축</li>
         <li>추가 논문: "GAN을 활용한 데이터 생성 연구 동향" (한국항공우주학회 2023)</li>
     </ul>
 
@@ -680,33 +677,22 @@ title: 프로젝트
     <h3 id="tank">Tank Object Detection Model <span class="badge">인피닉</span></h3>
     <p class="project-meta">2023.01 ~ 2023.08 · 전차 탐지 모델 개발</p>
     <dl class="ps">
-        <dt>문제</dt><dd>정찰·드론 영상을 사람이 일일이 분석해 시간과 비용이 큼</dd>
-        <dt>해결</dt><dd>YOLO 기반 탐지 모델에 조도·각도·배경 증강을 더해 환경이 바뀌어도 탐지가 유지되도록 학습</dd>
+        <dt>과제</dt><dd>국방 도메인 이미지에서 전차를 자동으로 찾아내는 탐지 모델 개발</dd>
     </dl>
-    <div class="metrics">
-        <div class="metric"><span class="metric-value">YOLOv5 / v8</span><span class="metric-label">탐지 모델</span></div>
-        <div class="metric"><span class="metric-value">조도 · 각도 · 배경</span><span class="metric-label">강건성 증강 축</span></div>
-    </div>
     <div class="tech-tags">
-        <span class="tech-tag">YOLO</span>
         <span class="tech-tag">Object Detection</span>
         <span class="tech-tag">PyTorch</span>
         <span class="tech-tag">Defense Domain</span>
     </div>
     <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">Tank Object Detection Model — 접기</span></summary>
+        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 성과</span><span class="sum-close">Tank Object Detection Model — 접기</span></summary>
         <div class="detail-body">
 <h4 class="detail-head">배경</h4>
-    <p><span class="sentence">정찰/드론 영상에서 전차 자동 탐지 필요.</span><span class="sentence">기존 수동 분석의 시간 및 비용 문제.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>모델 개발:</strong> YOLOv5/v8 기반 전차 탐지 모델.</span><span class="sentence">다양한 조도, 각도, 배경 시나리오 강건성 확보를 위한 데이터 증강 및 하이퍼파라미터 튜닝.</span></p>
-    <p><span class="sentence"><strong>모델 학습 및 검증:</strong> 국방 도메인 데이터 기반 학습 및 성능 검증.</span><span class="sentence">다양한 환경 시나리오에서의 탐지 강건성 확보.</span></p>
+    <p><span class="sentence">국방 도메인 이미지에서 전차를 자동 탐지하는 모델이 필요했음.</span><span class="sentence">같은 시기 전차 이미지 생성 연구(Latent Diffusion)로 이어짐.</span></p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li>YOLO 기반 전차 탐지 모델 개발 완료</li>
-        <li>데이터 증강 및 하이퍼파라미터 튜닝으로 탐지 강건성 확보</li>
+        <li>전차 탐지 모델 개발 완료</li>
     </ul>
         </div>
     </details>
@@ -762,15 +748,10 @@ title: 프로젝트
     <p class="project-meta">2020.09 ~ 2021.09 · 계약직 — 데이터 수집 · 전처리 파이프라인 구축</p>
     <dl class="ps">
         <dt>문제</dt><dd>여러 소스에서 모은 금융 데이터를 수동으로 정제·통합하느라 분석까지 시간이 오래 걸림</dd>
-        <dt>해결</dt><dd>수집 → 정제 → 검증 → 저장을 자동화한 파이프라인 구축</dd>
+        <dt>해결</dt><dd>금융 데이터 수집·전처리 파이프라인 구축</dd>
     </dl>
-    <div class="metrics">
-        <div class="metric"><span class="metric-value">4단계</span><span class="metric-label">수집 · 정제 · 검증 · 저장 자동화</span></div>
-    </div>
     <div class="tech-tags">
         <span class="tech-tag">Python</span>
-        <span class="tech-tag">Pandas / NumPy</span>
-        <span class="tech-tag">SQL</span>
         <span class="tech-tag">Data Engineering</span>
     </div>
     <details>
@@ -780,13 +761,11 @@ title: 프로젝트
     <p><span class="sentence">금융 데이터 분석을 위한 고품질 데이터 필수.</span><span class="sentence">다중 소스 수집 데이터의 수동 정제 및 통합으로 인한 비효율.</span></p>
 
     <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>데이터 수집 & 정제:</strong> 금융 데이터 크롤링 및 수집.</span><span class="sentence">Pandas/NumPy 기반 결측값 처리, 이상치 제거, 형식 정규화.</span></p>
-    <p><span class="sentence"><strong>자동화 파이프라인:</strong> 수집 → 정제 → 검증 → 저장 자동화.</span><span class="sentence">SQL 기반 데이터 관리.</span></p>
+    <p><span class="sentence"><strong>데이터 수집 & 전처리:</strong> 금융 데이터를 수집하고 분석에 쓸 수 있게 전처리.</span></p>
 
     <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
-        <li>금융 데이터 자동 수집 파이프라인 구축</li>
-        <li>데이터 품질 검증 도구 개발</li>
+        <li>금융 데이터 수집·전처리 파이프라인 구축</li>
         <li>데이터 엔지니어링 역량 확보</li>
     </ul>
         </div>
@@ -1252,10 +1231,10 @@ title: 프로젝트
     <tbody>
         <tr><td>TTS 운영 · 품질 관리</td><td>MiCo AI</td><td>2025.10 ~ 2026.02</td><td>기존 TTS 서비스의 QA·데이터 정제·운영 테스트 담당</td></tr>
         <tr><td>Speaker Diarization</td><td>MiCo AI</td><td>2025.04 ~ 07</td><td>Pyannote 평가·파인튜닝 — DER 개선 없어 미채택, 판정 근거 기록</td></tr>
-        <tr><td>NLP 문서·대화 요약</td><td>인피닉</td><td>2024.01 ~ 07</td><td>BART·T5 파인튜닝(R3F)해 사내 메신저 전사 배포 (약 300명)</td></tr>
+        <tr><td>NLP 문서·대화 요약</td><td>인피닉</td><td>2024.01 ~ 07</td><td>BART·T5 요약 모델을 사내 메신저 전사 배포 (약 300명)</td></tr>
         <tr><td>3D Semantic Segmentation</td><td>인피닉</td><td>2022.08 ~ 12</td><td>LiDAR·카메라 융합 Trans-Unet — 제1저자 논문 2편·특허 등록 2건</td></tr>
-        <tr><td>Latent Diffusion 합성 데이터</td><td>인피닉</td><td>2023.09 ~ 12</td><td>조건부 생성·LoRA로 국방 데이터 확보 — 우수논문상 (2023.11)</td></tr>
-        <tr><td>전차 탐지 모델</td><td>인피닉</td><td>2023.01 ~ 08</td><td>YOLO 기반, 조도·각도·배경 증강으로 환경 변화에 강건하게</td></tr>
+        <tr><td>Latent Diffusion 합성 데이터</td><td>인피닉</td><td>2023.09 ~ 12</td><td>Latent Diffusion으로 전차 이미지 생성 실험 — 우수논문상 (2023.11)</td></tr>
+        <tr><td>전차 탐지 모델</td><td>인피닉</td><td>2023.01 ~ 08</td><td>국방 도메인 전차 탐지 모델 개발</td></tr>
         <tr><td>OCR 데이터 생성 도구</td><td>이든티앤에스</td><td>2022.04 ~ 08</td><td>PyQt 주석 도구 단독 개발로 자동화 — 프로젝트 성과금 수령</td></tr>
         <tr><td>금융 데이터 파이프라인</td><td>큐헷지</td><td>2020.09 ~ 2021.09</td><td>수집 → 정제 → 검증 → 저장 자동화로 수작업 대체</td></tr>
         <tr><td>예지보전 Agent</td><td>개인</td><td>2026.07</td><td>결정적 신호처리로 탐지, LLM은 해석만 — NASA C-MAPSS 검증</td></tr>
