@@ -159,7 +159,7 @@ title: 프로젝트
     <h4 class="detail-head">차별점</h4>
     <p class="point"><strong>① 스트리밍 품질 자동 감지 · 자가 치유</strong> — 잘리거나 반복된 음성을 서버가 스스로 걸러내는 구조.</p>
     <ul class="detail-list">
-        <li><span class="sentence">합성 오디오의 <strong>예상 길이 대비 실제 길이 비율</strong>로 잘림·반복을 판정 (0.35배 미만 = 잘림 의심, 3배 초과 = 반복 의심).</span><span class="sentence">텍스트에서 음절 버킷으로 기대 길이를 추정</span></li>
+        <li><span class="sentence">합성 오디오의 <strong>예상 길이 대비 실제 길이 비율</strong>로 잘림·반복을 판정 (0.70배 미만 = 잘림 의심, 3배 초과 = 반복 의심 — 한국어 6,355건 실측으로 0.35에서 상향).</span><span class="sentence">텍스트에서 음절 버킷으로 기대 길이를 추정</span></li>
         <li><span class="sentence">이상 클립은 캐시에 넣지 않고 배제.</span><span class="sentence">같은 문장의 다음 요청이 정상 합성을 받아 <strong>자가 치유</strong>.</span><span class="sentence">스트리밍은 이미 나간 청크를 되돌릴 수 없으므로 후속 요청부터 회복되는 구조</span></li>
         <li><span class="sentence">감지(로깅)는 전 요청·전 언어 상시 동작.</span><span class="sentence"><strong>캐시 배제는 오탐이 정상 클립을 버리는 쪽이 더 위험</strong>하다고 판단해, 길이 추정이 신뢰되는 언어(CJK)로 게이팅하고 플래그로 단계 도입 — 현재 운영 관측 단계</span></li>
     </ul>
