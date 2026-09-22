@@ -223,7 +223,7 @@ title: 프로젝트
         </div>
 
     <details class="sub">
-        <summary><span class="sum-text">구현 세부 보기</span><span class="sum-hint">시스템 구조 · 구현 · 핵심 엔지니어링 9건 · 운영 대시보드 · 데모 영상</span><span class="sum-close">구현 세부 접기</span></summary>
+        <summary><span class="sum-text">구현 세부 보기</span><span class="sum-hint">시스템 구조 · 구현 · 핵심 엔지니어링 9건 · 데모 영상</span><span class="sum-close">구현 세부 접기</span></summary>
         <div class="sub-body">
 <h4 class="detail-head">시스템 구조</h4>
     <div class="diagram-grid">
@@ -271,13 +271,6 @@ title: 프로젝트
         <li><span class="sentence">스트리밍 품질을 자동 감지해 자가 치유 (위 차별점 ① 참조).</span><span class="sentence">품질 사고가 캐시에 굳는 것을 차단</span></li>
     </ul>
 
-    <h4 class="detail-head">운영 대시보드</h4>
-    <div class="shot-grid">
-        <img class="shot" src="/assets/images/image 1.png" alt="TTS Dashboard 1">
-        <img class="shot" src="/assets/images/image 2.png" alt="TTS Dashboard 2">
-        <img class="shot" src="/assets/images/image 3.png" alt="TTS Dashboard 3">
-    </div>
-
     <h4 class="detail-head">데모 영상</h4>
     <div class="demo-grid">
         <div class="demo">
@@ -315,7 +308,7 @@ title: 프로젝트
     <p class="project-meta">2025.10 ~ 2026.02 · 기존 TTS 서비스 운영 · 품질 담당</p>
     <dl class="ps">
         <dt>문제</dt><dd>스트리밍 API 리팩토링 이후, 기존 TTS(ZipVoice) 서비스의 합성 품질을 검수하고 데이터·모델을 계속 손봐야 했음</dd>
-        <dt>해결</dt><dd>합성 결과 QA, TTS 학습 데이터 정제, ZipVoice 모델 학습, 사내 운영 테스트를 맡아 운영을 이어감</dd>
+        <dt>해결</dt><dd>합성 결과 QA, TTS 학습 데이터 정제, ZipVoice 모델 학습, 사내 운영 테스트를 맡고, 상태·에러·통계를 한 화면에서 보는 운영 페이지를 직접 제작</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">QA · 데이터 정제</span><span class="metric-label">담당 범위</span></div>
@@ -327,6 +320,18 @@ title: 프로젝트
         <span class="tech-tag">Data Curation</span>
         <span class="tech-tag">Service Operation</span>
     </div>
+    <details>
+        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">운영 페이지</span><span class="sum-close">TTS 운영 · 품질 관리 — 접기</span></summary>
+        <div class="detail-body">
+<h4 class="detail-head">운영 페이지</h4>
+    <div class="shot-grid">
+        <img class="shot" src="/assets/images/image 1.png" alt="ZipVoice 기반 TTS 운영 페이지 — 서비스 상태 요약과 최근 에러 로그">
+        <img class="shot" src="/assets/images/image 2.png" alt="ZipVoice 기반 TTS 운영 페이지 — 에러 로그 전체 조회·필터">
+        <img class="shot" src="/assets/images/image 3.png" alt="ZipVoice 기반 TTS 운영 페이지 — 엔진별 요청·응답 통계와 인프라 리소스 이력">
+    </div>
+    <p class="caption">기존 TTS(ZipVoice) 서비스를 운영하며 만든 관리 페이지 — 서버 상태와 평균 응답, 에러 로그 조회·필터, 엔진별 요청·성공률·응답 시간과 GPU·CPU 이력을 한 화면에서 확인 (2026.01 화면)</p>
+        </div>
+    </details>
 </div>
 
 <hr class="rule-sub">
