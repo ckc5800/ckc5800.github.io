@@ -14,6 +14,8 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
                aria-label="프로젝트 검색" autocomplete="off"
                title="Enter: 첫 결과로 이동 · Esc: 초기화">
         <div class="side-nav-count" id="filter-count" role="status" aria-live="polite"></div>
+        <button type="button" class="expand-all" id="expand-all" aria-pressed="false"
+                title="접힌 카드 안은 브라우저 찾기(Ctrl+F)에 걸리지 않는다">모두 펼치기</button>
     </div>
     <div class="side-nav-group">
         <div class="side-nav-label">추론 서빙 · 성능 엔지니어링</div>
@@ -1444,6 +1446,8 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
                 if (!p || p.nodeType !== 1) return NodeFilter.FILTER_REJECT;
                 var tag = p.tagName;
                 if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'SUMMARY') return NodeFilter.FILTER_REJECT;
+                // 절 이동 칩은 본문 소제목의 복사본이라, 세면 같은 문구를 두 번 센다
+                if (p.closest('.detail-nav')) return NodeFilter.FILTER_REJECT;
                 return node.nodeValue.toLowerCase().indexOf(q) === -1
                     ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
             }
@@ -1476,7 +1480,9 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         var qTokens = tokenize(q);
         var shown = 0, hits = 0, scored = [];
 
-        // 이전 검색의 강조·펼침 상태를 먼저 되돌린다
+        // 이전 검색의 강조·펼침 상태를 먼저 되돌린다.
+        // 여러 개가 한꺼번에 접히므로 '접으면 카드 머리로' 복귀는 건너뛴다
+        if (openedByFilter.length) window.__bulkToggleAt = Date.now();
         openedByFilter.forEach(function (d) { d.open = false; });
         openedByFilter = [];
 
@@ -1614,11 +1620,177 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     document.addEventListener('toggle', function (e) {
         var d = e.target;
         if (d.tagName !== 'DETAILS' || d.open) return;
+        // 모두 접기는 카드 수만큼 toggle 을 쏘므로 복귀를 건너뛴다.
+        // toggle 은 비동기로 큐에 들어가서, 플래그 대신 시각으로 구분한다
+        if (Date.now() - (window.__bulkToggleAt || 0) < 400) return;
         var anchor = d.classList.contains('sub') ? d : d.closest('.project');
         if (!anchor) return;
+        // 접힌 본문 안을 가리키는 해시는 카드 자체로 되돌린다 (새로고침하면 그 절로 다시 뛴다)
+        var here = location.hash.length > 1 && document.getElementById(
+            decodeURIComponent(location.hash.slice(1)));
+        var h3 = anchor.querySelector ? anchor.closest('.project').querySelector('h3') : null;
+        if (here && h3 && h3.id && here !== h3 && d.contains(here))
+            history.replaceState(null, '', '#' + h3.id);
         var top = anchor.getBoundingClientRect().top + window.scrollY - 80;
         if (window.scrollY > top) window.scrollTo({ top: top });
     }, true);
+})();
+
+// 긴 카드에 절 이동 칩 — 카드 안 목차를 본문 머리에 만든다 (절 5개 이상)
+(function () {
+    var MIN_HEADS = 5;
+    [].forEach.call(document.querySelectorAll('.project > details'), function (d) {
+        var heads = [].slice.call(d.querySelectorAll('.detail-head'));
+        var body = d.querySelector('.detail-body');
+        if (heads.length < MIN_HEADS || !body) return;
+        var card = d.closest('.project');
+        var h3 = card.querySelector('h3');
+        var base = (h3 && h3.id) || 'p';
+
+        var nav = document.createElement('div');
+        nav.className = 'detail-nav';
+        var label = document.createElement('span');
+        label.className = 'detail-nav-label';
+        label.textContent = '절 이동';
+        nav.appendChild(label);
+
+        heads.forEach(function (h, i) {
+            if (!h.id) h.id = base + '-sec' + (i + 1);
+            var a = document.createElement('a');
+            a.href = '#' + h.id;
+            // 칩에는 이름만 — 괄호 보충과 대시 뒤 수치는 본문에서 읽는다
+            a.textContent = h.textContent
+                .replace(/\s*\([^)]*\)\s*$/, '').split(' — ')[0].trim();
+            nav.appendChild(a);
+        });
+        body.insertBefore(nav, body.firstChild);
+    });
+})();
+
+// 해시로 오면 그 카드를 펼치고, 목표 지점까지 데려다 놓는다.
+// 예전엔 카드가 접힌 채 도착해 한 번 더 눌러야 했고, 펼치면서 문서가 길어져
+// 브라우저가 시작한 스크롤이 중간에 취소되는 일도 있었다 — 그래서 둘 다 여기서 한다.
+(function () {
+    function targetOf(hash) {
+        if (!hash || hash.length < 2 || hash.charAt(0) !== '#') return null;
+        try { return document.getElementById(decodeURIComponent(hash.slice(1))); }
+        catch (err) { return null; }
+    }
+
+    // 이동 때문에 펼친 카드는 하나만 남긴다 — 목차를 훑을수록 펼친 카드가
+    // 쌓여 문서가 4만 픽셀이 되면, 열어 두는 편의가 오히려 길을 잃게 만든다.
+    // 직접 요약 바를 눌러 편 카드는 본인 의사이므로 건드리지 않는다.
+    var autoOpened = null;
+
+    // 목표를 감싼 접힌 덩어리를 모두 펼친다.
+    // 프로젝트 제목(h3)은 details 밖에 있어서 조상만 훑으면 카드가 안 열린다 —
+    // 그래서 카드의 1단 접기는 따로 연다.
+    function reveal(el) {
+        var card = el.closest('.project');
+        if (card) {
+            var top = card.querySelector(':scope > details');
+            if (top && !top.open) {
+                if (autoOpened && autoOpened !== top && autoOpened.open) {
+                    window.__bulkToggleAt = Date.now();   // 스크롤 복귀는 이동이 맡는다
+                    autoOpened.open = false;
+                }
+                top.open = true;
+                autoOpened = top;
+            }
+        }
+        for (var d = el.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) {
+            if (!d.open) d.open = true;
+        }
+    }
+
+    function go(hash, instant) {
+        var el = targetOf(hash);
+        if (!el) return;
+        reveal(el);
+        // 브라우저가 스스로 해시로 다시 스크롤해 주지만(레이아웃이 바뀌면 다시 맞춘다),
+        // 뒤로가기·주소 직접 입력처럼 그 보정이 이미 끝난 경우를 위해 한 번 더 맞춘다
+        requestAnimationFrame(function () {
+            el.scrollIntoView({ behavior: instant ? 'instant' : 'smooth', block: 'start' });
+        });
+    }
+
+    // 링크는 기본 동작(주소 변경 + 스크롤)보다 먼저 펼쳐 둔다 — capture 단계.
+    // 접힌 본문 안의 절은 렌더 트리에 없어서, 펼치기 전에는 브라우저가 찾아갈 수 없다
+    document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href^="#"]');
+        if (!a) return;
+        var href = a.getAttribute('href');
+        if (href.length < 2) return;
+        var el = targetOf(href);
+        if (el) reveal(el);
+    }, true);
+
+    // 주소창 입력·뒤로가기·같은 해시 재클릭
+    window.addEventListener('hashchange', function () { go(location.hash, false); });
+    if (location.hash) go(location.hash, true);
+
+    // 펼친 카드를 주소에 남긴다 — 그 상태의 주소를 복사해 보내면 상대도 펼쳐진 화면을 본다
+    document.addEventListener('click', function (e) {
+        var sum = e.target.closest && e.target.closest('.project > details > summary');
+        if (!sum) return;
+        var d = sum.parentNode;
+        if (autoOpened === d) autoOpened = null;   // 이제 본인이 관리하는 카드
+        var h3 = d.closest('.project').querySelector('h3');
+        if (!h3 || !h3.id) return;
+        // 클릭 시점엔 아직 토글 전이라 다음 틱에 상태를 읽는다
+        setTimeout(function () {
+            if (d.open) history.replaceState(null, '', '#' + h3.id);
+            else if (location.hash === '#' + h3.id)
+                history.replaceState(null, '', location.pathname + location.search);
+        }, 0);
+    });
+})();
+
+// Esc — 읽고 있는 카드를 접는다. 접기 바까지 스크롤을 올리지 않아도 되게.
+document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;  // 검색 초기화에 양보
+    var nav = document.querySelector('.side-nav');
+    if (nav && nav.classList.contains('is-open')) return;                  // 패널 닫기에 양보
+
+    // 화면에 가장 많이 걸쳐 있는 열린 카드가 지금 읽고 있는 카드다.
+    // '상단 경계에 걸친 카드'로 골랐더니 스크롤 중이거나 카드가 화면보다
+    // 작을 때 아무것도 안 골라지는 경우가 있었다
+    var best = null, bestArea = 0;
+    [].forEach.call(document.querySelectorAll('.project > details[open]'), function (d) {
+        var r = d.getBoundingClientRect();
+        var area = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+        if (area > bestArea) { bestArea = area; best = d; }
+    });
+    if (best && bestArea > 0) best.open = false;
+});
+
+// 모두 펼치기 / 모두 접기 — Ctrl+F 로 전체를 훑거나 통째로 읽을 때
+(function () {
+    var btn = document.getElementById('expand-all');
+    if (!btn) return;
+
+    function all() { return [].slice.call(document.querySelectorAll('.project details')); }
+    function tops() { return [].slice.call(document.querySelectorAll('.project > details')); }
+
+    function sync() {
+        var t = tops(), openCount = t.filter(function (d) { return d.open; }).length;
+        var allOpen = openCount === t.length;
+        btn.textContent = allOpen ? '모두 접기' : '모두 펼치기 (' + t.length + ')';
+        btn.setAttribute('aria-pressed', allOpen ? 'true' : 'false');
+    }
+
+    btn.addEventListener('click', function () {
+        var t = tops(), on = t.filter(function (d) { return d.open; }).length < t.length;
+        window.__bulkToggleAt = Date.now();      // 카드별 스크롤 복귀를 막는다
+        all().forEach(function (d) { d.open = on; });
+        if (!on) window.scrollTo({ top: 0 });    // 전부 접으면 문서가 짧아져 위치가 무의미해진다
+        sync();
+    });
+
+    document.addEventListener('toggle', sync, true);
+    sync();
 })();
 
 // 좁은 화면(<1500px): 플로팅 버튼으로 목차·검색 패널 열고 닫기

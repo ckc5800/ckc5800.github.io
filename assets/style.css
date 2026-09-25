@@ -59,6 +59,18 @@ body {
     padding: 0 22px;
 }
 
+/* 내비게이션 높이 — 고정된 요약 바와 앵커 여백이 이 값을 기준으로 잡는다.
+   480px 아래에서는 로고와 메뉴가 두 줄로 쌓여 113px 가 된다. */
+:root {
+    --nav-h: 67px;
+}
+
+@media (max-width: 480px) {
+    :root {
+        --nav-h: 113px;
+    }
+}
+
 /* ===== Navigation (frosted glass) ===== */
 .navbar {
     position: sticky;
@@ -403,12 +415,9 @@ a.project-card:focus-visible {
 }
 
 /* 앵커 이동 시 고정 내비게이션에 제목이 가리지 않도록 */
-h3[id] {
-    scroll-margin-top: 90px;
-}
-
+h3[id],
 h2[id] {
-    scroll-margin-top: 90px;
+    scroll-margin-top: calc(var(--nav-h) + 23px);
 }
 
 /* ===== 프로젝트 그룹 (task 단위) ===== */
@@ -637,10 +646,10 @@ h2[id] {
 
 /* 펼쳐진 동안 요약 바를 상단에 고정 — 긴 카드를 읽다가 접으려고 다시
    위로 스크롤하는 왕복을 없앤다. 지금 무슨 프로젝트를 읽는지도 같이 보인다.
-   navbar(67px) 바로 아래. z-index는 목차 플로팅 버튼(120)보다 낮게 둔다. */
+   내비게이션 바로 아래. z-index는 목차 플로팅 버튼(120)보다 낮게 둔다. */
 .project details[open] > summary {
     position: sticky;
-    top: 67px;
+    top: var(--nav-h);
     z-index: 40;
 }
 
@@ -673,6 +682,73 @@ h2[id] {
 .project summary:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 3px;
+}
+
+/* 절 이동 칩 — 절이 5개를 넘는 카드(TTS 11 · k8s 6 · rag 5 · ragbench 5)는
+   펼치면 본문이 여덟 화면을 넘어, 무엇이 어디 있는지를 머리에서 먼저 보여 준다.
+   칩은 스크립트가 .detail-head 를 훑어 만든다 — 카드마다 손으로 달지 않는다. */
+.detail-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 2px 0 26px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--hairline);
+}
+
+.detail-nav-label {
+    margin-right: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: var(--text-secondary);
+}
+
+.detail-nav a {
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    background-color: var(--pill-bg);
+    border: 1px solid transparent;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.detail-nav a:hover,
+.detail-nav a:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+/* 칩으로 옮겨 온 절은 내비게이션 + 고정된 요약 바(48px) 아래에서 시작해야 한다 */
+.detail-head[id] {
+    scroll-margin-top: calc(var(--nav-h) + 57px);
+}
+
+/* 좁은 화면에서는 칩이 다섯 줄(191px)까지 쌓여 카드 머리를 다 먹는다 —
+   한 줄로 눕히고 옆으로 밀어 보게 한다 */
+@media (max-width: 700px) {
+    .detail-nav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 14px;
+        scrollbar-width: none;
+    }
+
+    .detail-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .detail-nav a {
+        flex: none;
+        white-space: nowrap;
+    }
+
+    .detail-nav-label {
+        flex: none;
+    }
 }
 
 /* ===== 프로젝트 상세 본문 서식 (18개 카드 공통) ===== */
@@ -820,6 +896,27 @@ h2[id] {
 
 .side-nav-count:empty {
     display: none;
+}
+
+/* 모두 펼치기 — 브라우저 찾기(Ctrl+F)는 접힌 카드 안을 훑지 못한다.
+   전부 펼쳐 한 문서로 만들고 싶을 때의 탈출구. */
+.expand-all {
+    width: 100%;
+    margin-top: 8px;
+    padding: 6px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--text-secondary);
+    background-color: var(--surface);
+    border: 1px solid var(--separator);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.expand-all:hover {
+    color: var(--accent);
+    border-color: var(--accent);
 }
 
 .side-nav-group + .side-nav-group {
@@ -1312,6 +1409,8 @@ mark.search-hit.is-current {
     .side-nav-toggle,
     .toc-projects,
     .project summary,
+    .detail-nav,
+    .expand-all,
     .theme-toggle,
     .cta-button {
         display: none !important;
