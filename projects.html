@@ -966,9 +966,9 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <dt>해결</dt><dd>탐지는 결정적 신호처리(z-score·EWMA·추세 회귀)가 맡고, LLM은 탐지 근거 해석만 하도록 역할 분리</dd>
     </dl>
     <div class="metrics">
-        <div class="metric"><span class="metric-value">93.6~98.0%</span><span class="metric-label">경보 유효율 (오탐 0~0.9%, 대조군 0~1%)</span></div>
+        <div class="metric"><span class="metric-value">93.6~98.0%</span><span class="metric-label">경보 유효율 (오탐 0~0.9%, knee 125 가정)</span></div>
         <div class="metric"><span class="metric-value">15.8~23.0</span><span class="metric-label">공식 test 셋 RUL MAE (사이클)</span></div>
-        <div class="metric"><span class="metric-value">5번</span><span class="metric-label">뒤집힌 결론을 대조군으로 기록</span></div>
+        <div class="metric"><span class="metric-value">7번</span><span class="metric-label">뒤집힌 결론을 대조군·가정 검증으로 기록</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Time Series</span>
@@ -999,7 +999,10 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">같은 탐지기를 터보팬 엔진 run-to-failure 벤치마크 4개 셋(FD001~FD004)에 적용.</span><span class="sentence">운전 조건이 6개인 FD002·FD004는 조건별 z-정규화가 없으면 k를 0.5까지 낮춰도 유효 경보율 14%에 그침</span></li>
         <li><span class="sentence"><strong>경보 지표 재설계</strong> — 탐지율·리드타임만 보면 무조건 경보하는 상수 예측기가 만점을 받음.</span><span class="sentence">예고 20~100사이클만 유효로 치는 4분류로 바꾸자 상수 대조군은 0~1%로 무너지고, 권장 구성(전처리 없음, k=2.0)은 <strong>유효율 93.6~98.0%·오탐 0~0.9%</strong></span></li>
         <li><span class="sentence"><strong>공식 test 셋 RUL</strong> — MAE 15.8~23.0사이클·응답률 75~86%로 상수·생존시간 대조군을 전 구성에서 이김.</span><span class="sentence">학습 기반 모델(FD001 RMSE 15~18.5)에는 응답률·정확도 모두 뒤짐 — 이 접근의 가치는 정확도가 아니라 라벨·학습 없이 바로 배치할 수 있다는 점</span></li>
-        <li><span class="sentence"><strong>뒤집힌 결론 5건을 기록</strong> — 센서 융합·평활·센서 선택이 경보를 개선한다던 결론은 ROC로 보니 k 하나로 얻어지는 것이었음.</span><span class="sentence">고장 30사이클 전 시점의 RUL MAE(선형 28.5 → 지수 12.9)도 정답이 상수라 "항상 30"이 0.0을 받는 지표여서, 두 모델의 상대 비교로만 사용</span></li>
+        <li><span class="sentence"><strong>지표 대신 비용으로 운전점 선택</strong> — 경보 4분류에 비용을 매겨(놓침·늦음·조기·유효+오탐 출동) 한 대당 기대 비용으로 k·평활창을 고름.</span><span class="sentence">경보 없음 대비 90% 절감, 무조건 경보 대비 2.4배 저렴. 비용비를 3배로 흔들어도 최적점이 그대로라 "비용 가정을 몰라도 고를 수 있는 구간"임을 수치로 확인</span></li>
+        <li><span class="sentence"><strong>보류가 실력인지 검증</strong> — 응답률 65~86%라는 사실만 적혀 있던 것을 위험-커버리지 곡선으로 재측정.</span><span class="sentence">근거 센서 수 기준으로 커버리지를 낮추면 MAE가 23.0 → 7.3까지 내려가고 같은 부분집합의 상수 대조군은 그만큼 안 내려감. 반면 센서 합의도(spread)는 결함 모드가 2개인 셋에서 거꾸로 가, 신뢰도라고 다 같지 않음을 확인</span></li>
+        <li><span class="sentence"><strong>가정 자체를 흔들어 봄</strong> — 오탐 0은 "잔여 수명 > 125면 건강"이라는 문헌 관례 위에 있었음.</span><span class="sentence">knee를 75로 조이면 권장 운전점의 오탐이 10%가 되고 k를 3.5까지 올려야 함. 결론에 가정이 붙어 있다는 것을 표로 남김</span></li>
+        <li><span class="sentence"><strong>뒤집힌 결론 7건을 기록</strong> — 센서 융합·평활·센서 선택이 경보를 개선한다던 결론은 ROC로 보니 k 하나로 얻어지는 것이었음.</span><span class="sentence">고장 30사이클 전 시점의 RUL MAE(선형 28.5 → 지수 12.9)도 정답이 상수라 "항상 30"이 0.0을 받는 지표여서, 두 모델의 상대 비교로만 사용</span></li>
         <li><span class="sentence"><strong>LLM 진단 접지 검증</strong> — 3B의 미접지 0%는 10회 중 6회를 숫자 없이 서술해 얻은 값이었고, 7B는 수치 109개 중 2개(1.8%)를 지어냄.</span><span class="sentence">탐지는 결정적 알고리즘, LLM은 서술만 맡기는 분리가 필요한 실측 사례</span></li>
     </ul>
 
