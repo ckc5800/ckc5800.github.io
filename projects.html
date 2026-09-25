@@ -1110,7 +1110,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     <p class="project-meta">2026.07 · MCP 서버 설계 · 구현</p>
     <dl class="ps">
         <dt>문제</dt><dd>포트폴리오가 문서로만 있어 AI 도구가 경력·프로젝트를 직접 조회할 수 없음</dd>
-        <dt>해결</dt><dd>MCP 표준 서버로 read-only 도구 7종을 제공하고, 추론은 클라이언트 LLM에 위임해 서버는 결정적으로 유지</dd>
+        <dt>해결</dt><dd>MCP 표준 서버로 read-only 도구 8종을 제공하고, 추론은 클라이언트 LLM에 위임해 서버는 결정적으로 유지</dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">2개</span><span class="metric-label">의존성 · clone 후 30초 내 동작</span></div>
@@ -1130,7 +1130,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     <p>포트폴리오를 AI 도구 생태계에 연결 — Claude Desktop/Claude Code 등 MCP 클라이언트가 경력·프로젝트·논문 정보를 도구로 조회할 수 있도록 표준 프로토콜 서버 구현.</p>
 
     <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>도구 설계:</strong> read-only 도구 7개 — 구조화 조회(프로필/프로젝트/논문·특허) + BM25 문서 검색 + 실시간 조회(GitHub 활동·블로그·회사 공식 정보).</span><span class="sentence">검색 실패 시 다음 행동을 안내하는 actionable 오류 응답 설계.</span></p>
+    <p><span class="sentence"><strong>도구 설계:</strong> read-only 도구 8개 — 구조화 조회(프로필/프로젝트/논문·특허) + BM25 문서 검색 + 타임라인 + 실시간 조회(GitHub 활동·블로그·회사 공식 정보).</span><span class="sentence">검색 실패 시 다음 행동을 안내하는 actionable 오류 응답 설계.</span></p>
     <p><span class="sentence"><strong>경량 아키텍처:</strong> 의존성 2개(MCP SDK + rank_bm25)만으로 구성 — 임베딩 서버·GPU 불필요, clone 후 30초 내 동작.</span><span class="sentence">실시간 조회는 표준 라이브러리(urllib)만 쓰고, 조회 실패 시 정적 데이터로 답하도록 안내.</span><span class="sentence">추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지.</span></p>
 
     <ul class="detail-list">
@@ -1138,6 +1138,8 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li>확정 사실(profile.json)과 서술형 문서 검색을 이원화한 구조</li>
         <li>Claude Code에 사용자 스코프로 등록해 실제 에이전트 세션에서 도구 호출을 검증 — 세션을 재생한 SVG 데모를 README에 수록</li>
         <li>RAG Agent와 동일 지식 베이스 공유 — RAG·MCP 두 노출 방식 비교 경험</li>
+        <li><span class="sentence">기간 계산을 서버가 맡는 타임라인 도구 — 경력·프로젝트·논문·특허·학력을 시작순으로 정렬하고 개월 수까지 계산해 반환.</span><span class="sentence">rag-agent 평가에서 가장 약했던 유형이 비교(61~67%)였고 실패 다수가 날짜 산술이라, 모델이 계산하지 않도록 값을 미리 내주는 쪽을 택함</span></li>
+        <li>데이터 파일이 바뀌면 다시 읽는 구조 — stdio 서버가 기동 시점 데이터를 들고 있어, 사실을 고쳐도 클라이언트를 재시작하기 전까지 낡은 값을 응답하던 문제를 수정</li>
     </ul>
 
     <h4 class="detail-head">성과</h4>
@@ -1145,6 +1147,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li>노션 export의 퍼센트 인코딩 경로가 무의미 토큰으로 쪼개져 길이 정규화 페널티를 유발하던 문제를 원문 정제로 해결 (토큰 7,653 → 6,310개, 18% 감소)</li>
         <li>응답이 오는지만 보던 스모크 테스트를 내용 단언(프로젝트 수·특허 건수)으로 전환, 과정에서 구 사명 미인식 버그 발견·별칭 매칭 추가</li>
         <li><span class="sentence">rag-agent의 에이전트가 이 서버를 클라이언트로 사용.</span><span class="sentence">제공자와 소비자 양쪽을 모두 구현</span></li>
+        <li><span class="sentence">도구를 엮어야 풀리는 질문 10개로 별도 평가를 만들어 도구 응답만으로 답에 닿는지 검증(현재 10/10).</span><span class="sentence">채점기부터 의심해, 정답 "8"이 응답의 "2018"에 걸려 통과하던 것을 자릿수 경계 규칙으로 고치고 틀린 답이 실제로 떨어지는지 시험</span></li>
     </ul>
 
     <p class="repo-link"><a href="https://github.com/ckc5800/portfolio-mcp" target="_blank">GitHub 저장소</a></p>
