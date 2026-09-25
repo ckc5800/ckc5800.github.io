@@ -627,6 +627,16 @@ h2[id] {
     flex: 1;
 }
 
+/* Esc 로도 접힌다는 것을 아무 데도 알려 주지 않아, 고정 바에 붙인다.
+   키보드가 없는 좁은 화면에서는 뺀다. */
+@media (min-width: 701px) and (hover: hover) {
+    .project details[open] > summary .sum-close::after {
+        content: " · Esc";
+        font-weight: 400;
+        color: var(--text-secondary);
+    }
+}
+
 .project summary::after {
     content: "▾";
     font-size: 11px;
