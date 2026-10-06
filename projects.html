@@ -223,11 +223,11 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     <h4 class="detail-head">매일 도는 코드베이스 심층 점검 (2026.08~09)</h4>
     <ul class="detail-list">
         <li><span class="sentence">혼자 만든 시스템이라 리뷰어가 없다는 것이 가장 큰 위험이었다.</span><span class="sentence">도메인을 11개(엔진·보안·인프라·네트워크·API 계약·관측·데이터 정합·동시성·합성 E2E·백로그·첫재생 지연)로 나누고 <strong>하루 3회 한 도메인씩</strong> 심층 점검하는 에이전트 러너를 스케줄러에 걸어 약 3.7일에 한 바퀴를 돌렸다</span></li>
-        <li><span class="sentence">2026.08.18 ~ 09.16 동안 <strong>51회 실행 · 리포트 54건</strong>.</span><span class="sentence">발견은 등급으로 <strong>HIGH 34 · MED 141 · LOW 125 · TRIVIAL 33</strong>, 성격으로 구현 결함·설계 지적·개선·신규 기능 네 층으로 분류</span></li>
+        <li><span class="sentence">2026.08.18 ~ 09.16 동안 <strong>리포트 53건</strong>.</span><span class="sentence">원장에 집계된 51회분 기준으로 <strong>HIGH 34 · MED 141 · LOW 125 · TRIVIAL 33</strong>, 성격으로 구현 결함·설계 지적·개선·신규 기능 네 층으로 분류</span></li>
         <li><span class="sentence">규칙 두 개를 못 박았다 — <strong>결함 주장은 실행으로 확증</strong>(코드 읽기만으로는 보고하지 않음), <strong>내가 세운 가설도 틀리면 그대로 기록</strong>.</span><span class="sentence">그렇게 스스로 기각한 가설·리드가 <strong>63건</strong>으로, 이쪽이 실제 결함 목록만큼 쓸모 있었다</span></li>
         <li><span class="sentence">미수정 항목은 다음 회차 리포트에 "이월 N건 전부 미수정 지속"으로 따라붙게 해, 조용히 사라지지 않도록 원장을 유지</span></li>
         <li><span class="sentence">실행으로 확증한 예 — <strong>백업은 돌고 있는데 복구는 되지 않는 상태</strong>를 실제 컨테이너로 재현(복원 명령이 성공 코드를 반환하면서 운영 DB를 바꾸지 않음), 캐시가 잘못 변환된 오디오를 <strong>만료 없이 영구 적재</strong>하던 경로, 긴 입력의 말미 9%가 조용히 잘리던 길이 상한 충돌</span></li>
-        <li><span class="sentence">발견을 밤에 고치는 루틴도 함께 돌렸다.</span><span class="sentence">수정마다 회귀 핀을 붙여 유닛 스위트를 <strong>206 → 264개</strong>로 키웠고, 이 야간 수정 커밋이 32건</span></li>
+        <li><span class="sentence">발견을 밤에 고치는 루틴을 함께 돌렸다 — 수정마다 회귀 핀을 붙여 유닛 스위트가 점검 기간에 <strong>206 → 264개</strong>로 늘었다.</span><span class="sentence">야간 루틴 커밋은 2026.07~08 구간 32건, 그중 점검 기간과 겹치는 것이 9건</span></li>
     </ul>
 
     <h4 class="detail-head">엔진 내부 판독 — 성능 여지 목록 (2026.09)</h4>
@@ -344,7 +344,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     <ul class="detail-list">
         <li><span class="sentence">인원이 늘어 역할을 나눠야 했을 때, 커밋 기록부터 셌다 — <strong>최근 90일 커밋 1,256건이 전부 1인 작성</strong>.</span><span class="sentence">문제는 역할 분담이 없는 게 아니라 <strong>인수인계가 없다</strong>는 쪽이라고 보고 거기에 맞춰 설계</span></li>
         <li><span class="sentence">분담 축을 프론트/백엔드 같은 층이 아니라 <strong>런타임 품질 ↔ 제품 표면</strong>으로 잘랐다.</span><span class="sentence">변경량 상위(프론트·배포·UI)와 되돌리기 비용 상위(엔진 패치·ITN·누수)가 한 사람에게 몰리지 않도록 배분하고, 블록 안에서는 단독 결정권을 주되 <strong>맞닿는 인터페이스 5개와 2인 승인 6종</strong>만 공동 통제</span></li>
-        <li><span class="sentence">인수인계서에는 자랑이 아니라 <strong>밟으면 다치는 것</strong>을 적었다 — 선행 지식 9종(설정 실효값이 DB &gt; env 순이라는 것 등), 실제로 밟았던 함정 11가지, 미완 과제와 리스크를 P1~P3 등급으로</span></li>
+        <li><span class="sentence">인수인계서에는 자랑이 아니라 <strong>밟으면 다치는 것</strong>을 적었다 — 선행 지식 9종(설정 실효값이 DB &gt; env 순이라는 것 등), 실제로 밟았던 함정 Top 10, 미완 과제와 리스크를 P1~P3 등급으로</span></li>
         <li><span class="sentence">버스 팩터 2를 목적으로 6개월 뒤 오너 1회 로테이션을 전제로 두고, 진행 중 조사(메모리 누수)는 이관 금지·주 1회 공유로 구분</span></li>
     </ul>
 
