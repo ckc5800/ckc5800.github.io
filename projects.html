@@ -140,7 +140,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <dt>해결</dt><dd><span class="sentence">Qwen3-TTS 기반 신규 구축 — vLLM(GPU)·Supertonic(CPU) 듀얼 엔진 추론 서빙을 단독 설계.</span><span class="sentence">구간 계측으로 병목을 엔진 디코드 루프로 좁혀 첫 응답을 당기고, FP8 양자화·vLLM 0.24 마이그레이션으로 처리량 4.2배. 고객사 PoC·시연까지 진행</span></dd>
     </dl>
     <div class="metrics">
-        <div class="metric"><span class="metric-value">1,008 → 652ms</span><span class="metric-label">burst p95 TTFB</span></div>
+        <div class="metric"><span class="metric-value">426 → 114ms</span><span class="metric-label">첫 소리 지연</span></div>
         <div class="metric"><span class="metric-value">0.73 → 3.09 rps</span><span class="metric-label">엔진 처리량</span></div>
         <div class="metric"><span class="metric-value">실패 0</span><span class="metric-label">동시 256건 폭주 부하</span></div>
     </div>
@@ -182,6 +182,15 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">자원 축도 함께 실측.</span><span class="sentence">per-stage VRAM · 컨테이너별 CPU/메모리 피크 · GPU 온도와 SM 클럭까지 기록해 열 스로틀링 드리프트를 측정 오염과 구분</span></li>
     </ul>
 
+    <p class="point"><strong>④ 지표를 바꾸자 드러난 첫 소리 지연</strong> — 빠르다고 재고 있던 숫자가 체감과 다른 것을 먼저 고쳤다.</p>
+    <ul class="detail-list">
+        <li><span class="sentence">TTFB 는 44바이트 헤더가 도착한 시각이라 "소리가 나기 시작하는 시각"과 다르다.</span><span class="sentence">주지표를 <strong>first_play(실제 재생 시작)</strong>로 바꿔 재니 경합이 없는 단건에서도 <strong>426ms</strong>였다</span></li>
+        <li><span class="sentence">원인은 모델이 아니라 직렬로 놓인 버퍼 둘.</span><span class="sentence">SDK 읽기 버퍼가 <strong>32,768바이트 = 오디오 683ms 분량</strong>이라 그만큼 쌓일 때까지 한 바이트도 내보내지 않았다 — 4,096으로 내려 <strong>432 → 134ms</strong>(단건 6회 중위)</span></li>
+        <li><span class="sentence">더 내리지 않은 이유도 남겼다.</span><span class="sentence">512까지 내리면 첫 청크는 그대로인데 청크가 401개로 늘고 e2e 가 13% 나빠져 4,096을 택했다</span></li>
+        <li><span class="sentence">두 번째 버퍼는 스트림 홀드백.</span><span class="sentence">발화 종료 판정값(500ms)에 묶여 <strong>615ms 분량</strong>을 붙들고 있던 것을 별도 스위치로 분리했다(기본 off).</span><span class="sentence">판정값 자체는 낮출 수 없다 — 200/300 으로 내리면 문장 안 호흡을 종료로 오판해 <strong>STT 누락률이 4.4% → 12~14%</strong></span></li>
+        <li><span class="sentence">합쳐서 <strong>426 → 114ms</strong>.</span><span class="sentence">앞선 A/B 에서 보이던 "홀드백 이득 −501ms"는 <strong>선행 무음이 일찍 도착한 착시</strong>였고 목소리 도착은 384 → 380ms 로 불변이었다 — 진짜 레버는 API 가 앞에 붙이던 무음 패딩(기본 200ms)이었음을 프로브로 확정</span></li>
+    </ul>
+
 <h4 class="detail-head">성과</h4>
     <ul class="detail-list">
         <li><span class="sentence">0.22 에서는 executor 를 uni 로 바꿔도 <strong>0.68 → 0.73 rps(+6%)</strong>에 그쳤고 conc16 에서 엔진이 죽었음 — 병목이 executor 가 아니라 엔진 버전이었음. 0.24 로 옮긴 뒤 최대 안정치 <strong>3.09 rps</strong>(conc32, conc48까지 err=0).</span><span class="sentence">측정 조건별 비교는 차별점 ②에 정리</span></li>
@@ -190,6 +199,25 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li>ITN 정규화 정확도 50.1% → 70.9% (검증셋 기준)</li>
         <li><span class="sentence">같은 GPU에서 <strong>burst p95 TTFB 1,008ms → 652ms</strong> (동시 20 기준). ≤500ms는 달성 불가에서 동시 15로, ≤1000ms는 20~25에서 30으로 올랐다.</span><span class="sentence">동시 스트림 수용 한계 36 실측 (2026.07 말)</span></li>
         <li>TTFB 경로의 순차 Redis 왕복을 16회에서 13회로 줄이고, 문장 캐시는 일괄 조회로 바꿔 N왕복을 1왕복으로</li>
+    </ul>
+
+    <h4 class="detail-head">음성마다 기전이 다른 무음 붕괴 (2026.09)</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">특정 음성에서 첫 소리가 나오지 않고 잘리는 현상을 음성 3종으로 분해.</span><span class="sentence">엔진을 직접 호출해 API 가드를 우회하고, 생성 오디오의 선행 무음이 컷선 500ms 를 넘는 비율로 정의해 측정</span></li>
+        <li><span class="sentence"><strong>원인이 음성마다 달랐다.</strong></span><span class="sentence">음성 A 는 temperature 의존 — 0.5 에서 <strong>56.7% ±5.6</strong>, 0.9 에서 <strong>16.0% ±4.1</strong> 로 신뢰구간이 겹치지 않는 3.5배 차.</span><span class="sentence">음성 B 는 같은 레버에 무반응(5.7% ±2.6 vs 5.0% ±2.5), 음성 C 는 전 조건 0% — 전역 레버가 아니라 음성 고유 특성</span></li>
+        <li><span class="sentence">하필 운영 기본값(0.5)이 음성 A 곡선의 최악점이었다.</span><span class="sentence">발현 조건은 부하 — 동시성 1 에서는 세 음성이 구분되지 않고 동시 8 에서만 운영 순위가 재현됨</span></li>
+        <li><span class="sentence">"조용한 화자를 복제해 무음으로 오판정된다"는 가설은 <strong>기각</strong>.</span><span class="sentence">붕괴 구간의 최대 RMS 가 19~51 로 판정 문턱 104 에 한참 못 미쳐, 문턱을 낮추는 쪽은 무음 송출을 부르는 길이었다</span></li>
+        <li><span class="sentence">조건당 n=48 로 낸 10.4% 가 n=300 에서 5.7% 로 내려앉았다.</span><span class="sentence">이 저장소에서 소표본 결론이 뒤집힌 <strong>다섯 번째</strong> 사례라, 붕괴율 판정은 조건당 최소 n=300 을 규칙으로 못 박음</span></li>
+    </ul>
+
+    <h4 class="detail-head">파라미터 전수 스크리닝과 측정 기준 고정 (2026.09)</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">지연·음질·동시성에 닿을 수 있는 설정을 전 층에서 전수 열거 — <strong>요청 26 · API 환경변수 32 · DB 기본값 약 45 · 엔진 yaml 29 · 측정 하네스 28</strong></span></li>
+        <li><span class="sentence">스윕을 돌리기 전에 코드 근거로 먼저 걸러냈다.</span><span class="sentence">읽는 코드가 0건인 설정 3종, 엔진 페이로드에 실리지 않는 환경변수, 버킷 교집합이 0 이라 무효인 값, 포크가 조용히 드롭한 기능, 스트리밍 경로가 소비하지 않는 요청 필드 7종 — 남은 <strong>14종만</strong> 2수준 OFAT 로 스크리닝</span></li>
+        <li><span class="sentence">기준선을 처음·중간·끝 <strong>3회</strong> 잡아 잡음 폭을 먼저 재고, 변화량이 그 폭을 넘는 것만 유의로 채택</span></li>
+        <li><span class="sentence">비교가 성립하도록 측정 기준을 둘로 고정.</span><span class="sentence"><strong>pessimistic</strong>(최악 음성·39자 고정 문장·prefix 캐시 off·응답 캐시 bypass)과 <strong>mixed</strong>(운영 대표)를 두고 리포트마다 어느 기준인지 명기</span></li>
+        <li><span class="sentence">밤새 도는 종합 매트릭스로 음질·동시성·안정성을 한 번에 측정.</span><span class="sentence">단계 시작 전 잔여 시간을 보고 못 끝낼 단계는 통째로 건너뛰며, 어떤 경로로 끝나든 설정과 컨테이너를 원복</span></li>
+        <li><span class="sentence">관측은 운영 코드를 고치지 않고 붙였다.</span><span class="sentence">인터프리터 시작 훅으로 프로브를 주입해 첫 청크 타임라인과 이벤트 루프 정지를 기록 — 엔진·API 코드 무수정</span></li>
     </ul>
 
     <h4 class="detail-head">메모리 누수 전수 조사 (vLLM-Omni 엔진)</h4>
