@@ -220,6 +220,25 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">관측은 운영 코드를 고치지 않고 붙였다.</span><span class="sentence">인터프리터 시작 훅으로 프로브를 주입해 첫 청크 타임라인과 이벤트 루프 정지를 기록 — 엔진·API 코드 무수정</span></li>
     </ul>
 
+    <h4 class="detail-head">매일 도는 코드베이스 심층 점검 (2026.08~09)</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">혼자 만든 시스템이라 리뷰어가 없다는 것이 가장 큰 위험이었다.</span><span class="sentence">도메인을 11개(엔진·보안·인프라·네트워크·API 계약·관측·데이터 정합·동시성·합성 E2E·백로그·첫재생 지연)로 나누고 <strong>하루 3회 한 도메인씩</strong> 심층 점검하는 에이전트 러너를 스케줄러에 걸어 약 3.7일에 한 바퀴를 돌렸다</span></li>
+        <li><span class="sentence">2026.08.18 ~ 09.16 동안 <strong>51회 실행 · 리포트 54건</strong>.</span><span class="sentence">발견은 등급으로 <strong>HIGH 34 · MED 141 · LOW 125 · TRIVIAL 33</strong>, 성격으로 구현 결함·설계 지적·개선·신규 기능 네 층으로 분류</span></li>
+        <li><span class="sentence">규칙 두 개를 못 박았다 — <strong>결함 주장은 실행으로 확증</strong>(코드 읽기만으로는 보고하지 않음), <strong>내가 세운 가설도 틀리면 그대로 기록</strong>.</span><span class="sentence">그렇게 스스로 기각한 가설·리드가 <strong>63건</strong>으로, 이쪽이 실제 결함 목록만큼 쓸모 있었다</span></li>
+        <li><span class="sentence">미수정 항목은 다음 회차 리포트에 "이월 N건 전부 미수정 지속"으로 따라붙게 해, 조용히 사라지지 않도록 원장을 유지</span></li>
+        <li><span class="sentence">실행으로 확증한 예 — <strong>백업은 돌고 있는데 복구는 되지 않는 상태</strong>를 실제 컨테이너로 재현(복원 명령이 성공 코드를 반환하면서 운영 DB를 바꾸지 않음), 캐시가 잘못 변환된 오디오를 <strong>만료 없이 영구 적재</strong>하던 경로, 긴 입력의 말미 9%가 조용히 잘리던 길이 상한 충돌</span></li>
+        <li><span class="sentence">발견을 밤에 고치는 루틴도 함께 돌렸다.</span><span class="sentence">수정마다 회귀 핀을 붙여 유닛 스위트를 <strong>206 → 264개</strong>로 키웠고, 이 야간 수정 커밋이 32건</span></li>
+    </ul>
+
+    <h4 class="detail-head">엔진 내부 판독 — 성능 여지 목록 (2026.09)</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">설정 스윕이 한계에 닿아, 엔진 두 단(Talker·Code2Wav) 소스를 파일 단위로 읽고 성능 여지를 목록으로 만들었다.</span><span class="sentence">Talker 28층·code_predictor 5층·보코더 114.3M 파라미터가 <strong>fp32로 강제</strong>되는 것까지 코드·부팅 로그·설정 파일을 대조해 확정</span></li>
+        <li><span class="sentence">보코더의 CUDA 그래프가 <strong>배치 2 이상에서 전부 eager 로 폴백</strong>하는 것을 적중률로 확인(단건 99.5% → 동시 12에서 56%).</span><span class="sentence">배치 상한을 1로 고정하자 적중률 99.5%가 돌아오는 것을 실측해 원인을 확정</span></li>
+        <li><span class="sentence">캡처된 그래프 모양이 실제 입력과 어긋나 <strong>29~33% 패딩</strong>으로 낭비되던 것을 찾아, 캡처 길이를 실측 주력 윈도로 교체하면 패딩 0에 메모리는 중립임을 확인</span></li>
+        <li><span class="sentence">샘플링 꼬리가 CUDA 그래프 밖에 있어 프레임당 약 120번의 커널 실행이 쌓이는 구조를 마이크로벤치로 계량 — 배치와 무관하게 프레임당 2~3ms로, 토큰 시간의 <strong>약 29%</strong></span></li>
+        <li><span class="sentence">결론을 쓰기 전에 <strong>측정의 유효 범위부터 적었다</strong>.</span><span class="sentence">로컬 GPU는 fp8 가속 경로를 못 타 지연 수치가 무효이고 기준선 자체가 ±30% 흔들려, 서버로 옮길 수 있는 것은 그래프 적중률·캡처 수·VRAM 같은 GPU 무관 지표뿐임을 먼저 명시</span></li>
+    </ul>
+
     <h4 class="detail-head">메모리 누수 전수 조사 (vLLM-Omni 엔진)</h4>
     <ul class="detail-list">
         <li><span class="sentence">43시간 롱런에서 stage0(talker) 프로세스의 호스트 메모리가 <strong>선형 증가(+943 MiB/43h)</strong>하고 플래토에 도달하지 않는 것을 발견.</span><span class="sentence">주기 재시작이 필요한 상태에서 원인을 한 건씩 특정해 <strong>6건을 모두 수정</strong> (2026.08 ~ 09)</span></li>
@@ -254,7 +273,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         </div>
 
     <details class="sub">
-        <summary><span class="sum-text">구현 세부 보기</span><span class="sum-hint">시스템 구조 · 구현 · 핵심 엔지니어링 9건 · 데모 영상</span><span class="sum-close">구현 세부 접기</span></summary>
+        <summary><span class="sum-text">구현 세부 보기</span><span class="sum-hint">시스템 구조 · 구현 · 용량 환산 · 2인 체제 · 핵심 엔지니어링 9건 · 데모 영상</span><span class="sum-close">구현 세부 접기</span></summary>
         <div class="sub-body">
 <h4 class="detail-head">시스템 구조</h4>
     <div class="diagram-grid">
@@ -313,6 +332,21 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
             <a class="demo-btn" href="https://drive.google.com/file/d/1FE4p0ItxPPuKvGDC90gHxbmmGTHef8YB/view?usp=drive_link" target="_blank">영상 보기</a>
         </div>
     </div>
+
+    <h4 class="detail-head">용량을 상담원 수로 환산</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">"동시 몇 명까지 되냐"는 질문에 rps 로 답하면 영업·고객 쪽에서 쓸 수가 없다.</span><span class="sentence">3계층 부하 결과를 상담원 수로 환산한 표를 리포트에 넣었다 — <strong>활성 400명이 분당 1건을 쓰면 6.7 rps, GPU 84%</strong>로 권장 상한. 활성률 30%를 가정하면 등록 약 1,300명 규모</span></li>
+        <li><span class="sentence">긴급 안내 폭증을 가정한 시나리오도 함께 — 평시 1 rps 가 흐르는 중 60초 시점에 30건을 동시에 밀어 넣어 <strong>193요청 실패 0 · p99 742ms</strong>, 큐가 바로 회복되는 것을 확인</span></li>
+        <li><span class="sentence">같은 문서에 <strong>정직한 한계 5가지</strong>를 같은 비중으로 적었다 — 단일 GPU 기준이라는 것, 배포 직후 콜드 캐시에서 p99 4초가 관찰된다는 것, 클라이언트 재시도까지 보면 관측 부하가 1.1~1.3배가 된다는 것, 게이트웨이 한 IP 로 모아 호출하면 레이트 리밋에 걸린다는 것, 스테이징 전제라는 것</span></li>
+    </ul>
+
+    <h4 class="detail-head">2인 체제 설계와 인수인계</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">인원이 늘어 역할을 나눠야 했을 때, 커밋 기록부터 셌다 — <strong>최근 90일 커밋 1,256건이 전부 1인 작성</strong>.</span><span class="sentence">문제는 역할 분담이 없는 게 아니라 <strong>인수인계가 없다</strong>는 쪽이라고 보고 거기에 맞춰 설계</span></li>
+        <li><span class="sentence">분담 축을 프론트/백엔드 같은 층이 아니라 <strong>런타임 품질 ↔ 제품 표면</strong>으로 잘랐다.</span><span class="sentence">변경량 상위(프론트·배포·UI)와 되돌리기 비용 상위(엔진 패치·ITN·누수)가 한 사람에게 몰리지 않도록 배분하고, 블록 안에서는 단독 결정권을 주되 <strong>맞닿는 인터페이스 5개와 2인 승인 6종</strong>만 공동 통제</span></li>
+        <li><span class="sentence">인수인계서에는 자랑이 아니라 <strong>밟으면 다치는 것</strong>을 적었다 — 선행 지식 9종(설정 실효값이 DB &gt; env 순이라는 것 등), 실제로 밟았던 함정 11가지, 미완 과제와 리스크를 P1~P3 등급으로</span></li>
+        <li><span class="sentence">버스 팩터 2를 목적으로 6개월 뒤 오너 1회 로테이션을 전제로 두고, 진행 중 조사(메모리 누수)는 이관 금지·주 1회 공유로 구분</span></li>
+    </ul>
 
     <h4 class="detail-head">핵심 엔지니어링</h4>
     <ol class="detail-list">
