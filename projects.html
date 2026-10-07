@@ -1092,7 +1092,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     <ul class="detail-list">
         <li>이미지+텍스트 복합 질의 — "이 상품이랑 비슷한데 검정색으로": 스타일은 임베딩 가중 합성, 속성은 메타 필터가 담당</li>
         <li>대화형 정교화 — 후속 발화를 조건 병합, 부정어(말고·빼고) 처리, 대화 경로 UI. 서버는 무상태</li>
-        <li>FastAPI + 바닐라 JS 데모 — 검색 응답 약 80ms, 질의 임베딩 LRU 캐시(반복 질의 165 → 0ms), 단계별 타이밍 노출</li>
+        <li><span class="sentence">FastAPI + 바닐라 JS 데모 — 44K 인덱스에서 검색 응답 <strong>중앙 36ms</strong>(서버 내부 임베딩 24.5 + 랭킹 6.6ms).</span><span class="sentence">질의 임베딩 LRU 캐시가 붙으면 반복 질의는 <strong>13ms</strong>로 내려간다 (로컬 CPU 재측정, 신규 질의 n=8 중앙).</span><span class="sentence">응답에 단계별 타이밍을 실어 어디서 시간이 가는지 보이게 함</span></li>
         <li>44K 규모라 정확 탐색(numpy 내적) 채택 — ANN 도입 시점을 규모 기준으로 명시</li>
     </ul>
 
