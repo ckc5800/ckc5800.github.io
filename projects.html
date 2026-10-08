@@ -142,7 +142,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     <div class="metrics">
         <div class="metric"><span class="metric-value">426 → 114ms</span><span class="metric-label">첫 소리 지연</span></div>
         <div class="metric"><span class="metric-value">0.73 → 3.09 rps</span><span class="metric-label">엔진 처리량</span></div>
-        <div class="metric"><span class="metric-value">실패 0</span><span class="metric-label">동시 256건 폭주 부하</span></div>
+        <div class="metric"><span class="metric-value">16 → 52</span><span class="metric-label">동시 처리 · p95 1초 이내</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Python 3.12</span>
@@ -175,11 +175,14 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">안정성도 질적 전환.</span><span class="sentence"><strong>conc16 진입 시 엔진 사망(3회 재현)하던 것이 conc48 무오류(1,500+ 요청)로</strong></span></li>
     </ul>
 
-    <p class="point"><strong>③ 용량 한계 실측</strong> — 동시 몇 명까지 받을 수 있는지를 숫자로 확정.</p>
+    <p class="point"><strong>③ 최대 동시 처리 확정</strong> — 운영 조건 그대로, 음질을 지키는 선에서 몇 명까지 받을 수 있는지를 확정.</p>
     <ul class="detail-list">
-        <li><span class="sentence">burst 스윕으로 SLA 확립.</span><span class="sentence">TTFB <strong>≤500ms 동시 15 · ≤1000ms 동시 30</strong>, 수용 한계 36 (실링 약 40)</span></li>
-        <li><span class="sentence">판정 기준은 지연이 아닌 <strong>RTF 여유</strong>.</span><span class="sentence">코덱 좌측 컨텍스트를 조정해 N30 RTF 0.91 → 0.71 확보, N40은 0.96~1.04로 마진이 사라지는 것을 확인하고 운영값을 실링 -1 티어(36)로 결정</span></li>
-        <li><span class="sentence">자원 축도 함께 실측.</span><span class="sentence">per-stage VRAM · 컨테이너별 CPU/메모리 피크 · GPU 온도와 SM 클럭까지 기록해 열 스로틀링 드리프트를 측정 오염과 구분</span></li>
+        <li><span class="sentence">한국어 음성 16종 혼합 · 응답 완료 즉시 다음 요청(closed-loop) · 캐시 우회로 재고, 판정은 첫 오디오 도착 p95 로 했다.</span><span class="sentence"><strong>최적(≤600ms) 동시 28 · 마지노선(≤1초) 동시 52</strong> — 같은 방식으로 잰 캠페인 전(8 · 16)의 약 3배. WebSocket 경로 마지노선은 48</span></li>
+        <li><span class="sentence">레버마다 몫을 <strong>같은 시간대 교대 A/B 쌍</strong>으로만 분리했다(다른 날짜끼리 절대값 비교 금지).</span><span class="sentence">temperature 0.9 <strong>−37~41%</strong> &gt; stage1 컴파일 −6~7% ≈ 청크 6프레임 −4~8%, 음질을 되살린 코덱 문맥 4는 비용 +0~8%. 동시 24 기준 누적 <strong>973 → 554ms(−43%)</strong>, 단계 효과를 곱한 추정 567과 실측이 2% 안에서 맞았다</span></li>
+        <li><span class="sentence">8시간 소크(동시 52, <strong>45.3만 건</strong>)에서 시간대별 p95 940~947ms · 불량 0.02% · 열화 추세 없음.</span><span class="sentence">음질은 14세트 자동 판정으로 동등 범위 확인(화자 유사도 0.945~0.954 · CER p95 0.07~0.14)</span></li>
+        <li><span class="sentence">속도를 올리다 생긴 음질 문제를 먼저 잡았다 — 블라인드 청감에서 "음절마다 기계음"이 보고돼 추적하니, 코덱 문맥을 줄인 채택이 <strong>의식적으로 정한 적 없는 화자 참조 길이까지 2초 → 0.16초로</strong> 끌고 내려간 부작용이었다.</span><span class="sentence">청크 경계 스펙트럼 변화량으로 계량하고, 블라인드 24쌍에서 화자 참조를 되돌린 안이 7:0(p=0.02)으로 원인을 확정.</span><span class="sentence">그 안은 RTF +14~27% 비용으로 기각하고, 6:1 이던 문맥 4를 채택</span></li>
+        <li><span class="sentence">컴파일 함정 둘 — 그래프는 배치가 <strong>정확히 일치</strong>해야 적중하는데 초안 목록이 배치 3·5를 빠뜨렸고, torch 기본 재컴파일 한도 8을 넘은 형상은 <strong>조용히 일반 그래프로 떨어지면서 적중으로 집계</strong>됐다.</span><span class="sentence">형상을 바로잡은 컴파일 도입으로 보코더 그래프 적중률 58 → 99%</span></li>
+        <li><span class="sentence">무효는 무효로 적었다 — 동시 60·64는 요청 97%가 API 백프레셔 503이라 엔진 한계가 아니라 <strong>측정 무효</strong>로 처리.</span><span class="sentence">자원 축(스테이지별 VRAM · CPU/메모리 피크 · GPU 온도와 SM 클럭)도 함께 기록해 열 스로틀링을 측정 오염과 구분</span></li>
     </ul>
 
     <p class="point"><strong>④ 지표를 바꾸자 드러난 첫 소리 지연</strong> — 빠르다고 재고 있던 숫자가 체감과 다른 것을 먼저 고쳤다.</p>
@@ -197,7 +200,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">부하 테스트를 3층으로 설계 — 스모크(생사 확인) → 순간 폭주(동시 4~256 워커가 같은 순간 도착) → 지속 부하(Poisson 도착 모사, 텍스트 길이 3종·화자 5명·캐시 히트 30% 반영, 시나리오별 3분).</span><span class="sentence"><strong>256건이 같은 순간 도착하는 폭주에도 실패 0</strong>, 지속 부하 <strong>TTFB p50 70ms</strong>(p95 219 · p99 292ms) · 최대 처리량 <strong>8.7 rps</strong> (2026.07.20 실측)</span></li>
         <li>32개 언어 지원 단일 플랫폼 (vLLM 10개 · Supertonic 31개 · 중복 제외 32개)</li>
         <li>ITN 정규화 정확도 50.1% → 70.9% (검증셋 기준)</li>
-        <li><span class="sentence">같은 GPU에서 <strong>burst p95 TTFB 1,008ms → 652ms</strong> (동시 20 기준). ≤500ms는 달성 불가에서 동시 15로, ≤1000ms는 20~25에서 30으로 올랐다.</span><span class="sentence">동시 스트림 수용 한계 36 실측 (2026.07 말)</span></li>
+        <li><span class="sentence">같은 GPU에서 <strong>burst p95 TTFB 1,008ms → 652ms</strong> (동시 20 기준). ≤500ms는 달성 불가에서 동시 15로, ≤1000ms는 20~25에서 30으로 올랐다.</span><span class="sentence">동시 스트림 수용 한계 36 실측 (2026.07 말) — 이후 9월 확정 캠페인에서 마지노선 52 · 동시 한도 56으로 상향(차별점 ③)</span></li>
         <li>TTFB 경로의 순차 Redis 왕복을 16회에서 13회로 줄이고, 문장 캐시는 일괄 조회로 바꿔 N왕복을 1왕복으로</li>
     </ul>
 
@@ -208,6 +211,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">하필 운영 기본값(0.5)이 음성 A 곡선의 최악점이었다.</span><span class="sentence">발현 조건은 부하 — 동시성 1 에서는 세 음성이 구분되지 않고 동시 8 에서만 운영 순위가 재현됨</span></li>
         <li><span class="sentence">"조용한 화자를 복제해 무음으로 오판정된다"는 가설은 <strong>기각</strong>.</span><span class="sentence">붕괴 구간의 최대 RMS 가 19~51 로 판정 문턱 104 에 한참 못 미쳐, 문턱을 낮추는 쪽은 무음 송출을 부르는 길이었다</span></li>
         <li><span class="sentence">조건당 n=48 로 낸 10.4% 가 n=300 에서 5.7% 로 내려앉았다.</span><span class="sentence">이 저장소에서 소표본 결론이 뒤집힌 <strong>다섯 번째</strong> 사례라, 붕괴율 판정은 조건당 최소 n=300 을 규칙으로 못 박음</span></li>
+        <li><span class="sentence">분석 결과로 운영 기본 temperature 를 <strong>0.5 → 0.9</strong>로 바꿨다(2026.09).</span><span class="sentence">불량 <strong>0.93 → 0.17%</strong>, 첫 오디오 p95 −37~41%, 화자 유사도 0.9426 → 0.9522 — 저온에서 잦던 붕괴의 대기·재시도가 꼬리를 만들고 있던 것으로 판단</span></li>
     </ul>
 
     <h4 class="detail-head">파라미터 전수 스크리닝과 측정 기준 고정 (2026.09)</h4>
@@ -220,14 +224,15 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">관측은 운영 코드를 고치지 않고 붙였다.</span><span class="sentence">인터프리터 시작 훅으로 프로브를 주입해 첫 청크 타임라인과 이벤트 루프 정지를 기록 — 엔진·API 코드 무수정</span></li>
     </ul>
 
-    <h4 class="detail-head">매일 도는 코드베이스 심층 점검 (2026.08~09)</h4>
+    <h4 class="detail-head">매일 도는 코드베이스 심층 점검 (2026.08~10)</h4>
     <ul class="detail-list">
         <li><span class="sentence">혼자 만든 시스템이라 리뷰어가 없다는 것이 가장 큰 위험이었다.</span><span class="sentence">도메인을 11개(엔진·보안·인프라·네트워크·API 계약·관측·데이터 정합·동시성·합성 E2E·백로그·첫재생 지연)로 나누고 <strong>하루 3회 한 도메인씩</strong> 심층 점검하는 에이전트 러너를 스케줄러에 걸어 약 3.7일에 한 바퀴를 돌렸다</span></li>
-        <li><span class="sentence">2026.08.18 ~ 09.16 동안 <strong>리포트 53건</strong>.</span><span class="sentence">원장에 집계된 51회분 기준으로 <strong>HIGH 34 · MED 141 · LOW 125 · TRIVIAL 33</strong>, 성격으로 구현 결함·설계 지적·개선·신규 기능 네 층으로 분류</span></li>
-        <li><span class="sentence">규칙 두 개를 못 박았다 — <strong>결함 주장은 실행으로 확증</strong>(코드 읽기만으로는 보고하지 않음), <strong>내가 세운 가설도 틀리면 그대로 기록</strong>.</span><span class="sentence">그렇게 스스로 기각한 가설·리드가 <strong>63건</strong>으로, 이쪽이 실제 결함 목록만큼 쓸모 있었다</span></li>
+        <li><span class="sentence">2026.08.18 ~ 10.07 동안 <strong>리포트 89건</strong>.</span><span class="sentence">원장에 집계된 88회분 기준으로 <strong>HIGH 39 · MED 214 · LOW 196 · TRIVIAL 63</strong>, 성격으로 구현 결함·설계 지적·개선·신규 기능 네 층으로 분류</span></li>
+        <li><span class="sentence">규칙 두 개를 못 박았다 — <strong>결함 주장은 실행으로 확증</strong>(코드 읽기만으로는 보고하지 않음), <strong>내가 세운 가설도 틀리면 그대로 기록</strong>.</span><span class="sentence">그렇게 스스로 기각한 가설·리드가 <strong>75건</strong>으로, 이쪽이 실제 결함 목록만큼 쓸모 있었다</span></li>
         <li><span class="sentence">미수정 항목은 다음 회차 리포트에 "이월 N건 전부 미수정 지속"으로 따라붙게 해, 조용히 사라지지 않도록 원장을 유지</span></li>
         <li><span class="sentence">실행으로 확증한 예 — <strong>백업은 돌고 있는데 복구는 되지 않는 상태</strong>를 실제 컨테이너로 재현(복원 명령이 성공 코드를 반환하면서 운영 DB를 바꾸지 않음), 캐시가 잘못 변환된 오디오를 <strong>만료 없이 영구 적재</strong>하던 경로, 긴 입력의 말미 9%가 조용히 잘리던 길이 상한 충돌</span></li>
-        <li><span class="sentence">발견을 밤에 고치는 루틴을 함께 돌렸다 — 수정마다 회귀 핀을 붙여 유닛 스위트가 점검 기간에 <strong>206 → 264개</strong>로 늘었다.</span><span class="sentence">야간 루틴 커밋은 2026.07~08 구간 32건, 그중 점검 기간과 겹치는 것이 9건</span></li>
+        <li><span class="sentence"><strong>찾는 것과 고치는 것은 다른 일</strong>이었다 — 리포트 87건의 구현 결함 502건을 현재 코드와 다시 대조하니 <strong>고쳐진 것은 55건(11%)</strong>, 미해결 HIGH 가 23건이었다.</span><span class="sentence">원인도 찾았다 — 발견을 밤에 고치던 루틴(2026.07~08, 32커밋)이 8월 말 스케줄러에서 빠진 뒤로 결함은 쌓이기만 했다</span></li>
+        <li><span class="sentence">대조는 도메인별 읽기 전용 에이전트 6개가 리포트의 인용 코드를 현재 HEAD 에서 다시 열고, 수정 커밋을 이력 검색으로 찾는 방식으로 — 부분 수정은 미해결로 둠.</span><span class="sentence">이후 수정은 구 코드 재현 → 수정 → 실엔진 비회귀 순으로 진행(적대적 감사 결함 21커밋). 점검 기간 동안 유닛 스위트는 <strong>206 → 511개</strong></span></li>
     </ul>
 
     <h4 class="detail-head">엔진 내부 판독 — 성능 여지 목록 (2026.09)</h4>
@@ -237,6 +242,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">캡처된 그래프 모양이 실제 입력과 어긋나 <strong>29~33% 패딩</strong>으로 낭비되던 것을 찾아, 캡처 길이를 실측 주력 윈도로 교체하면 패딩 0에 메모리는 중립임을 확인</span></li>
         <li><span class="sentence">샘플링 꼬리가 CUDA 그래프 밖에 있어 프레임당 약 120번의 커널 실행이 쌓이는 구조를 마이크로벤치로 계량 — 배치와 무관하게 프레임당 2~3ms로, 토큰 시간의 <strong>약 29%</strong></span></li>
         <li><span class="sentence">결론을 쓰기 전에 <strong>측정의 유효 범위부터 적었다</strong>.</span><span class="sentence">로컬 GPU는 fp8 가속 경로를 못 타 지연 수치가 무효이고 기준선 자체가 ±30% 흔들려, 서버로 옮길 수 있는 것은 그래프 적중률·캡처 수·VRAM 같은 GPU 무관 지표뿐임을 먼저 명시</span></li>
+        <li><span class="sentence">목록의 후보는 서버 A/B 로 하나씩 걸렀다 — prefix 그래프 교정은 저부하(동시 28·32)에서 p95 −3~8% · 처리량 +7%였지만, 고부하(56↑)에서 <strong>청크 간격 p95 +34~44%</strong>로 나빠져 기각.</span><span class="sentence">p50·p99 는 전 구간에서 같거나 낮아 판정이 기준 백분위에 달려 있다는 점, 첫 컴파일 307~375초가 API 타임아웃(122초)을 넘는다는 점까지 함께 남김</span></li>
     </ul>
 
     <h4 class="detail-head">메모리 누수 전수 조사 (vLLM-Omni 엔진)</h4>
@@ -262,6 +268,8 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">후보를 원인으로 지목하기 전에 <strong>"요청당 바이트 × 요청률 = 계측 기울기"</strong>를 대조 — ⑤를 전체 원인으로 단정했다가 실제 몫이 11%였던 오판에서 도출</span></li>
         <li><span class="sentence"><strong>RSS는 누수량이 아니라 할당자가 만진 페이지의 최고수위</strong> — 판정은 jemalloc <code>allocated</code> 카운터와 청정 부팅 기준선으로</span></li>
         <li><span class="sentence">롱런 회귀는 <strong>부하 구간과 종료 후 구간을 나눠서</strong> — 종료 시 반납 계단이 섞인 단일 회귀가 거짓 기울기를 만든 사례에서 도출</span></li>
+        <li><span class="sentence">"동시 30 첫 재생 약 1.2초는 소프트웨어로 더 못 줄인다"던 판정을 <strong>나흘 뒤 스스로 뒤집었다</strong> — 당시 스윕 범위에 코덱 문맥·청크 크기 축이 없었다.</span><span class="sentence">그 축을 25 → 12로 내리자 동시 10~30 전 구간에서 첫 재생 p95 <strong>−30~55%</strong>(9런 교차 배치, 구간 비중첩)</span></li>
+        <li><span class="sentence">같은 계열의 판단이 하나 더 있었다 — 7월 말 대규모 스윕 뒤 "설정·모델 크기로는 더 못 올리고 남은 길은 수평 확장뿐"이라 정리했지만, 9월 확정 캠페인에서 최대 동시 처리가 <strong>약 3배</strong>로 올라 반증됐다</span></li>
     </ul>
 
     <h4 class="detail-head">상류 기여 (vLLM-Omni)</h4>
@@ -310,7 +318,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     </ul>
     <p><strong>기능 확장:</strong> 참조 음성 3~10초만으로 화자 목소리를 복제하는 ICL 기반 음성복제 기능 구현.</p>
     <ul class="detail-list">
-        <li>OpenAI TTS API 호환 인터페이스 + 기존 WebSocket 프로토콜 호환 레이어 — 외부 서비스가 코드 수정 없이 연동</li>
+        <li><span class="sentence">OpenAI TTS API 호환 인터페이스 + 기존 WebSocket 프로토콜 호환 레이어 — 외부 서비스가 코드 수정 없이 연동.</span><span class="sentence">세 번째로 Soniox TTS WebSocket 형식을 붙여, 클라이언트가 텍스트를 조각으로 흘려보내면 문장 경계마다 합성 큐에 넣고 스트림별 순서는 지키되 스트림끼리는 병렬로 처리 — PCM·μ-law·A-law·WAV, 8~48kHz, Python·TypeScript SDK 동봉</span></li>
         <li>Redis 기반 Atomic quota·분산락·Circuit Breaker 등 장애 대응 로직</li>
         <li>Whisper 기반 CER/WER 자동 품질 측정 파이프라인</li>
     </ul>
