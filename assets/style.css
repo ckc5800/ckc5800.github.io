@@ -1032,7 +1032,7 @@ h2[id] {
         gap: 7px;
         position: fixed;
         right: 20px;
-        top: 72px;   /* 네비게이션 바로 아래 */
+        top: calc(var(--nav-h) + 5px);   /* 네비게이션 바로 아래 — 모바일은 메뉴가 두 줄이라 nav-h가 커짐 */
         z-index: 120;
         padding: 10px 17px;
         font-family: inherit;
@@ -1058,9 +1058,9 @@ h2[id] {
         display: block;
         position: fixed;
         right: 20px;
-        top: 122px;   /* 토글 버튼 아래로 펼침 */
+        top: calc(var(--nav-h) + 55px);   /* 토글 버튼 아래로 펼침 */
         width: 248px;
-        max-height: min(480px, calc(100vh - 142px));
+        max-height: min(480px, calc(100vh - var(--nav-h) - 75px));
         overflow-y: auto;
         overscroll-behavior: contain;
         z-index: 120;
