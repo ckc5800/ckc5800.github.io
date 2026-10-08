@@ -191,7 +191,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">원인은 모델이 아니라 직렬로 놓인 버퍼 둘.</span><span class="sentence">SDK 읽기 버퍼가 <strong>32,768바이트 = 오디오 683ms 분량</strong>이라 그만큼 쌓일 때까지 한 바이트도 내보내지 않았다 — 4,096으로 내려 <strong>432 → 134ms</strong>(단건 6회 중위)</span></li>
         <li><span class="sentence">더 내리지 않은 이유도 남겼다.</span><span class="sentence">512까지 내리면 첫 청크는 그대로인데 청크가 401개로 늘고 e2e 가 13% 나빠져 4,096을 택했다</span></li>
         <li><span class="sentence">두 번째 버퍼는 스트림 홀드백.</span><span class="sentence">발화 종료 판정값(500ms)에 묶여 <strong>615ms 분량</strong>을 붙들고 있던 것을 별도 스위치로 분리했다(기본 off).</span><span class="sentence">판정값 자체는 낮출 수 없다 — 200/300 으로 내리면 문장 안 호흡을 종료로 오판해 <strong>STT 누락률이 4.4% → 12~14%</strong></span></li>
-        <li><span class="sentence">합쳐서 <strong>426 → 114ms</strong> — 두 값은 이후 운영 확정값으로 반영됐다(홀드백 0 · 선행 무음 패딩 0).</span><span class="sentence">앞선 A/B 에서 보이던 "홀드백 이득 −501ms"는 <strong>선행 무음이 일찍 도착한 착시</strong>였고 목소리 도착은 384 → 380ms 로 불변이었다 — 진짜 레버는 API 가 앞에 붙이던 무음 패딩(기본 200ms)이었음을 프로브로 확정</span></li>
+        <li><span class="sentence">합쳐서 <strong>426 → 114ms</strong> — 두 값은 이후 운영 확정값으로 반영됐고(홀드백 0 · 선행 무음 패딩 0), 9월 말 재측정에서도 단건 첫 재생은 <strong>엔진 첫 청크 97~102ms + API·전송 약 11ms</strong>로 남은 시간의 대부분이 엔진 몫이었다.</span><span class="sentence">앞선 A/B 에서 보이던 "홀드백 이득 −501ms"는 <strong>선행 무음이 일찍 도착한 착시</strong>였고 목소리 도착은 384 → 380ms 로 불변이었다 — 진짜 레버는 API 가 앞에 붙이던 무음 패딩(기본 200ms)이었음을 프로브로 확정</span></li>
     </ul>
 
 <h4 class="detail-head">성과</h4>
