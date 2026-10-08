@@ -55,7 +55,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     </div>
 </nav>
 
-<!-- 19개 중 어디를 봐야 하는지 안내가 없어 추가 — 홈의 핵심 성과 지표 3개와 1:1로 대응 -->
+<!-- 어디를 봐야 하는지 안내 — 홈의 핵심 성과 3장(TTS 서빙 · MLOps 인프라 · 연구 성과)과 같은 순서로 1:1 대응 -->
 <div class="pick">
     <div class="pick-label">대표 프로젝트</div>
     <div class="pick-grid">
@@ -64,15 +64,15 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
             <span class="pick-name">Qwen3-TTS 플랫폼 구축</span>
             <span class="pick-note">추론 서빙 플랫폼을 모델 선정부터 배포·운영까지 단독 구축</span>
         </a>
-        <a class="pick-card" href="#tts-api">
-            <span class="pick-num">1,943 → 985ms</span>
-            <span class="pick-name">TTS 스트리밍 API 리팩토링</span>
-            <span class="pick-note">전체 합성 후 전송을 문장 단위 즉시 전송으로 전환</span>
-        </a>
         <a class="pick-card" href="#k8s">
             <span class="pick-num">관측 스택 5종</span>
             <span class="pick-name">Kubernetes 기반 AI 인프라</span>
             <span class="pick-note">20여 개 모델이 도는 클러스터의 지표·경보·로그 단독 구축</span>
+        </a>
+        <a class="pick-card" href="#seg3d">
+            <span class="pick-num">특허 2건 · 논문 2편</span>
+            <span class="pick-name">3D Semantic Segmentation Research</span>
+            <span class="pick-note">카메라·LiDAR 센서 퓨전 Trans-Unet — 2D MIoU 31.94%, 단일 모달의 약 2배</span>
         </a>
     </div>
     <p class="pick-more">아래는 전체 21건 — 실무 12건 · 기술 검증 · 개인 연구 9건</p>
@@ -180,9 +180,6 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">한국어 음성 16종 혼합 · 응답 완료 즉시 다음 요청(closed-loop) · 캐시 우회로 재고, 판정은 첫 오디오 도착 p95 로 했다.</span><span class="sentence"><strong>최적(≤600ms) 동시 28 · 마지노선(≤1초) 동시 52</strong> — 같은 방식으로 잰 캠페인 전(8 · 16)의 약 3배. WebSocket 경로 마지노선은 48</span></li>
         <li><span class="sentence">레버마다 몫을 <strong>같은 시간대 교대 A/B 쌍</strong>으로만 분리했다(다른 날짜끼리 절대값 비교 금지).</span><span class="sentence">temperature 0.9 <strong>−37~41%</strong> &gt; stage1 컴파일 −6~7% ≈ 청크 6프레임 −4~8%, 음질을 되살린 코덱 문맥 4는 비용 +0~8%. 동시 24 기준 누적 <strong>973 → 554ms(−43%)</strong>, 단계 효과를 곱한 추정 567과 실측이 2% 안에서 맞았다</span></li>
         <li><span class="sentence">8시간 소크(동시 52, <strong>45.3만 건</strong>)에서 시간대별 p95 940~947ms · 불량 0.02% · 열화 추세 없음.</span><span class="sentence">음질은 14세트 자동 판정으로 동등 범위 확인(화자 유사도 0.945~0.954 · CER p95 0.07~0.14)</span></li>
-        <li><span class="sentence">속도를 올리다 생긴 음질 문제를 먼저 잡았다 — 블라인드 청감에서 "음절마다 기계음"이 보고돼 추적하니, 코덱 문맥을 줄인 채택이 <strong>의식적으로 정한 적 없는 화자 참조 길이까지 2초 → 0.16초로</strong> 끌고 내려간 부작용이었다.</span><span class="sentence">청크 경계 스펙트럼 변화량으로 계량하고, 블라인드 24쌍에서 화자 참조를 되돌린 안이 7:0(p=0.02)으로 원인을 확정.</span><span class="sentence">그 안은 RTF +14~27% 비용으로 기각하고, 6:1 이던 문맥 4를 채택</span></li>
-        <li><span class="sentence">컴파일 함정 둘 — 그래프는 배치가 <strong>정확히 일치</strong>해야 적중하는데 초안 목록이 배치 3·5를 빠뜨렸고, torch 기본 재컴파일 한도 8을 넘은 형상은 <strong>조용히 일반 그래프로 떨어지면서 적중으로 집계</strong>됐다.</span><span class="sentence">형상을 바로잡은 컴파일 도입으로 보코더 그래프 적중률 58 → 99%</span></li>
-        <li><span class="sentence">무효는 무효로 적었다 — 동시 60·64는 요청 97%가 API 백프레셔 503이라 엔진 한계가 아니라 <strong>측정 무효</strong>로 처리.</span><span class="sentence">자원 축(스테이지별 VRAM · CPU/메모리 피크 · GPU 온도와 SM 클럭)도 함께 기록해 열 스로틀링을 측정 오염과 구분</span></li>
     </ul>
 
     <p class="point"><strong>④ 지표를 바꾸자 드러난 첫 소리 지연</strong> — 빠르다고 재고 있던 숫자가 체감과 다른 것을 먼저 고쳤다.</p>
@@ -204,7 +201,26 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li>TTFB 경로의 순차 Redis 왕복을 16회에서 13회로 줄이고, 문장 캐시는 일괄 조회로 바꿔 N왕복을 1왕복으로</li>
     </ul>
 
-    <h4 class="detail-head">음성마다 기전이 다른 무음 붕괴 (2026.09)</h4>
+    <h4 class="detail-head">메모리 누수 전수 조사 — 결과</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">43시간 롱런에서 호스트 메모리가 선형으로 늘고 플래토에 닿지 않는 것을 발견해, 원인 <strong>6건</strong>을 하나씩 특정하고 모두 수정 — 원인별 추적 과정은 아래 심화 기록에</span></li>
+        <li><span class="sentence">누수율 <strong>230~258 MiB/h → +0.03 MiB/h</strong> (로컬 9.8시간 소크, 목표 ≤ +0.2)</span></li>
+        <li><span class="sentence">운영 서버 <strong>70시간 · 3,433,614건 · 실패 0 · 재시작 0</strong>.</span><span class="sentence">부하 종료 시 프로세스가 <strong>1,025 MiB를 반납</strong>해, 부하 중 남은 증가분이 누수가 아니라 워킹셋임을 확정 — 주기 재기동 불필요</span></li>
+    </ul>
+
+    </div>
+
+    <details class="sub">
+        <summary><span class="sum-text">심화 기록 보기</span><span class="sum-hint">확정 캠페인 · 무음 붕괴 · 파라미터 스크리닝 · 엔진 판독 · 누수 원인 6건 · 상류 기여 · 자가 점검 · 틀린 판단</span><span class="sum-close">심화 기록 접기</span></summary>
+        <div class="sub-body">
+
+    <h4 class="detail-head">확정 캠페인에서 잡은 문제 (2026.09)</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">속도를 올리다 생긴 음질 문제를 먼저 잡았다 — 블라인드 청감에서 "음절마다 기계음"이 보고돼 추적하니, 코덱 문맥을 줄인 채택이 <strong>의식적으로 정한 적 없는 화자 참조 길이까지 2초 → 0.16초로</strong> 끌고 내려간 부작용이었다.</span><span class="sentence">청크 경계 스펙트럼 변화량으로 계량하고, 블라인드 24쌍에서 화자 참조를 되돌린 안이 7:0(p=0.02)으로 원인을 확정.</span><span class="sentence">그 안은 RTF +14~27% 비용으로 기각하고, 6:1 이던 문맥 4를 채택</span></li>
+        <li><span class="sentence">컴파일 함정 둘 — 그래프는 배치가 <strong>정확히 일치</strong>해야 적중하는데 초안 목록이 배치 3·5를 빠뜨렸고, torch 기본 재컴파일 한도 8을 넘은 형상은 <strong>조용히 일반 그래프로 떨어지면서 적중으로 집계</strong>됐다.</span><span class="sentence">형상을 바로잡은 컴파일 도입으로 보코더 그래프 적중률 58 → 99%</span></li>
+        <li><span class="sentence">무효는 무효로 적었다 — 동시 60·64는 요청 97%가 API 백프레셔 503이라 엔진 한계가 아니라 <strong>측정 무효</strong>로 처리.</span><span class="sentence">자원 축(스테이지별 VRAM · CPU/메모리 피크 · GPU 온도와 SM 클럭)도 함께 기록해 열 스로틀링을 측정 오염과 구분</span></li>
+    </ul>
+<h4 class="detail-head">음성마다 기전이 다른 무음 붕괴 (2026.09)</h4>
     <ul class="detail-list">
         <li><span class="sentence">특정 음성에서 첫 소리가 나오지 않고 잘리는 현상을 음성 3종으로 분해.</span><span class="sentence">엔진을 직접 호출해 API 가드를 우회하고, 생성 오디오의 선행 무음이 컷선 500ms 를 넘는 비율로 정의해 측정</span></li>
         <li><span class="sentence"><strong>원인이 음성마다 달랐다.</strong></span><span class="sentence">음성 A 는 temperature 의존 — 0.5 에서 <strong>56.7% ±5.6</strong>, 0.9 에서 <strong>16.0% ±4.1</strong> 로 신뢰구간이 겹치지 않는 3.5배 차.</span><span class="sentence">음성 B 는 같은 레버에 무반응(5.7% ±2.6 vs 5.0% ±2.5), 음성 C 는 전 조건 0% — 전역 레버가 아니라 음성 고유 특성</span></li>
@@ -222,17 +238,6 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">비교가 성립하도록 측정 기준을 둘로 고정.</span><span class="sentence"><strong>pessimistic</strong>(최악 음성·39자 고정 문장·prefix 캐시 off·응답 캐시 bypass)과 <strong>mixed</strong>(운영 대표)를 두고 리포트마다 어느 기준인지 명기</span></li>
         <li><span class="sentence">밤새 도는 종합 매트릭스로 음질·동시성·안정성을 한 번에 측정.</span><span class="sentence">단계 시작 전 잔여 시간을 보고 못 끝낼 단계는 통째로 건너뛰며, 어떤 경로로 끝나든 설정과 컨테이너를 원복</span></li>
         <li><span class="sentence">관측은 운영 코드를 고치지 않고 붙였다.</span><span class="sentence">인터프리터 시작 훅으로 프로브를 주입해 첫 청크 타임라인과 이벤트 루프 정지를 기록 — 엔진·API 코드 무수정</span></li>
-    </ul>
-
-    <h4 class="detail-head">매일 도는 코드베이스 심층 점검 (2026.08~10)</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">혼자 만든 시스템이라 리뷰어가 없다는 것이 가장 큰 위험이었다.</span><span class="sentence">도메인을 11개(엔진·보안·인프라·네트워크·API 계약·관측·데이터 정합·동시성·합성 E2E·백로그·첫재생 지연)로 나누고 <strong>하루 3회 한 도메인씩</strong> 심층 점검하는 에이전트 러너를 스케줄러에 걸어 약 3.7일에 한 바퀴를 돌렸다</span></li>
-        <li><span class="sentence">2026.08.18 ~ 10.07 동안 <strong>리포트 89건</strong>.</span><span class="sentence">원장에 집계된 88회분 기준으로 <strong>HIGH 39 · MED 214 · LOW 196 · TRIVIAL 63</strong>, 성격으로 구현 결함·설계 지적·개선·신규 기능 네 층으로 분류</span></li>
-        <li><span class="sentence">규칙 두 개를 못 박았다 — <strong>결함 주장은 실행으로 확증</strong>(코드 읽기만으로는 보고하지 않음), <strong>내가 세운 가설도 틀리면 그대로 기록</strong>.</span><span class="sentence">그렇게 스스로 기각한 가설·리드가 <strong>75건</strong>으로, 이쪽이 실제 결함 목록만큼 쓸모 있었다</span></li>
-        <li><span class="sentence">미수정 항목은 다음 회차 리포트에 "이월 N건 전부 미수정 지속"으로 따라붙게 해, 조용히 사라지지 않도록 원장을 유지</span></li>
-        <li><span class="sentence">실행으로 확증한 예 — <strong>백업은 돌고 있는데 복구는 되지 않는 상태</strong>를 실제 컨테이너로 재현(복원 명령이 성공 코드를 반환하면서 운영 DB를 바꾸지 않음), 캐시가 잘못 변환된 오디오를 <strong>만료 없이 영구 적재</strong>하던 경로, 긴 입력의 말미 9%가 조용히 잘리던 길이 상한 충돌</span></li>
-        <li><span class="sentence"><strong>찾는 것과 고치는 것은 다른 일</strong>이었다 — 리포트 87건의 구현 결함 502건을 현재 코드와 다시 대조하니 <strong>고쳐진 것은 55건(11%)</strong>, 미해결 HIGH 가 23건이었다.</span><span class="sentence">원인도 찾았다 — 발견을 밤에 고치던 루틴(2026.07~08, 32커밋)이 8월 말 스케줄러에서 빠진 뒤로 결함은 쌓이기만 했다</span></li>
-        <li><span class="sentence">대조는 도메인별 읽기 전용 에이전트 6개가 리포트의 인용 코드를 현재 HEAD 에서 다시 열고, 수정 커밋을 이력 검색으로 찾는 방식으로 — 부분 수정은 미해결로 둠.</span><span class="sentence">이후 수정은 구 코드 재현 → 수정 → 실엔진 비회귀 순으로 진행(적대적 감사 결함 21커밋). 점검 기간 동안 유닛 스위트는 <strong>206 → 511개</strong></span></li>
     </ul>
 
     <h4 class="detail-head">엔진 내부 판독 — 성능 여지 목록 (2026.09)</h4>
@@ -256,10 +261,21 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence"><strong>⑥ torch stable ABI 문자열 unbox (남은 누수의 ~89%)</strong> — 파이썬 객체, GC, 단편화를 모두 배제한 뒤 jemalloc 힙 프로파일로 추적.</span><span class="sentence">표집 편향 보정을 넣자 설명률이 10%에서 84%로 올라, <code>stableivalue_conversions.h:766</code>의 <code>new std::string</code>이 해제되지 않는 것을 특정 — 20만 회 최소재현에서 호출당 +31.9 B, 대조군 0.0 B.</span><span class="sentence">prebuilt wheel이라 헤더를 고칠 수 없어 해당 op의 eager 호출을 순수 torch 스캐터로 우회하고, 6개 형상 × 3개 헤드 구성 18건 동치 검증과 통제 A/B 성능 중립을 확인한 뒤 적용</span></li>
     </ul>
 
-    <h4 class="detail-head">누수 조사 결과</h4>
+    <h4 class="detail-head">상류 기여 (vLLM-Omni)</h4>
     <ul class="detail-list">
-        <li><span class="sentence">누수율 <strong>230~258 MiB/h → +0.03 MiB/h</strong> (로컬 9.8시간 소크, 목표 ≤ +0.2)</span></li>
-        <li><span class="sentence">운영 서버 <strong>70시간 · 3,433,614건 · 실패 0 · 재시작 0</strong>.</span><span class="sentence">부하 종료 시 프로세스가 <strong>1,025 MiB를 반납</strong>해, 부하 중 남은 증가분이 누수가 아니라 워킹셋임을 확정 — 주기 재기동 불필요</span></li>
+        <li><span class="sentence">①을 이슈로 리포트하고, 잔여 ~13 KB/abort의 원인(save 큐에 이미 적재된 청크가 상태를 되살리는 레이스)과 닫는 방법까지 남김.</span><span class="sentence">같은 원인을 다루는 기존 PR을 발견해 프로덕션 검증 데이터를 붙였고, PR 작성자와 리뷰어가 근거로 인용 (머지 대기)</span></li>
+        <li><span class="sentence">⑥은 상류에 이미 보고된 결함(vLLM #50150)임을 확인해 별도 이슈는 내지 않고, vLLM 버전업 때 수정 반영 여부를 확인해 우회 패치를 걷어내기로 함</span></li>
+    </ul>
+    <p class="repo-link"><a href="https://github.com/vllm-project/vllm-omni/issues/6352" target="_blank">이슈 #6352 (리포트)</a> &nbsp;·&nbsp; <a href="https://github.com/vllm-project/vllm-omni/pull/4349" target="_blank">PR #4349 (검증 데이터 제공)</a></p>
+        <h4 class="detail-head">매일 도는 코드베이스 심층 점검 (2026.08~10)</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">혼자 만든 시스템이라 리뷰어가 없다는 것이 가장 큰 위험이었다.</span><span class="sentence">도메인을 11개(엔진·보안·인프라·네트워크·API 계약·관측·데이터 정합·동시성·합성 E2E·백로그·첫재생 지연)로 나누고 <strong>하루 3회 한 도메인씩</strong> 심층 점검하는 에이전트 러너를 스케줄러에 걸어 약 3.7일에 한 바퀴를 돌렸다</span></li>
+        <li><span class="sentence">2026.08.18 ~ 10.07 동안 <strong>리포트 89건</strong>.</span><span class="sentence">원장에 집계된 88회분 기준으로 <strong>HIGH 39 · MED 214 · LOW 196 · TRIVIAL 63</strong>, 성격으로 구현 결함·설계 지적·개선·신규 기능 네 층으로 분류</span></li>
+        <li><span class="sentence">규칙 두 개를 못 박았다 — <strong>결함 주장은 실행으로 확증</strong>(코드 읽기만으로는 보고하지 않음), <strong>내가 세운 가설도 틀리면 그대로 기록</strong>.</span><span class="sentence">그렇게 스스로 기각한 가설·리드가 <strong>75건</strong>으로, 이쪽이 실제 결함 목록만큼 쓸모 있었다</span></li>
+        <li><span class="sentence">미수정 항목은 다음 회차 리포트에 "이월 N건 전부 미수정 지속"으로 따라붙게 해, 조용히 사라지지 않도록 원장을 유지</span></li>
+        <li><span class="sentence">실행으로 확증한 예 — <strong>백업은 돌고 있는데 복구는 되지 않는 상태</strong>를 실제 컨테이너로 재현(복원 명령이 성공 코드를 반환하면서 운영 DB를 바꾸지 않음), 캐시가 잘못 변환된 오디오를 <strong>만료 없이 영구 적재</strong>하던 경로, 긴 입력의 말미 9%가 조용히 잘리던 길이 상한 충돌</span></li>
+        <li><span class="sentence"><strong>찾는 것과 고치는 것은 다른 일</strong>이었다 — 리포트 87건의 구현 결함 502건을 현재 코드와 다시 대조하니 <strong>고쳐진 것은 55건(11%)</strong>, 미해결 HIGH 가 23건이었다.</span><span class="sentence">원인도 찾았다 — 발견을 밤에 고치던 루틴(2026.07~08, 32커밋)이 8월 말 스케줄러에서 빠진 뒤로 결함은 쌓이기만 했다</span></li>
+        <li><span class="sentence">대조는 도메인별 읽기 전용 에이전트 6개가 리포트의 인용 코드를 현재 HEAD 에서 다시 열고, 수정 커밋을 이력 검색으로 찾는 방식으로 — 부분 수정은 미해결로 둠.</span><span class="sentence">이후 수정은 구 코드 재현 → 수정 → 실엔진 비회귀 순으로 진행(적대적 감사 결함 21커밋). 점검 기간 동안 유닛 스위트는 <strong>206 → 511개</strong></span></li>
     </ul>
 
     <h4 class="detail-head">틀린 판단을 규칙으로</h4>
@@ -272,13 +288,9 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">같은 계열의 판단이 하나 더 있었다 — 7월 말 대규모 스윕 뒤 "설정·모델 크기로는 더 못 올리고 남은 길은 수평 확장뿐"이라 정리했지만, 9월 확정 캠페인에서 최대 동시 처리가 <strong>약 3배</strong>로 올라 반증됐다</span></li>
     </ul>
 
-    <h4 class="detail-head">상류 기여 (vLLM-Omni)</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">①을 이슈로 리포트하고, 잔여 ~13 KB/abort의 원인(save 큐에 이미 적재된 청크가 상태를 되살리는 레이스)과 닫는 방법까지 남김.</span><span class="sentence">같은 원인을 다루는 기존 PR을 발견해 프로덕션 검증 데이터를 붙였고, PR 작성자와 리뷰어가 근거로 인용 (머지 대기)</span></li>
-        <li><span class="sentence">⑥은 상류에 이미 보고된 결함(vLLM #50150)임을 확인해 별도 이슈는 내지 않고, vLLM 버전업 때 수정 반영 여부를 확인해 우회 패치를 걷어내기로 함</span></li>
-    </ul>
-    <p class="repo-link"><a href="https://github.com/vllm-project/vllm-omni/issues/6352" target="_blank">이슈 #6352 (리포트)</a> &nbsp;·&nbsp; <a href="https://github.com/vllm-project/vllm-omni/pull/4349" target="_blank">PR #4349 (검증 데이터 제공)</a></p>
+    
         </div>
+    </details>
 
     <details class="sub">
         <summary><span class="sum-text">구현 세부 보기</span><span class="sum-hint">시스템 구조 · 구현 · 용량 환산 · 2인 체제 · 핵심 엔지니어링 9건 · 데모 영상</span><span class="sum-close">구현 세부 접기</span></summary>
@@ -839,7 +851,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
 
 <h2 class="section-title">기술 검증 · 개인 연구</h2>
 
-<section class="group">
+<section class="group group-brief">
 <h2 class="group-title" id="g-personal">개인 프로젝트<span class="group-count">7</span></h2>
 
 <div class="project">
@@ -1216,7 +1228,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
 
 </section>
 
-<section class="group">
+<section class="group group-brief">
 <h2 class="group-title" id="g-extern">대회 · 대외 팀 프로젝트<span class="group-count">2</span></h2>
 
 <div class="project">
@@ -1554,17 +1566,19 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
 
             words.forEach(function (w) { hits += markMatches(e.card, w); });
             scored.push({ entry: e, score: bm25(idx, qTokens) });
-            // 접힌 상세 안에 일치가 있으면 펼쳐서 보이게
-            var details = e.card.querySelector('details');
-            if (details && !details.open && details.querySelector('mark.search-hit')) {
-                details.open = true;
-                openedByFilter.push(details);
-            }
+            // 접힌 상세 안에 일치가 있으면 펼쳐서 보이게 — 2단 접기(심화 기록·구현 세부)까지
+            [].forEach.call(e.card.querySelectorAll('details'), function (details) {
+                if (!details.open && details.querySelector('mark.search-hit')) {
+                    details.open = true;
+                    openedByFilter.push(details);
+                }
+            });
         });
 
         // 관련도순 정렬 — 검색 중일 때만 그룹 목차를 랭킹 리스트로 교체
         scored.sort(function (a, b) { return b.score - a.score; });
         nav.classList.toggle('is-searching', !!q && scored.length > 0);
+        document.body.classList.toggle('is-searching', !!q);
         if (q && scored.length) renderRanked(scored);
         else ranked.innerHTML = '';
 

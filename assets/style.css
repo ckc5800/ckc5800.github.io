@@ -761,6 +761,18 @@ h2[id] {
     }
 }
 
+/* 개인 연구 압축 — 접힌 상태에서는 '제목 · 해결 · 대표 지표 1개'만 보여 실무 경력에 무게를 싣는다.
+   펼치거나 검색 중이면 전부 보인다. :has() 를 모르는 브라우저는 그대로 전체 표시(손실 없음).
+   인쇄는 건드리지 않도록 화면 전용. */
+@media screen {
+    body:not(.is-searching) .group-brief .project:not(:has(> details[open])) .ps dt:first-of-type,
+    body:not(.is-searching) .group-brief .project:not(:has(> details[open])) .ps dd:first-of-type,
+    body:not(.is-searching) .group-brief .project:not(:has(> details[open])) .tech-tags,
+    body:not(.is-searching) .group-brief .project:not(:has(> details[open])) .metric:nth-child(n+2) {
+        display: none;
+    }
+}
+
 /* ===== 프로젝트 상세 본문 서식 (18개 카드 공통) ===== */
 .detail-head {
     font-size: 18px;
