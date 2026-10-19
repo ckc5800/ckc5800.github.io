@@ -247,6 +247,8 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">비교가 성립하도록 측정 기준을 2종으로 고정.</span><span class="sentence"><strong>pessimistic</strong>(최악 음성·39자 고정 문장·prefix 캐시 off·응답 캐시 bypass)과 <strong>mixed</strong>(운영 대표)를 두고 리포트마다 어느 기준인지 명기</span></li>
         <li><span class="sentence">야간 종합 매트릭스로 음질·동시성·안정성을 일괄 측정.</span><span class="sentence">단계 시작 전 잔여 시간을 보고 못 끝낼 단계는 통째로 생략하고, 어떤 경로로 끝나도 설정과 컨테이너를 원복</span></li>
         <li><span class="sentence">관측은 운영 코드 수정 없이 부착.</span><span class="sentence">인터프리터 시작 훅으로 프로브를 주입해 첫 청크 타임라인과 이벤트 루프 정지를 기록, 엔진·API 코드 무수정</span></li>
+        <li><span class="sentence"><strong>엔진 prefix KV 캐시가 부하 측정을 오염</strong>시키던 것을 발견.</span><span class="sentence">응답 캐시만 우회하고 엔진 캐시(음성+문장 해시)는 켜져 있어, 직전 런과 문장이 57~64% 겹친 재실행이 동시 28 p50 <strong>1,250 → 430ms</strong>로 빨라 보였음.</span><span class="sentence">요청마다 새 문장 · 직전 런 문장 회피로 하네스를 고쳐 겹침 0% 확인</span></li>
+        <li><span class="sentence">prefix KV 캐싱 자체는 10월 전체 스윕에서 현행과 교대 비교: 끄면 p99 <strong>1,008 → 1,059ms</strong>로 나빠져 켜기 유지</span></li>
     </ul>
 
     <h4 class="detail-head">엔진 내부 판독 — 성능 여지 목록 (2026.09)</h4>
@@ -256,7 +258,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">캡처된 그래프 모양이 실제 입력과 어긋나 <strong>29~33% 패딩</strong>으로 낭비되던 것을 찾아, 캡처 길이를 실측 주력 윈도로 교체하면 패딩 0에 메모리는 중립임을 확인</span></li>
         <li><span class="sentence">샘플링 꼬리가 CUDA 그래프 밖에 있어 프레임당 약 120번의 커널 실행이 쌓이는 구조를 마이크로벤치로 계량: 배치와 무관하게 프레임당 2~3ms로, 토큰 시간의 <strong>약 29%</strong></span></li>
         <li><span class="sentence">결론에 앞서 <strong>측정의 유효 범위부터 명시</strong>.</span><span class="sentence">로컬 GPU는 fp8 가속 경로를 못 타 지연 수치가 무효이고 기준선 자체가 ±30% 흔들려, 서버로 옮길 수 있는 것은 그래프 적중률·캡처 수·VRAM 같은 GPU 무관 지표뿐임을 먼저 명시</span></li>
-        <li><span class="sentence">목록의 후보는 서버 A/B 로 하나씩 검증. prefix 그래프 교정은 저부하(동시 28·32)에서 p95 −3~8% · 처리량 +7%였으나, 고부하(56↑)에서 <strong>청크 간격 p95 +34~44%</strong> 악화로 기각.</span><span class="sentence">p50·p99 는 전 구간에서 같거나 낮아 판정이 기준 백분위에 달려 있다는 점, 첫 컴파일 307~375초가 API 타임아웃(122초)을 넘는다는 점까지 함께 남김</span></li>
+        <li><span class="sentence">목록의 후보는 서버 A/B 로 하나씩 검증. prefix 그래프 교정은 저부하(동시 28·32)에서 p95 −3~8% · 처리량 +7%였으나, 고부하(56↑)에서 <strong>청크 간격 p95 +34~44%</strong> 악화로 기각.</span><span class="sentence">p50·p99 는 전 구간에서 같거나 낮아 판정이 기준 백분위에 달려 있다는 점, 첫 컴파일 307~375초가 API 타임아웃(122초)을 넘는다는 점까지 함께 남김.</span><span class="sentence">고부하 악화 원인 후보였던 'KV 캐시 축소'는 부팅 로그의 KV 캐시 용량이 양쪽 모두 148,016토큰으로 같아 기각</span></li>
     </ul>
 
     <h4 class="detail-head">메모리 누수 전수 조사 (vLLM-Omni 엔진)</h4>
@@ -267,7 +269,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence"><strong>③ SHM 커넥터 키 장부</strong>: 키 추가는 송신 프로세스에, 삭제는 수신 프로세스에만 있어 송신측 set이 토큰당 ~26 B씩 자람.</span><span class="sentence">첫 수정은 미소비 세그먼트까지 지워 전송 중인 청크를 파괴(중단율 87%)해 롤백하고, "보냈다 ≠ 읽혔다"를 교훈으로 키만 지우는 방식으로 재수정</span></li>
         <li><span class="sentence"><strong>④ jemalloc 미연결</strong>: 이미지에 라이브러리는 있었지만 <code>LD_PRELOAD</code>가 빠져 glibc arena가 메모리를 반납하지 않음.</span><span class="sentence">연결 후 <strong>+1.51 → +0.33 MiB/h</strong>, 선형성 R² 0.90 → 0.22</span></li>
         <li><span class="sentence"><strong>⑤ 취소 요청 장부</strong>: <code>_cancelled_load_reqs</code>에 추가만 되고 삭제 경로 두 곳이 모두 도달 불가 (요청당 108 B).</span><span class="sentence">tracemalloc에서 객체 1개가 128 KiB로 커진 것을 set 해시테이블 리사이즈로 읽고, 슬롯 수(8,192)와 요청 수(2,894)가 맞는 것으로 확인</span></li>
-        <li><span class="sentence"><strong>⑥ torch stable ABI 문자열 unbox (남은 누수의 ~89%)</strong>: 파이썬 객체, GC, 단편화를 모두 배제한 뒤 jemalloc 힙 프로파일로 추적.</span><span class="sentence">표집 편향 보정을 넣자 설명률이 10%에서 84%로 올라, <code>stableivalue_conversions.h:766</code>의 <code>new std::string</code>이 해제되지 않는 것을 특정. 20만 회 최소재현에서 호출당 +31.9 B, 대조군 0.0 B.</span><span class="sentence">prebuilt wheel이라 헤더를 고칠 수 없어 해당 op의 eager 호출을 순수 torch 스캐터로 우회하고, 6개 형상 × 3개 헤드 구성 18건 동치 검증과 통제 A/B 성능 중립을 확인한 뒤 적용</span></li>
+        <li><span class="sentence"><strong>⑥ torch stable ABI 문자열 unbox (남은 누수의 ~89%)</strong>: 파이썬 객체, GC, 단편화를 모두 배제한 뒤 jemalloc 힙 프로파일로 추적.</span><span class="sentence">표집 편향 보정을 넣자 설명률이 10%에서 84%로 올라, <code>stableivalue_conversions.h:766</code>의 <code>new std::string</code>이 해제되지 않는 것을 특정. 새는 호출은 <strong>KV 캐시 쓰기 연산</strong> <code>reshape_and_cache_flash</code>의 <code>kv_cache_dtype</code> 인자. 20만 회 최소재현에서 호출당 +31.9 B, 대조군 0.0 B.</span><span class="sentence">prebuilt wheel이라 헤더를 고칠 수 없어 KV 캐시 쓰기의 eager 호출을 순수 torch 스캐터로 우회하고, 6개 형상 × 3개 헤드 구성 18건 동치 검증과 통제 A/B 성능 중립을 확인한 뒤 적용</span></li>
     </ul>
 
     <h4 class="detail-head">상류 기여 (vLLM-Omni)</h4>
