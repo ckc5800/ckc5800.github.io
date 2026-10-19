@@ -134,10 +134,10 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
 
 <div class="project">
     <h3 id="tts" data-print="full">Qwen3-TTS 플랫폼 구축 <span class="badge">MiCo AI</span></h3>
-    <p class="project-meta">2026.03 ~ 현재 · PM · 풀스택 단독 개발 (백엔드 · 프론트 · 인프라)</p>
+    <p class="project-meta">2026.03 ~ 현재 · PM · 풀스택 단독 개발 (백엔드 · 프론트 · 인프라) · 사내 솔루션 운영 중</p>
     <dl class="ps">
         <dt>문제</dt><dd>상담센터에 제안할 자사 TTS 솔루션이 없었음 — 실시간 상담에 쓸 응답 속도와 음성 선택지를 갖춘 제품이 필요했음</dd>
-        <dt>해결</dt><dd><span class="sentence">Qwen3-TTS 기반 신규 구축, vLLM(GPU) 추론 서빙을 단독 설계.</span><span class="sentence">구간 계측으로 병목을 엔진 디코드 루프로 좁혀 첫 응답을 당기고, FP8 양자화·vLLM 0.24 마이그레이션으로 처리량 4.2배. 고객사 PoC·시연까지 진행</span></dd>
+        <dt>해결</dt><dd><span class="sentence">Qwen3-TTS 기반 신규 구축, vLLM(GPU) 추론 서빙을 단독 설계.</span><span class="sentence">구간 계측으로 병목을 엔진 디코드 루프로 좁혀 첫 응답을 당기고, FP8 양자화·vLLM 0.24 마이그레이션으로 처리량 4.2배. 고객사 PoC·시연을 거쳐 현재 사내 솔루션에 적용돼 운영 중</span></dd>
     </dl>
     <div class="metrics">
         <div class="metric"><span class="metric-value">426 → 114ms</span><span class="metric-label">첫 소리 지연</span></div>
@@ -157,7 +157,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 차별점 · 성과 · 메모리 누수 조사 결과 · 상류 기여</span><span class="sum-close">Qwen3-TTS 플랫폼 구축 — 접기</span></summary>
         <div class="detail-body">
 <h4 class="detail-head">배경</h4>
-    <p><span class="sentence">상담센터를 타깃으로 제안할 자사 TTS 솔루션을 신규 구축하는 과제.</span><span class="sentence">기존 시스템 교체가 아니라, 실시간 상담에 쓸 수 있는 응답 속도와 음성 선택지를 갖춘 제품을 처음부터 만드는 것이 목표였음.</span><span class="sentence">모델 선정부터 서빙 아키텍처, 백엔드·프론트엔드, 배포·운영까지 전 구간을 단독으로 맡았고, 고객사 PoC·시연까지 진행.</span></p>
+    <p><span class="sentence">상담센터를 타깃으로 제안할 자사 TTS 솔루션을 신규 구축하는 과제.</span><span class="sentence">기존 시스템 교체가 아니라, 실시간 상담에 쓸 수 있는 응답 속도와 음성 선택지를 갖춘 제품을 처음부터 만드는 것이 목표였음.</span><span class="sentence">모델 선정부터 서빙 아키텍처, 백엔드·프론트엔드, 배포·운영까지 전 구간을 단독으로 맡았고, 고객사 PoC·시연까지 진행.</span><span class="sentence">현재 사내 솔루션에 적용돼 운영 중.</span></p>
 
     <h4 class="detail-head">차별점</h4>
     <p class="point"><strong>① 스트리밍 품질 자동 감지 · 자가 치유</strong>: 잘리거나 반복된 음성을 서버가 스스로 걸러내는 구조.</p>
