@@ -142,7 +142,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     <div class="metrics">
         <div class="metric"><span class="metric-value">426 → 114ms</span><span class="metric-label">첫 소리 지연</span></div>
         <div class="metric"><span class="metric-value">0.73 → 3.09 rps</span><span class="metric-label">엔진 처리량</span></div>
-        <div class="metric"><span class="metric-value">16 → 52</span><span class="metric-label">동시 처리 · p95 1초 이내</span></div>
+        <div class="metric"><span class="metric-value">16 → 60</span><span class="metric-label">동시 처리 · p95 1초 이내</span></div>
     </div>
     <div class="tech-tags">
         <span class="tech-tag">Python 3.12</span>
@@ -181,6 +181,9 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">레버마다 몫을 <strong>같은 시간대 교대 A/B 쌍</strong>으로만 분리(다른 날짜끼리 절대값 비교 금지).</span><span class="sentence">temperature 0.9 <strong>−37~41%</strong> &gt; stage1 컴파일 −6~7% ≈ 청크 6프레임 −4~8%(청크 6은 10월 음질 개선 때 8로 번복), 음질을 되살린 코덱 문맥 4는 비용 +0~8%. 동시 24 기준 누적 <strong>973 → 554ms(−43%)</strong>, 단계 효과를 곱한 추정 567과 실측이 2% 안에서 일치</span></li>
         <li><span class="sentence">8시간 소크(동시 52, <strong>45.3만 건</strong>)에서 시간대별 p95 940~947ms · 불량 0.02% · 열화 추세 없음.</span><span class="sentence">음질은 14세트 자동 판정으로 동등 범위 확인(화자 유사도 0.945~0.954 · CER p95 0.07~0.14)</span></li>
         <li><span class="sentence">10월 4일간 전체 스윕으로 재확정: 후보 설정 13종을 단계마다 현행과 교대 3회 측정해 <strong>전부 기각</strong>, 전 워커 웜업 · 초반 90초 제외로 측정 기준도 강화.</span><span class="sentence">운영 기준은 <strong>최적(≤600ms) 동시 40 · 마지노선(≤1초) 동시 한도 56까지 전부 통과</strong>, HTTP·WebSocket 동일.</span><span class="sentence">9월 값 대비 향상분은 코드 변경과 측정 방식 변경이 섞여 있어 기여를 나누지 않고 그대로 기록</span></li>
+        <li><span class="sentence">10월 하순 재확정: stage0 code_predictor <strong>KV 캐시</strong>와 참조 오디오 단독 인코딩을 적용한 뒤 2회 재측정.</span><span class="sentence">운영 조건에서 <strong>최적(≤600ms) 동시 44 · 마지노선(≤1초) 동시 60</strong>, 동시 64는 초과(1,021~1,121ms). 전 구간 불량·거절 0, 수용 게이트는 설정값 60</span></li>
+        <li><span class="sentence"><strong>닫힌 루프만으로는 실제 통화를 모사하지 못한다</strong>고 보고 <strong>열린 루프</strong>(도착률 고정) 측정을 새로 붙임 — 요청이 밀려도 다음 요청이 그대로 들어오는 구조라 포화 거동이 드러남.</span><span class="sentence">같은 도착률에서 KV 캐시 적용으로 첫 오디오 p50·p95 <strong>−16~20%</strong>, 포화 도착률(상담원 250명 규모 부하 모델) 실패율 <strong>6.1% → 0.2%</strong></span></li>
+        <li><span class="sentence">60분 소크 <strong>39,483건</strong> 불량 0 · 엔진 메모리 증가 +3MiB</span></li>
     </ul>
 
     <p class="point"><strong>④ 지표를 바꾸자 드러난 첫 소리 지연</strong>: 측정 지표가 체감과 어긋나던 것부터 교정.</p>
@@ -190,6 +193,14 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">더 낮추지 않은 근거도 기록.</span><span class="sentence">512까지 낮추면 첫 청크는 그대로이고 청크 401개 · e2e 13% 악화라 4,096 채택</span></li>
         <li><span class="sentence">두 번째 버퍼는 스트림 홀드백.</span><span class="sentence">발화 종료 판정값(500ms)에 묶여 <strong>615ms 분량</strong>을 붙들고 있던 것을 별도 스위치로 분리(기본 off).</span><span class="sentence">판정값 자체는 하향 불가. 200/300 으로 낮추면 문장 안 호흡을 종료로 오판해 <strong>STT 누락률 4.4% → 12~14%</strong></span></li>
         <li><span class="sentence">합계 <strong>426 → 114ms</strong>. 두 값 모두 운영 확정값으로 반영(홀드백 0 · 선행 무음 패딩 0), 9월 말 재측정에서도 단건 첫 재생은 <strong>엔진 첫 청크 97~102ms + API·전송 약 11ms</strong>로 남은 시간의 대부분이 엔진 몫.</span><span class="sentence">앞선 A/B 에서 보이던 "홀드백 이득 −501ms"는 <strong>선행 무음이 일찍 도착한 착시</strong>로, 목소리 도착은 384 → 380ms 로 불변. 실제 레버는 API 가 앞에 붙이던 무음 패딩(기본 200ms)임을 프로브로 확정</span></li>
+    </ul>
+
+    <p class="point"><strong>⑤ 한국어 읽기 규칙을 반복 점검으로 굳힘</strong>: 숫자·기호가 섞인 문장을 사람처럼 읽히게 하는 정규화(TN) 층을, 영역 점검을 거듭하며 교정.</p>
+    <ul class="detail-list">
+        <li><span class="sentence">같은 영역을 날짜를 달리해 다시 점검하는 방식으로 규칙 결함을 들춤 — 교정 사례는 <strong>D-7·D+3을 날짜 수로 읽되 D-day 문맥에서만</strong>, <strong>좌석·열·게이트의 'A'를 암페어가 아닌 글자로</strong>, <strong>범위의 뒤쪽 단위(만·억)를 앞 숫자와 공유</strong>, 'M/D(요일)~M/D(요일)'를 날짜 범위로 읽기 등</span></li>
+        <li><span class="sentence">사전 키를 <strong>입력과 같은 방식으로 정규화</strong>(NFC·보이지 않는 문자 제거)한 뒤 대조하도록 수정 — 눈에 같아 보이는 키가 매칭되지 않던 원인.</span><span class="sentence">BCP-47 지역·문자 태그(ko-KR·zh-Hans·pt-BR)도 해당 언어로 해석</span></li>
+        <li><span class="sentence">워커마다 사전을 다시 읽던 것을 <strong>직렬화·합치기</strong>로 정리하고, 갱신 신호만 구독하도록 변경.</span><span class="sentence">한 회차가 실패해도 대기 신호를 잃지 않게 해 누락 방지</span></li>
+        <li><span class="sentence">규칙 변경이 기존 발음을 깨뜨리지 않는지 <strong>불변식 기준선</strong>으로 회귀 확인. 사용자에게 보이는 규칙 설명에서 내부 메모·코드 식별자는 제거</span></li>
     </ul>
 
 <h4 class="detail-head">성과</h4>
@@ -386,7 +397,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence"><strong>스토리지 누수</strong>: 보이스를 삭제해도 디스크 사용량이 계속 증가.</span><span class="sentence">원본을 지워도 파생된 MD5 해시 캐시 파일이 남는 구조여서, 파생 파일까지 추적해 함께 지우는 Deep GC를 구현해 차단</span></li>
         <li><span class="sentence"><strong>웹소켓 세션 탈취 방어</strong>: 비밀번호를 바꿔도 이미 발급된 토큰으로 웹소켓 연결이 열리는 허점 발견.</span><span class="sentence">토큰 발급 시점과 password_changed_at을 대조해 변경 이전 토큰을 전부 무효화</span></li>
         <li><span class="sentence"><strong>ITN 정규화</strong>: URL·이메일을 한국어로 부자연스럽게 읽는 문제.</span><span class="sentence">자연스러운 발음으로 변환하는 스마트 ITN 엔진을 직접 개발해 정규화 정확도 50.1% → 70.9%</span></li>
-        <li><span class="sentence"><strong>CPU 스파이크 (ReDoS 가드 오버헤드)</strong>: 정규식 치환의 ReDoS 방어용 ThreadPoolExecutor(max_workers=1) 가드가 치환마다 새로 인스턴스화되어 다수 합성 시 CPU 스파이크와 지연을 유발.</span><span class="sentence">오버엔지니어링된 가드를 철거하고 네이티브 C 구현체(re.sub) 동기 호출로 교체해 핫 패스 병목 제거</span></li>
+        <li><span class="sentence"><strong>CPU 스파이크 (ReDoS 가드 오버헤드)</strong>: 정규식 치환의 ReDoS 방어용 ThreadPoolExecutor(max_workers=1) 가드가 치환마다 새로 인스턴스화되어 다수 합성 시 CPU 스파이크와 지연을 유발.</span><span class="sentence">오버엔지니어링된 가드를 철거하고 네이티브 C 구현체(re.sub) 동기 호출로 교체해 핫 패스 병목 제거.</span><span class="sentence"><strong>다만 방어를 없앤 채로 두지 않고 11월에 재설계</strong> — 런타임 가드 대신 <strong>사용자 정규식을 저장 시점에 시간 측정</strong>해 다항 백트래킹을 거부하고, 길이 0 일치 패턴(<code></code>·lookaround)은 치환이 공백·구두점일 때만 허용. 통과한 검사 결과만 캐시해 워커당 1회로 비용 고정</span></li>
         <li><span class="sentence"><strong>전면 백색소음 장애</strong>: vLLM 0.24 전환 직후 모든 합성이 백색소음으로 재생되는 문제를 추적해, 엔진의 SSE(JSON) 응답이 그대로 PCM으로 재생된 것이 원인임을 확인.</span><span class="sentence">응답 포맷을 오디오로 강제해 해결</span></li>
         <li><span class="sentence"><strong>스트리밍 WAV 헤더 정리</strong>: 엔진이 문장마다 RIFF 헤더를 붙여 보내 클라이언트 디코딩이 어긋나는 문제.</span><span class="sentence">문장별 헤더를 걷어내고 세션 전체에 스트리밍 WAV 헤더를 한 번만 내보내는 구조로 정리해 해결</span></li>
         <li><span class="sentence"><strong>크래시로 오진할 뻔한 스트림 집단 절단</strong>: 고부하 burst 중 스트림이 무더기로 끊기고 수 분간 무응답.</span><span class="sentence">엔진 크래시로 보였으나 컨테이너 재시작 횟수가 0인 것을 확인하고 가설 폐기.</span><span class="sentence">실체는 과부하 구간에서 엔진의 "sr concat" 경고(업스트림이 인정한 무해한 로그)가 무더기로 뜨는 사이 API의 vLLM 서킷이 열리고, 폴백이 빈 응답을 반환한 연쇄.</span><span class="sentence">동시 한도를 실링(40)보다 한 티어 낮춰(36) 과부하 진입 자체를 완화</span></li>
