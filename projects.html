@@ -209,7 +209,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <li><span class="sentence">부하 테스트 3층 설계: 스모크(생사 확인) → 순간 폭주(동시 4~256 워커가 같은 순간 도착) → 지속 부하(Poisson 도착 모사, 텍스트 길이 3종·화자 5명·캐시 히트 30% 반영, 시나리오별 3분).</span><span class="sentence"><strong>256건이 같은 순간 도착하는 폭주에도 실패 0</strong>, 지속 부하 <strong>TTFB p50 70ms</strong>(p95 219 · p99 292ms) · 최대 처리량 <strong>8.7 rps</strong> (2026.07.20 실측)</span></li>
         <li>10개 언어 지원 (vLLM 엔진 기준. CPU 엔진을 쓰던 동안은 Supertonic 31개를 합쳐 중복 제외 32개, 2026.10 CPU 엔진 제거로 정리)</li>
         <li>ITN 정규화 정확도 50.1% → 70.9% (검증셋 기준)</li>
-        <li><span class="sentence">같은 GPU에서 <strong>burst p95 TTFB 1,008ms → 652ms</strong> (동시 20 기준). ≤500ms는 달성 불가에서 동시 15로, ≤1000ms는 20~25에서 30으로 상향.</span><span class="sentence">동시 스트림 수용 한계 36 실측 (2026.07 말), 이후 9월 확정 캠페인에서 마지노선 52 · 동시 한도 56으로 상향, 10월 전체 스윕에서 한도 56까지 통과(차별점 ③)</span></li>
+        <li><span class="sentence">같은 GPU에서 <strong>burst p95 TTFB 1,008ms → 652ms</strong> (동시 20 기준). ≤500ms는 달성 불가에서 동시 15로, ≤1000ms는 20~25에서 30으로 상향.</span><span class="sentence">동시 스트림 수용 한계 36 실측 (2026.07 말), 9월 확정 캔페인에서 마지노선 52, 10월 전체 스윙에서 한도 56 통과, 10월 하순 stage0 KV 캐시·참조 오디오 단독 인코딩 적용 뒤 <strong>마지노선 60</strong>으로 재확정(차별점 ③)</span></li>
         <li>TTFB 경로의 순차 Redis 왕복을 16회에서 13회로 줄이고, 문장 캐시는 일괄 조회로 바꿔 N왕복을 1왕복으로</li>
     </ul>
 
