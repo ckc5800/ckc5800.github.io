@@ -1,0 +1,82 @@
+---
+layout: default
+title: '한국어 PDF 전처리 × RAG 검색 품질 벤치마크 (rag-preprocess-bench)'
+description: '한국어 PDF의 파서·청킹·정제 선택이 관행으로 정해질 뿐, 검색 품질을 실제로 얼마나 바꾸는지 근거가 없음 — 채점기부터 고정한 뒤 한 번에 한 축만 바꿔 14개 구성을 실측. 채택안뿐 아니라 기각안과 기각 사유를 전부 수치와 함께 남김'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 개인 프로젝트</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">한국어 PDF 전처리 × RAG 검색 품질 벤치마크 (rag-preprocess-bench) <span class="badge">개인 프로젝트</span></h2>
+    <p class="project-meta">2026.08 · 문서 파싱 · 청킹 파이프라인 실측 설계</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>한국어 PDF의 파서·청킹·정제 선택이 관행으로 정해질 뿐, 검색 품질을 실제로 얼마나 바꾸는지 근거가 없음</dd>
+        <dt>해결</dt><dd><span class="sentence">채점기부터 고정한 뒤 한 번에 한 축만 바꿔 14개 구성을 실측.</span><span class="sentence">채택안뿐 아니라 기각안과 기각 사유를 전부 수치와 함께 남김</span></dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">73.0 → 85.3%</span><span class="metric-label">page-level hit@10</span></div>
+        <div class="metric"><span class="metric-value">채택 4 · 기각 10</span><span class="metric-label">기각이 더 많았고 전부 기록</span></div>
+        <div class="metric"><span class="metric-value">문서 64개 · 1,450p</span><span class="metric-label">사람이 만든 질문 300개</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">pymupdf</span>
+        <span class="tech-tag">EasyOCR</span>
+        <span class="tech-tag">Kiwi</span>
+        <span class="tech-tag">BM25</span>
+        <span class="tech-tag">Chunking</span>
+        <span class="tech-tag">Benchmark Design</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 측정 설계 · 채택 · 기각 · 남긴 것</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<div class="detail-nav"><span class="detail-nav-label">절 이동</span><a href="#ragbench-sec1">배경</a><a href="#ragbench-sec2">측정 도구를 먼저 고정</a><a href="#ragbench-sec3">채택 4건</a><a href="#ragbench-sec4">기각 10건</a><a href="#ragbench-sec5">결론과 남긴 것</a></div>
+<h4 class="detail-head" id="ragbench-sec1">배경</h4>
+    <p><span class="sentence">RAG 파이프라인에서 전처리는 "이렇게 하면 좋다"는 관행만 있고 근거 수치가 드묾.</span><span class="sentence">무엇이 실제로 검색을 바꾸는지 가려내려고 전처리 축 하나만 남기고 리트리버를 Kiwi + BM25로 고정.</span></p>
+
+    <h4 class="detail-head" id="ragbench-sec2">측정 도구를 먼저 고정</h4>
+    <ul class="detail-list">
+        <li>LLM 채점 없이 정답 페이지 매칭으로 결정적 채점 — 채점기 흔들림이 전처리 효과로 잘못 귀속되는 것을 차단</li>
+        <li>랜덤 검색 하한을 해석적(0.687%)·경험적(0.78%) 두 방식으로 구해 일치를 확인 — 하네스 자체의 검증</li>
+        <li>전체 평균만 보고하는 것을 금지하고 context_type(paragraph · table · image)과 도메인 슬라이스를 항상 병기</li>
+        <li>데이터셋 메타를 믿지 않음 — 실제 PDF 1,450페이지 vs 메타 합 1,388에서 4개 문서의 오류를 찾아, 평가 기준을 항상 실제 파일로 고정</li>
+    </ul>
+
+    <h4 class="detail-head" id="ragbench-sec3">채택 4건 — 73.0 → 85.3%</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">파서를 pypdf → <strong>pymupdf</strong>로 교체해 76.0% (이득 9 / 손실 0).</span><span class="sentence">CID 인코딩을 못 풀어 깨진 문자를 내던 문서가 정상 복원되며 law 도메인이 0.650 → 0.783으로 올랐고, 이득 9건 중 8건이 그 한 문서에 몰려 있었음</span></li>
+        <li><span class="sentence"><strong>1024자 + 256 오버랩</strong> 청킹으로 80.7%.</span><span class="sentence">멀티페이지 청크는 top-10의 페이지 커버리지를 2.12배로 늘려 비교가 불공정해지므로, 커버리지를 맞춘 대조(top-5 vs top-10)로 재판정 — 그러고도 표 질문 <strong>+8pp</strong>가 남아 실질 개선으로 판정</span></li>
+        <li><span class="sentence">빈 페이지에만 <strong>EasyOCR(ko)</strong> 폴백을 붙여 84.7% (이득 12 / 손실 0).</span><span class="sentence">스캔 페이지가 정답인 14문항이 전패에서 12건 정답으로 전환</span></li>
+        <li>청크에 <strong>문서 제목 주입</strong>으로 85.3% — 이득 2 / 손실 0, 공동 정답 문항 안에서도 순위 개선 19 vs 악화 9</li>
+    </ul>
+
+    <h4 class="detail-head" id="ragbench-sec4">기각 10건 — 여기가 본론</h4>
+    <ul class="detail-list">
+        <li><span class="sentence"><strong>docling 전면 교체</strong> — hit@10 80.7 → 72.7%(−8pp), 추출 22초 → 약 3시간(약 500배).</span><span class="sentence">표·이미지 슬라이스도 전패.</span><span class="sentence">손실 26문항 중 17개가 두 문서에 몰렸고 한 문서는 404자, 다른 하나는 0자로 추출이 붕괴.</span><span class="sentence">무거운 파서는 평균보다 꼬리 위험이 치명적이라는 결론</span></li>
+        <li><span class="sentence"><strong>RapidOCR 폴백</strong> — flip 0/0 완전 무효.</span><span class="sentence">원인은 구조가 아니라 언어였음: 기본 설정이 한국어 스캔을 중국어 모델로 읽어 한자 쓰레기를 출력하고 있었음.</span><span class="sentence">"OCR이 텍스트를 냈다"와 "그 언어를 읽었다"는 다른 말</span></li>
+        <li>표면 정제 5종(NFKC · 개행 처리 2종 · 헤더/푸터 제거 · 숫자 정규화) 전부 무효~역효과 — 개행→공백은 Kiwi가 이미 공백으로 취급해 완전 no-op</li>
+        <li>문장 경계 청킹 무효 — 절단 손실을 256자 오버랩이 이미 흡수하고 있었음</li>
+        <li>표 텍스트 덧붙이기는 전체 동률인데 표 질문이 80.0 → 78.0%로 하락 (중복 추가 + 청크 증가로 BM25 희석), pdfplumber는 같은 품질에 23배 느림, 블록 청킹은 평균 387자로 과분할</li>
+    </ul>
+
+    <h4 class="detail-head" id="ragbench-sec5">결론과 남긴 것</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">검색 품질을 움직인 것은 <strong>깨진 것을 고치는 전처리</strong>(인코딩 깨짐 · 스캔 · 페이지 경계 절단)뿐이었고, <strong>정상 텍스트를 다듬는 전처리</strong>는 전부 무효였음.</span><span class="sentence">단 이 결론은 "Kiwi + BM25 한정"이라고 README에 못 박아 뒀음 — 임베딩에서는 달라질 수 있음</span></li>
+        <li>실무였다면 docling을 전면 교체가 아니라 품질 게이트 기반 폴백으로 붙였을 것 — 추출 0자·CID 깨짐을 탐지해 그 문서만 무거운 경로로 보내는 라우팅</li>
+    </ul>
+
+    <p class="repo-link"><a href="https://github.com/ckc5800/rag-preprocess-bench" target="_blank">GitHub 저장소 (실험 기록 및 기각 사유)</a></p>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/rag.html">← 이전 · LangGraph 기반 Corrective-RAG Agent</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <a href="/projects/pdm.html">다음 · 예지보전 Agent (pdm-agent) →</a>
+</nav>
+</div>

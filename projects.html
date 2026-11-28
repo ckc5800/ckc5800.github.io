@@ -14,8 +14,6 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
                aria-label="프로젝트 검색" autocomplete="off"
                title="Enter: 첫 결과로 이동 · Esc: 초기화">
         <div class="side-nav-count" id="filter-count" role="status" aria-live="polite"></div>
-        <button type="button" class="expand-all" id="expand-all" aria-pressed="false"
-                title="접힌 카드 안은 브라우저 찾기(Ctrl+F)에 걸리지 않는다">모두 펼치기</button>
     </div>
     <div class="side-nav-group">
         <div class="side-nav-label">추론 서빙 · 성능 엔지니어링</div>
@@ -64,12 +62,12 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
             <span class="pick-name">Qwen3-TTS 플랫폼 구축</span>
             <span class="pick-note">추론 서빙 플랫폼을 모델 선정부터 배포·운영까지 단독 구축</span>
         </a>
-        <a class="pick-card" href="#k8s">
+        <a class="pick-card" href="/projects/k8s.html">
             <span class="pick-num">관측 스택 5종</span>
             <span class="pick-name">Kubernetes 기반 AI 인프라</span>
             <span class="pick-note">20여 개 모델이 도는 클러스터의 지표·경보·로그 단독 구축</span>
         </a>
-        <a class="pick-card" href="#seg3d">
+        <a class="pick-card" href="/projects/seg3d.html">
             <span class="pick-num">특허 2건 · 논문 2편</span>
             <span class="pick-name">3D Semantic Segmentation Research</span>
             <span class="pick-note">카메라·LiDAR 센서 퓨전 Trans-Unet — 2D MIoU 31.94%, 단일 모달의 약 2배</span>
@@ -171,18 +169,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Data Curation</span>
         <span class="tech-tag">Service Operation</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">운영 페이지</span><span class="sum-close">TTS 운영 · 품질 관리 — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">운영 페이지</h4>
-    <div class="shot-grid">
-        <img class="shot" src="/assets/images/image 1.png" alt="ZipVoice 기반 TTS 운영 페이지 — 서비스 상태 요약과 최근 에러 로그">
-        <img class="shot" src="/assets/images/image 2.png" alt="ZipVoice 기반 TTS 운영 페이지 — 에러 로그 전체 조회·필터">
-        <img class="shot" src="/assets/images/image 3.png" alt="ZipVoice 기반 TTS 운영 페이지 — 엔진별 요청·응답 통계와 인프라 리소스 이력">
-    </div>
-    <p class="caption">기존 TTS(ZipVoice) 서비스를 운영하며 만든 관리 페이지 — 서버 상태와 평균 응답, 에러 로그 조회·필터, 엔진별 요청·성공률·응답 시간과 GPU·CPU 이력을 한 화면에서 확인 (2026.01 화면)</p>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/tts-ops.html">상세 보기 → <span class="detail-link-note">운영 페이지</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -203,36 +190,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Streaming API</span>
         <span class="tech-tag">ZipVoice</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과 · 데모 페이지</span><span class="sum-close">TTS 스트리밍 API 리팩토링 (ZipVoice 기반) — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">사내에서 쓰던 기존 TTS 엔진(ZipVoice)의 스트리밍 API가 담당 대상.</span><span class="sentence">전체 합성이 끝나야 첫 청크가 나가는 구조라 텍스트가 길수록 첫 응답이 비례해 늦어졌고, 실시간 상담에 쓰기 어려웠음.</span><span class="sentence">기존 담당자에게 인계받아 리팩토링을 맡음.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><strong>SSE 청크 디코딩 실패 해결:</strong> 브라우저 <code>decodeAudioData()</code>가 두 번째 청크부터 실패한다는 사내 사용 부서(API 호출측)의 제보를 추적.</p>
-    <ul class="detail-list">
-        <li>원인 — 엔진이 첫 청크에만 RIFF WAV 헤더를 붙이고 이후는 raw PCM만 반환</li>
-        <li>조치 — 첫 청크 헤더에서 샘플레이트·채널을 파싱해 모든 SSE 청크에 독립 헤더를 재생성, 청크 단위 독립 디코딩 가능하게</li>
-    </ul>
-    <p><span class="sentence"><strong>실시간 스트리밍 엔드포인트 신설:</strong> 수정 후에도 기존 <code>/sse</code>는 전체 합성이 끝난 뒤 WAV를 분할 전송하는 구조라, 텍스트가 길수록 TTFB가 비례해 늘어나는 상태.</span><span class="sentence">엔진의 gRPC server streaming을 활용한 <code>/sse-realtime</code>을 신설해 <strong>문장 단위 합성 → 즉시 전송</strong> 구조로 전환.</span></p>
-    <p><strong>정비:</strong> API v2 경로 표준화(v1은 deprecated로 하위 호환 유지), Swagger 문서 정비, 구·신 버전 TTFB를 직접 비교하는 데모 페이지 제공.</p>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li><span class="sentence"><strong>TTFB 1,943ms → 985ms</strong> — 같은 텍스트를 양쪽 엔드포인트로 완주시킨 비교(58.0초 342청크 / 59.4초 364청크), 데모 페이지 콘솔 로그 그대로.</span><span class="sentence">다른 런에서 334ms도 찍혔으나 첫 청크만 받고 중지한 단일 런이라 대표값으로 쓰지 않음</span></li>
-        <li>원인 분석부터 조치·검증·사내 사용 부서 공유까지 단독 수행</li>
-        <li>이 경험이 이후 Qwen3-TTS 플랫폼을 저지연 스트리밍 중심으로 설계하는 출발점이 됨</li>
-    </ul>
-
-    <h4 class="detail-head">데모 페이지</h4>
-    <div class="shot-grid">
-        <img class="shot" src="/assets/images/zipvoice-demo-compare.png" alt="구버전 vs 신버전 TTFB 직접 비교 데모">
-        <img class="shot" src="/assets/images/zipvoice-demo-form.png" alt="TTS API 샘플 데모 폼">
-    </div>
-    <p class="caption">사내 사용 부서에 제공한 비교 데모 페이지 — 동일 텍스트로 구버전(/sse)과 신버전(/sse-realtime)의 TTFB를 직접 비교 체험할 수 있게 구성 (스크린샷의 예시 런: 1943ms → 985ms, 내부 서버 주소는 가림 처리)</p>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/tts-api.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과 · 데모 페이지</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -252,26 +210,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">gRPC / HTTP</span>
         <span class="tech-tag">Docker</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">STT 배포 — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">대형 보험사 상담센터의 대량 상담 전화 실시간 처리 필요.</span><span class="sentence">기존 STT 시스템 병목으로 인한 채널 부족 및 추론 지연 불안정.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>STT 구조 개선:</strong> Triton Inference Server 기반 음성인식 파이프라인을 전처리·후처리·서비스 계층으로 모듈화해 파일/스트리밍 공통 로직을 통합.</span><span class="sentence">YAML 기반 로그 로테이션·아카이빙 체계와 Docker 구성을 정비하고, 컨테이너 자동 재시작 정책으로 안정성을 보강.</span></p>
-    <p><span class="sentence"><strong>담당 경계:</strong> Triton Python 백엔드로 파일 기반과 실시간 스트리밍 두 추론 모델을 구성하고 HTTP·gRPC를 제공하는 구조는 <strong>팀이 만든 것</strong>이며, 본인은 그 배포·운영과 위 계층 정비를 담당.</span></p>
-    <p><span class="sentence"><strong>화자별 전사 (구현했으나 미적용):</strong> 요청에 담겨 오는 화자 구간을 Faster Whisper의 <code>clip_timestamps</code> 형식으로 변환해 화자마다 따로 전사를 돌리고, 전사 결과를 환각 필터로 clean·flagged·blocked로 나눠 담도록 구현.</span><span class="sentence">결과 품질이 쓸 만한 수준에 못 미쳐 <strong>실제 서비스에는 적용되지 않았음</strong>.</span></p>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li>전처리·후처리·서비스 계층 분리로 파일·스트리밍 공통 로직 통합 — 코드 재사용성 확보</li>
-        <li>YAML 기반 로그 로테이션·아카이빙 체계와 Docker 구성 정비</li>
-        <li>컨테이너 자동 재시작 정책으로 운영 안정성 보강</li>
-        <li>팀이 구성한 Triton 기반 파이프라인의 배포·운영 담당 (구성 자체는 팀 성과)</li>
-    </ul>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/stt.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -299,51 +238,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Docker</span>
         <span class="tech-tag">ArgoCD</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 팀 구성과 담당 · 구현 · 성과 · 돌아보면 · 시스템 구조</span><span class="sum-close">Kubernetes-based AI Infrastructure — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">AI 서비스·API 20여 개를 수동 배포해 한 번에 수 시간이 소요.</span><span class="sentence">자동화·스케일링·자원 효율 개선이 필요했고, 클러스터로 옮긴 뒤에는 무엇이 어디서 터졌는지 볼 수단도 함께 있어야 했음.</span></p>
-
-    <h4 class="detail-head">팀 구성과 담당</h4>
-    <p><span class="sentence">인프라 엔지니어 3인이 온프레미스에 사내 첫 Kubernetes 플랫폼을 구축.</span><span class="sentence">아래가 팀이 만든 전체 구성이고, 그중 <strong>관측성 계층과 스토리지가 본인 담당</strong>.</span></p>
-    <ul class="detail-list">
-        <li>클러스터·네트워크 — MetalLB LoadBalancer, Ingress-nginx 라우팅 <span class="who">팀</span></li>
-        <li><strong>스토리지 — NFS 기반 PV/PVC로 모델·데이터 영속 볼륨 관리</strong> <span class="who mine">본인</span></li>
-        <li>배포 파이프라인 — GitLab → Jenkins·Argo Workflow → Harbor → ArgoCD GitOps <span class="who">팀</span></li>
-        <li><strong>지표·경보 — Prometheus 수집, Grafana 대시보드, AlertManager 경보 규칙</strong> <span class="who mine">본인</span></li>
-        <li><strong>로그 — Elasticsearch(ELK)와 Loki를 클러스터에 직접 설치해 수집·조회 환경 구성</strong> <span class="who mine">본인</span></li>
-    </ul>
-
-    <h4 class="detail-head">구현</h4>
-    <ul class="detail-list">
-        <li>Prometheus로 클러스터·노드·워크로드 지표를 수집하고, Grafana 대시보드로 20여 개 모델의 상태를 한 화면에서 보게 구성</li>
-        <li>AlertManager 경보 규칙을 세워 장애를 사람이 발견하기 전에 알리도록 전환</li>
-        <li>로그는 관리형 서비스 없이 클러스터에 Elasticsearch, Loki를 직접 설치·운영 — 온프레미스라 외부 로깅 SaaS를 쓸 수 없는 조건</li>
-        <li><span class="sentence">스토리지 — 용도별로 나뉘어 있던 서버들(모델 가중치 보관, DB 등)을 클러스터로 통합하는 과정이라 저장소가 한 곳이 아니었음.</span><span class="sentence">각 저장소를 NFS로 노출하고 용도별 PV를 만들어 워크로드가 PVC로 바인딩하도록 구성해, 파드가 재시작돼도 모델 가중치를 다시 받지 않게 됨</span></li>
-        <li>구축 이후 클러스터 장애 대응과 리소스 관리에 팀의 일원으로 참여</li>
-    </ul>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li>3인 인프라 팀으로 <strong>회사 최초 Kubernetes 기반 AI 플랫폼</strong>을 구축하고, 수동 배포를 GitOps 자동화로 전환 <span class="who">팀 성과</span></li>
-        <li>지표와 대시보드, 경보, 로그까지 <strong>관측성 5종을 혼자 구축</strong> (Prometheus, Grafana, AlertManager, Elasticsearch, Loki)</li>
-        <li>NFS 기반 PV/PVC로 20여 개 모델의 가중치와 데이터 볼륨을 영속 관리</li>
-        <li>20개 이상 ML 모델이 도는 클러스터를 지표와 로그로 들여다볼 수 있게 만들어, 장애 원인 추적이 가능해짐</li>
-    </ul>
-
-    <h4 class="detail-head">돌아보면</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">사내 첫 도입이라 참고할 선례가 없었고, 온프레미스에서 여러 NFS를 용도별로 붙이는 구성은 자료가 드물어 PV·PVC 바인딩 관계를 잡는 데 시행착오가 있었음.</span><span class="sentence">문서와 검색으로 메우는 데 시간을 썼고, 그만큼 남이 읽을 문서를 남기는 습관이 생김</span></li>
-        <li><span class="sentence">관측 스택은 세웠지만 SLO를 정의하지 못했음.</span><span class="sentence">경보를 리소스 임계값에 걸어 둬서, 사용자가 체감하는 장애와 어긋나는 경우가 있었음.</span><span class="sentence">지금이라면 모델별 지연·에러율로 목표를 먼저 정하고 경보를 거기 걸었을 것</span></li>
-    </ul>
-
-    <h4 class="detail-head">시스템 구조</h4>
-    <div class="shot-grid one">
-        <img class="shot" src="/assets/images/kubernetes-architecture.png" alt="Kubernetes Infrastructure Architecture">
-    </div>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/k8s.html">상세 보기 → <span class="detail-link-note">배경 · 팀 구성과 담당 · 구현 · 성과 · 돌아보면 · 시스템 구조</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 </section>
@@ -365,30 +260,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">PyTorch</span>
         <span class="tech-tag">Audio Processing</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과 · 미채택 기록과 회고</span><span class="sum-close">Speaker Diarization with Pyannote — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">회사가 만드는 메신저·협업 제품에 영상통화 회의록·전사 기능을 넣으려면 발화자 식별이 필요했음.</span><span class="sentence">STT는 음성 인식만 제공해 누가 말했는지 구분할 수단이 없었고, 화자 분리 모델을 검토해 제품에 쓸 수 있는 수준인지 판정하는 것이 과제였음.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>모델 평가:</strong> Pyannote 사전 학습 모델의 DER을 측정하고, 채택 가능한 수준인지 판정하는 것이 1차 목표였음.</span></p>
-    <p><span class="sentence"><strong>파인튜닝 시도:</strong> 화자 분리 데이터를 모아 파라미터 튜닝과 학습을 수행하고 DER로 평가.</span></p>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">모델 평가와 파인튜닝 파이프라인(데이터 수집 → 학습 → DER 측정)을 구축해 <strong>채택 여부를 판정할 근거를 만듦</strong>.</span><span class="sentence">결론은 미채택. 화자 분리는 이후 사내 회의록 STT 작업(2025.07 ~ 09)에서 STT와 연동</span></li>
-        <li>파인튜닝은 <strong>사전 학습 모델 대비 DER 개선이 없어 미채택</strong>. 결과를 포장하지 않고 그대로 기록</li>
-    </ul>
-
-    <h4 class="detail-head">미채택 기록과 회고</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">학습에 들어가기 전에 확보한 데이터의 규모·품질이 파인튜닝을 지탱할 수준인지부터 점검했어야 했다고 봄</span></li>
-        <li><span class="sentence">지금이라면 학습부터 하지 않음.</span><span class="sentence">사전 학습 모델의 DER을 먼저 재고, 실제 사용 음성 몇십 건이라도 직접 라벨링해 실패 유형(중첩 발화·짧은 맞장구·채널 특성)을 분류한 뒤, 그 유형이 학습으로 풀리는 문제인지부터 판정했을 것</span></li>
-        <li><span class="sentence">모델을 바꾸는 대신 후처리로 접근하는 선택지도 검증하지 않았음.</span><span class="sentence">화자 수를 고정하거나 짧은 구간을 병합하는 규칙만으로도 얼마나 좁혀지는지 재봤어야 했음</span></li>
-    </ul>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/diarization.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과 · 미채택 기록과 회고</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -411,25 +283,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">NLP</span>
         <span class="tech-tag">PyTorch</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">NLP Text Summarization System — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">휴가나 부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 오랜 시간이 걸린다는 문제에서 출발.</span><span class="sentence">사내 메신저에 넣을 한국어 요약 모델 개발이 목표.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>모델 설계:</strong> 대화 요약은 BART, 문서 요약은 T5로 나눠 개발.</span><span class="sentence">후속으로 사전 학습 표현을 훼손하지 않는 R3F 정규화 파인튜닝을 설계하고 적용을 계획.</span></p>
-    <p><span class="sentence"><strong>연구 계획:</strong> 한국어 대화-요약 쌍 데이터 수집·전처리와 한국어 임베딩 모델 선택을 1단계로 잡고, ROUGE 점수와 사내 인원 휴먼 평가를 평가 지표로 설정.</span></p>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li>사내 메신저에 요약 기능을 붙여 <strong>전 직원(약 300명)</strong>이 쓰는 서비스에 실제 적용</li>
-        <li>긴 사내 공지 문서를 한 줄 요약으로 압축, 실제 업무 대화는 2초대에 요약</li>
-        <li>카카오톡 대화 요약 기능과 나란히 비교해 유사한 품질의 요약을 확인한 데모 수행</li>
-        <li>STT 결과 텍스트를 활용한 자연어 처리 기능 개발과 전처리·평가 환경 구축도 함께 수행</li>
-    </ul>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/nlp.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -454,23 +308,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Computer Vision</span>
         <span class="tech-tag">Autonomous Driving</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">3D Semantic Segmentation Research — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">자율주행 환경 인식에 3D 거리/높이 정보 필수.</span><span class="sentence">기존 2D 세그멘테이션의 한계로 인한 센서 퓨전 필요.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>모델 아키텍처:</strong> Trans-Unet (Transformer + U-Net 하이브리드) 설계로 LiDAR 포인트 클라우드 + 카메라 이미지 효과적 퓨전.</span><span class="sentence">Transformer 장거리 의존성 + U-Net 다중 스케일 피처 추출 결합.</span></p>
-    <p><strong>연구 기여:</strong> 논문 2편 제1저자 게재 (한국자동차공학회 2022.11, 2023.04) 및 특허 2건 등록 (제1발명자).</p>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li>논문 2편 게재 (제1저자, 한국자동차공학회 추계학술대회 2022.11 · 한국자동차공학회논문집 2023.04) — 2D MIoU 31.94%로 단일 모달의 약 2배, 3D MIoU 17.12%</li>
-        <li>특허 2건 등록 (제1발명자, 2023.05 등록, 등록번호: 1025382250000, 1025382310000)</li>
-    </ul>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/seg3d.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -492,31 +330,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">PyTorch</span>
         <span class="tech-tag">Data Augmentation</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과 · 생성 결과</span><span class="sum-close">Synthetic Data Generation with Latent Diffusion — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">국방 도메인 AI 모델 개발의 학습 데이터 부족 (보안 제약으로 수집 어려움).</span><span class="sentence">GAN 모드 붕괴 문제 및 범용 생성 모델의 도메인 불일치.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>진행:</strong> 선행 연구를 인수인계받아 Latent Diffusion 기반 전차 이미지 생성 실험을 이어서 진행.</span></p>
-    <p><strong>검증 및 평가:</strong> 웹에서 모은 전차 이미지 7,586장으로 학습해 새 전차 이미지를 생성하고 실제 데이터와 비교 — 상당 부분 유사하나 아직 실제 데이터를 대체할 수준은 아님을 확인. 후속으로 UNet 대신 UNet++·UNet3+ 구조 적용을 제시.</p>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li><strong>우수 논문상 수상:</strong> "국방 데이터 확보를 위한 생성모델 Latent Diffusion 실험" (한국국방기술학회 2023.11)</li>
-        <li>추가 논문: "GAN을 활용한 데이터 생성 연구 동향" (한국항공우주학회 2023)</li>
-    </ul>
-
-    <h4 class="detail-head">생성 결과</h4>
-    <div class="shot-grid">
-        <img class="shot" src="/assets/images/image 47.png" alt="Synthetic Data 1">
-        <img class="shot" src="/assets/images/image 48.png" alt="Synthetic Data 2">
-        <img class="shot" src="/assets/images/image 49.png" alt="Synthetic Data 3">
-        <img class="shot" src="/assets/images/image 50.png" alt="Synthetic Data 4">
-    </div>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/latent.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과 · 생성 결과</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -532,18 +346,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">PyTorch</span>
         <span class="tech-tag">Defense Domain</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 성과</span><span class="sum-close">Tank Object Detection Model — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">국방 도메인 이미지에서 전차를 자동 탐지하는 모델이 필요했음.</span><span class="sentence">같은 시기 전차 이미지 생성 연구(Latent Diffusion)로 이어짐.</span></p>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li>전차 탐지 모델 개발 완료</li>
-    </ul>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/tank.html">상세 보기 → <span class="detail-link-note">배경 · 성과</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 </section>
@@ -565,25 +368,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Vision Transformer</span>
         <span class="tech-tag">Python</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">OCR Dataset Annotation Tool — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">PDF/이미지 문서에서 표 영역 추출을 위한 OCR 학습 데이터 필요.</span><span class="sentence">수동 주석 작업의 병목 해결 필요.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>시스템 아키텍처:</strong> PyQt GUI 기반 Annotation Tool 설계 및 단독 개발.</span><span class="sentence">이미지 로딩, 라벨링, 데이터 저장 기능 구현.</span></p>
-    <p><span class="sentence"><strong>AI 모델 개발:</strong> Tesseract 및 ViT 기반 표 영역 탐지, RNN 기반 테이블 셀 내 텍스트 추출 모델 개발.</span><span class="sentence">OCR 학습 데이터 생성 프로세스 자동화.</span></p>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li>Annotation Tool 설계 및 단독 개발 (상용 서비스 투입 전 단계까지 참여)</li>
-        <li>OCR 학습 데이터 생성 프로세스 자동화</li>
-        <li>OCR 문서 인식 성능 개선</li>
-        <li><strong>프로젝트 성공 성과금 수령</strong></li>
-    </ul>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/ocr.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -599,22 +384,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Python</span>
         <span class="tech-tag">Data Engineering</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">Data Collection & Preprocessing — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">금융 데이터 분석을 위한 고품질 데이터 필수.</span><span class="sentence">다중 소스 수집 데이터의 수동 정제 및 통합으로 인한 비효율.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>데이터 수집 & 전처리:</strong> 금융 데이터를 수집하고 분석에 쓸 수 있게 전처리.</span></p>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li>금융 데이터 수집·전처리 파이프라인 구축</li>
-        <li>데이터 엔지니어링 역량 확보</li>
-    </ul>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/quhedge.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 </section>
@@ -642,26 +412,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Observability</span>
         <span class="tech-tag">Python</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">llm-bench — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">TTS 게이트웨이 TTFB를 절반 가까이 줄이며 손으로 하던 측정을 도구화.</span><span class="sentence">OpenAI 호환 엔드포인트(Ollama, vLLM 등)에 동시 부하를 걸어 TTFT·지연 percentile·처리량을 측정하는 CLI.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>측정 설계:</strong> asyncio + httpx로 동시성 수준별 스윕.</span><span class="sentence">스트리밍 청크 단위로 요청별 TTFT(첫 토큰까지 시간)를 기록하고 처리량은 합산 tokens/s로, p50/p95 집계.</span><span class="sentence">리포트에 출력 토큰 분포와 소표본 경고(요청 4개면 p95는 사실상 최댓값)를 함께 실어, 지연이 서버 속도 탓인지 생성량 탓인지 읽는 사람이 구분하도록 함.</span><span class="sentence">예열 요청으로 모델 로드 시간을 측정에서 분리.</span><span class="sentence">의존성은 httpx 하나, 차트는 SVG 직접 생성.</span></p>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li>로컬 Ollama(CPU) 기준선: 동시성 1에서 TTFT 0.62초, 7.6 tokens/s</li>
-        <li><span class="sentence">동시성을 2·4로 올리자 TTFT는 7.9초·12.4초로 악화되는데 처리량은 8.1 tokens/s에 고정.</span><span class="sentence">요청이 병렬로 처리되지 않고 줄을 서고 있다는 신호</span></li>
-        <li><span class="sentence">원인은 Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화.</span><span class="sentence">벤치마크 도구가 병목의 위치를 짚어냄</span></li>
-        <li><span class="sentence">NUM_PARALLEL=4로 서버 설정만 바꿔 같은 스윕을 재실행하니 TTFT p50이 12.4초에서 0.93초로, 합산 처리량이 8.1에서 22.9 tokens/s로 스케일.</span><span class="sentence">진단 → 설정 변경 → 재측정까지 한 번에 확인</span></li>
-    </ul>
-
-    <p class="repo-link"><a href="https://github.com/ckc5800/llm-bench" target="_blank">GitHub 저장소</a></p>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/llmbench.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -687,47 +438,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">FastAPI</span>
         <span class="tech-tag">Evaluation</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과 · 평가 방법론 · 실험 기록</span><span class="sum-close">LangGraph 기반 Corrective-RAG Agent — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">LLM Agent 시스템(RAG, tool orchestration, state 관리)의 E2E 구축 역량 확보 목적.</span><span class="sentence">포트폴리오 기술문서를 지식 베이스로 하는 Q&A Agent를 전부 로컬 환경(Ollama)에서 구현.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <ul class="detail-list">
-        <li>LangGraph StateGraph 기반 Corrective-RAG — retrieve → grade(자가 평가) → 판정 부족 시 rewrite 재검색 → generate</li>
-        <li>FAISS(의미) + BM25(키워드) RRF 융합 직접 구현 — 벡터 저장소는 환경변수로 Qdrant 교체 가능, 동일 평가로 비교해 선택 기준 실측</li>
-        <li>에이전트 레이어 3종 — ReAct 도구 호출, Planner–Worker–Synthesizer 멀티홉 분해, MCP 클라이언트</li>
-        <li>인덱싱 전 데이터 검수 CI 연결 — 노션 내부 링크가 코퍼스의 9.4%를 차지하던 오염 발견·제거</li>
-    </ul>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">평가셋을 10 → 51 → 140문항으로 늘려가며 재측정 — 현재 <strong>140문항 80.7·81.4%</strong>(같은 조건 2회, 포트폴리오 100문항 77~78% · TTS 40문항 90%).</span><span class="sentence">실패를 검색·청킹·생성 층으로 나눠 병목이 생성 단계임을 수치로 확인하고 컨텍스트 수를 튜닝</span></li>
-        <li><span class="sentence">코퍼스를 <strong>54 → 842청크(15.6배)</strong>로 늘린 뒤 튜닝값을 전수 재검증 — 작은 코퍼스에서 정한 청크 크기·top-N·HyDE 판정이 그대로 유지됨을 확인.</span><span class="sentence">"코퍼스가 작아서 기각했다"던 유보를 실제로 시험한 결과.</span><span class="sentence">검색 지표는 10문항 앵커의 recall@1 90%가 확장 평가에서 착시로 드러나, 결론을 확장본 기준으로 갱신하고 하이브리드 검색 결함 7건을 수정</span></li>
-        <li><span class="sentence">채점기가 동의 표기를 오답으로 세고 있던 것을 발견.</span><span class="sentence"><strong>6%p를 정정</strong> — 지표를 쓰기 전에 지표부터 검증한 경우.</span><span class="sentence">기본 모델도 3B → 7B로 전환해 <strong>+8%p(77 → 85%)</strong>를 지연 비용 없이 얻고, 재작성률이 67~76%에서 16%로 떨어지는 것까지 재측정</span></li>
-        <li><span class="sentence">코퍼스에 답이 없는 거부 문항 10개를 넣어 <strong>환각 측정 지표 신설</strong>.</span><span class="sentence">컨텍스트를 넓힐수록 환각이 느는 트레이드오프를 실측</span></li>
-    </ul>
-
-    <h4 class="detail-head">평가 방법론</h4>
-    <ul class="detail-list">
-        <li>검색/생성 분리 평가 — recall@k(LLM 불필요)와 E2E 정답률을 분리해 실패 원인 귀속</li>
-        <li>gold 라벨을 청크 md5·앵커 문자열로 고정 — 재청킹 시 자동 무효화, 전 지표에 무작위 기준선 병기</li>
-        <li>3B 모델의 런 간 편차 ±6%p 실측 — 모든 A/B는 반복 측정, 1~2문항 차이로 결론 내지 않는 원칙</li>
-        <li>RAGAS 도입 검토 후 보류 — 로컬 3B 심판의 일치율 45~50%로 정보량이 없음을 실측. 도입 조건을 "7B 이상·일치율 90%"로 정했다가, 아무것도 판정하지 않는 상수 심판도 90%가 나오는 것을 확인하고 "상수 심판 대비 순증" 기준으로 재정의</li>
-    </ul>
-
-    <h4 class="detail-head">실험 기록</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">Parent-Child 청킹 — 초기엔 유일하게 풀던 집계 질문을 base의 top-N 확장이 함께 해결했고 child recall@1도 열위(78% vs 89%)라 미채택.</span><span class="sentence">판단 근거를 코드 주석에 기록</span></li>
-        <li>시맨틱 청킹(임베딩 유사도 breakpoint, 직접 구현) — 동일 조건 비교에서 base가 전 지표 우위로 미채택</li>
-        <li>격리 단일 호출의 판단이 전체 파이프라인 반복 측정에서 뒤집힌 사례 확보 — n=1 실험의 함정을 직접 측정해 문서화</li>
-        <li>이 사이트의 프로젝트 검색이 살아있는 데모 — BM25 레이어를 순수 브라우저 JS로 이식 (다중 단어 AND, 한글 바이그램으로 조사·어미 대응, 관련도순 정렬). 목차의 검색창에서 바로 체험 가능</li>
-    </ul>
-
-    <p class="repo-link"><a href="https://github.com/ckc5800/rag-agent" target="_blank">GitHub 저장소 (코드 및 개선 히스토리)</a></p>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/rag.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과 · 평가 방법론 · 실험 기록</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -752,46 +463,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Chunking</span>
         <span class="tech-tag">Benchmark Design</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 측정 설계 · 채택 · 기각 · 남긴 것</span><span class="sum-close">한국어 PDF 전처리 × RAG 검색 품질 벤치마크 — 접기</span></summary>
-        <div class="detail-body">
-    <h4 class="detail-head">배경</h4>
-    <p><span class="sentence">RAG 파이프라인에서 전처리는 "이렇게 하면 좋다"는 관행만 있고 근거 수치가 드묾.</span><span class="sentence">무엇이 실제로 검색을 바꾸는지 가려내려고 전처리 축 하나만 남기고 리트리버를 Kiwi + BM25로 고정.</span></p>
-
-    <h4 class="detail-head">측정 도구를 먼저 고정</h4>
-    <ul class="detail-list">
-        <li>LLM 채점 없이 정답 페이지 매칭으로 결정적 채점 — 채점기 흔들림이 전처리 효과로 잘못 귀속되는 것을 차단</li>
-        <li>랜덤 검색 하한을 해석적(0.687%)·경험적(0.78%) 두 방식으로 구해 일치를 확인 — 하네스 자체의 검증</li>
-        <li>전체 평균만 보고하는 것을 금지하고 context_type(paragraph · table · image)과 도메인 슬라이스를 항상 병기</li>
-        <li>데이터셋 메타를 믿지 않음 — 실제 PDF 1,450페이지 vs 메타 합 1,388에서 4개 문서의 오류를 찾아, 평가 기준을 항상 실제 파일로 고정</li>
-    </ul>
-
-    <h4 class="detail-head">채택 4건 — 73.0 → 85.3%</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">파서를 pypdf → <strong>pymupdf</strong>로 교체해 76.0% (이득 9 / 손실 0).</span><span class="sentence">CID 인코딩을 못 풀어 깨진 문자를 내던 문서가 정상 복원되며 law 도메인이 0.650 → 0.783으로 올랐고, 이득 9건 중 8건이 그 한 문서에 몰려 있었음</span></li>
-        <li><span class="sentence"><strong>1024자 + 256 오버랩</strong> 청킹으로 80.7%.</span><span class="sentence">멀티페이지 청크는 top-10의 페이지 커버리지를 2.12배로 늘려 비교가 불공정해지므로, 커버리지를 맞춘 대조(top-5 vs top-10)로 재판정 — 그러고도 표 질문 <strong>+8pp</strong>가 남아 실질 개선으로 판정</span></li>
-        <li><span class="sentence">빈 페이지에만 <strong>EasyOCR(ko)</strong> 폴백을 붙여 84.7% (이득 12 / 손실 0).</span><span class="sentence">스캔 페이지가 정답인 14문항이 전패에서 12건 정답으로 전환</span></li>
-        <li>청크에 <strong>문서 제목 주입</strong>으로 85.3% — 이득 2 / 손실 0, 공동 정답 문항 안에서도 순위 개선 19 vs 악화 9</li>
-    </ul>
-
-    <h4 class="detail-head">기각 10건 — 여기가 본론</h4>
-    <ul class="detail-list">
-        <li><span class="sentence"><strong>docling 전면 교체</strong> — hit@10 80.7 → 72.7%(−8pp), 추출 22초 → 약 3시간(약 500배).</span><span class="sentence">표·이미지 슬라이스도 전패.</span><span class="sentence">손실 26문항 중 17개가 두 문서에 몰렸고 한 문서는 404자, 다른 하나는 0자로 추출이 붕괴.</span><span class="sentence">무거운 파서는 평균보다 꼬리 위험이 치명적이라는 결론</span></li>
-        <li><span class="sentence"><strong>RapidOCR 폴백</strong> — flip 0/0 완전 무효.</span><span class="sentence">원인은 구조가 아니라 언어였음: 기본 설정이 한국어 스캔을 중국어 모델로 읽어 한자 쓰레기를 출력하고 있었음.</span><span class="sentence">"OCR이 텍스트를 냈다"와 "그 언어를 읽었다"는 다른 말</span></li>
-        <li>표면 정제 5종(NFKC · 개행 처리 2종 · 헤더/푸터 제거 · 숫자 정규화) 전부 무효~역효과 — 개행→공백은 Kiwi가 이미 공백으로 취급해 완전 no-op</li>
-        <li>문장 경계 청킹 무효 — 절단 손실을 256자 오버랩이 이미 흡수하고 있었음</li>
-        <li>표 텍스트 덧붙이기는 전체 동률인데 표 질문이 80.0 → 78.0%로 하락 (중복 추가 + 청크 증가로 BM25 희석), pdfplumber는 같은 품질에 23배 느림, 블록 청킹은 평균 387자로 과분할</li>
-    </ul>
-
-    <h4 class="detail-head">결론과 남긴 것</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">검색 품질을 움직인 것은 <strong>깨진 것을 고치는 전처리</strong>(인코딩 깨짐 · 스캔 · 페이지 경계 절단)뿐이었고, <strong>정상 텍스트를 다듬는 전처리</strong>는 전부 무효였음.</span><span class="sentence">단 이 결론은 "Kiwi + BM25 한정"이라고 README에 못 박아 뒀음 — 임베딩에서는 달라질 수 있음</span></li>
-        <li>실무였다면 docling을 전면 교체가 아니라 품질 게이트 기반 폴백으로 붙였을 것 — 추출 0자·CID 깨짐을 탐지해 그 문서만 무거운 경로로 보내는 라우팅</li>
-    </ul>
-
-    <p class="repo-link"><a href="https://github.com/ckc5800/rag-preprocess-bench" target="_blank">GitHub 저장소 (실험 기록 및 기각 사유)</a></p>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/ragbench.html">상세 보기 → <span class="detail-link-note">배경 · 측정 설계 · 채택 · 기각 · 남긴 것</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -815,38 +487,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Predictive Maintenance</span>
         <span class="tech-tag">LLM</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과 · 실데이터 검증 (NASA C-MAPSS)</span><span class="sum-close">예지보전 Agent (pdm-agent) — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">음성 AI에서 실시간 신호를 다뤄온 경험을 산업 설비 시계열로 확장.</span><span class="sentence">회전기계 센서(진동·온도·전류)에서 이상을 탐지하고 LLM이 정비 진단 리포트를 작성하는 예지보전 데모.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>설계 원칙 — "탐지는 결정적 알고리즘, LLM은 해석만":</strong> 이상 탐지는 z-score(순간 충격)·EWMA 관리한계(과열)·추세 회귀+간이 RUL 추정(베어링 마모)의 신호처리 알고리즘이 담당.</span><span class="sentence">LLM은 탐지 근거를 종합해 원인 추정·권고 조치를 작성하되, 근거 밖 수치 생성을 프롬프트로 차단.</span></p>
-    <p><strong>시뮬레이터:</strong> 부하 변동을 포함한 회전기계 모델에 결함 3종 주입 — 주입 시점이 ground truth로 남아 탐지기를 정량 평가.</p>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">5개 시나리오에 주입한 결함 15건을 전부 탐지.</span><span class="sentence">재현율 100%에 오탐 0건이지만, 통제 실험 기준이라는 한계 병기</span></li>
-        <li>추세 탐지기가 "한계치 도달까지 약 29시간" RUL 추정 산출</li>
-        <li>LLM 진단이 탐지 근거만으로 베어링 마모/윤활 불량 원인 후보 도출</li>
-    </ul>
-
-    <h4 class="detail-head">실데이터 검증 (NASA C-MAPSS)</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">같은 탐지기를 터보팬 엔진 run-to-failure 벤치마크 4개 셋(FD001~FD004)에 적용.</span><span class="sentence">운전 조건이 6개인 FD002·FD004는 조건별 z-정규화가 없으면 k를 0.5까지 낮춰도 유효 경보율 14%에 그침</span></li>
-        <li><span class="sentence"><strong>경보 지표 재설계</strong> — 탐지율·리드타임만 보면 무조건 경보하는 상수 예측기가 만점을 받음.</span><span class="sentence">예고 20~100사이클만 유효로 치는 4분류로 바꾸자 상수 대조군은 0~1%로 무너지고, 권장 구성(전처리 없음, k=2.0)은 <strong>유효율 93.6~98.0%·오탐 0~0.9%</strong></span></li>
-        <li><span class="sentence"><strong>공식 test 셋 RUL</strong> — MAE 15.8~23.0사이클·응답률 75~86%로 상수·생존시간 대조군을 전 구성에서 이김.</span><span class="sentence">학습 기반 모델(FD001 RMSE 15~18.5)에는 응답률·정확도 모두 뒤짐.</span><span class="sentence">이 접근의 가치는 정확도가 아니라 라벨·학습 없이 바로 배치할 수 있다는 점</span></li>
-        <li><span class="sentence"><strong>지표 대신 비용으로 운전점 선택</strong> — 경보 4분류에 비용을 매겨(놓침·늦음·조기·유효+오탐 출동) 한 대당 기대 비용으로 k·평활창을 고름.</span><span class="sentence">경보 없음 대비 90% 절감, 무조건 경보 대비 2.4배 저렴. 비용비를 3배로 흔들어도 최적점이 그대로라 "비용 가정을 몰라도 고를 수 있는 구간"임을 수치로 확인</span></li>
-        <li><span class="sentence"><strong>보류가 실력인지 검증</strong> — 응답률 65~86%라는 사실만 적혀 있던 것을 위험-커버리지 곡선으로 재측정.</span><span class="sentence">근거 센서 수 기준으로 커버리지를 낮추면 MAE가 23.0 → 7.3까지 내려가고 같은 부분집합의 상수 대조군은 그만큼 안 내려감. 반면 센서 합의도(spread)는 결함 모드가 2개인 셋에서 거꾸로 가, 신뢰도라고 다 같지 않음을 확인</span></li>
-        <li><span class="sentence"><strong>가정 자체를 흔들어 봄</strong> — 오탐 0은 "잔여 수명 > 125면 건강"이라는 문헌 관례 위에 있었음.</span><span class="sentence">knee를 75로 조이면 권장 운전점의 오탐이 10%가 되고 k를 3.5까지 올려야 함. 결론에 가정이 붙어 있다는 것을 표로 남김</span></li>
-        <li><span class="sentence"><strong>뒤집힌 결론 7건을 기록</strong> — 센서 융합·평활·센서 선택이 경보를 개선한다던 결론은 ROC로 보니 k 하나로 얻어지는 것이었음.</span><span class="sentence">고장 30사이클 전 시점의 RUL MAE(선형 28.5 → 지수 12.9)도 정답이 상수라 "항상 30"이 0.0을 받는 지표여서, 두 모델의 상대 비교로만 사용</span></li>
-        <li><span class="sentence"><strong>LLM 진단 접지 검증</strong> — 3B의 미접지 0%는 10회 중 6회를 숫자 없이 서술해 얻은 값이었고, 7B는 수치 109개 중 2개(1.8%)를 지어냄.</span><span class="sentence">탐지는 결정적 알고리즘, LLM은 서술만 맡기는 분리가 필요한 실측 사례</span></li>
-    </ul>
-
-    <p class="repo-link"><a href="https://github.com/ckc5800/pdm-agent" target="_blank">GitHub 저장소</a></p>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/pdm.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과 · 실데이터 검증 (NASA C-MAPSS)</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -872,31 +513,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">FastAPI</span>
         <span class="tech-tag">Evaluation</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">한국어 멀티모달 상품 검색 (visual-search) — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">rag-agent에서 구축한 검색 평가 방법론(gold 라벨, 실패 원인 분해, 미채택 실험 기록)을 멀티모달로 확장.</span><span class="sentence">패션 상품 44,072개(공개 데이터셋)를 한국어 문장형 질의("체크무늬 네이비 남성 셔츠")로 검색하는 시스템을 CLIP 임베딩 인덱스부터 평가셋·대화형 데모까지 구축.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <ul class="detail-list">
-        <li>이미지+텍스트 복합 질의 — "이 상품이랑 비슷한데 검정색으로": 스타일은 임베딩 가중 합성, 속성은 메타 필터가 담당</li>
-        <li>대화형 정교화 — 후속 발화를 조건 병합, 부정어(말고·빼고) 처리, 대화 경로 UI. 서버는 무상태</li>
-        <li><span class="sentence">FastAPI + 바닐라 JS 데모 — 44K 인덱스에서 검색 응답 <strong>중앙 36ms</strong>(서버 내부 임베딩 24.5 + 랭킹 6.6ms).</span><span class="sentence">질의 임베딩 LRU 캐시가 붙으면 반복 질의는 <strong>13ms</strong>로 단축 (로컬 CPU 재측정, 신규 질의 n=8 중앙).</span><span class="sentence">응답에 단계별 타이밍을 실어 어디서 시간이 가는지 보이게 함</span></li>
-        <li>44K 규모라 정확 탐색(numpy 내적) 채택 — ANN 도입 시점을 규모 기준으로 명시</li>
-    </ul>
-
-    <p class="repo-link"><a href="https://github.com/ckc5800/visual-search" target="_blank">GitHub 저장소 (데모 GIF·평가 리포트·번역문 전수 기록)</a></p><h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li><span class="sentence">한국어 50문항 × 44K 기준 <strong>hit@10 90% → 98%</strong>.</span><span class="sentence">임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 3문항, precision@10 0.10)한 뒤, 질의에서 색·성별·용도를 뽑아 메타 필터로 결합해 해소(0.53).</span><span class="sentence">gold와 필터가 같은 메타데이터 어휘를 쓰므로 추출이 정확할 때의 상한에 가까운 값임을 함께 기록</span></li>
-        <li><span class="sentence">같은 이미지 인덱스에서 텍스트 경로만 바꿔 <strong>다국어 전략 6종을 실측 비교</strong>.</span><span class="sentence">m-clip 48% &lt; 소형 MT 86% &lt; <strong>LLM(3B)+커머스 용어집 92%</strong>. 번역기는 크기순이 아님(NLLB 600M 76% &lt; 8배 작은 opus 86%)</span></li>
-        <li><span class="sentence"><strong>대형 멀티링구얼(jina-v2 865M)과는 상보 관계</strong>. 지표는 jina-v2가 앞서지만 임베딩 비용이 ko-clip의 약 130배.</span><span class="sentence">실패 문항도 정확히 갈림. 외래어는 멀티링구얼이, 콩글리시는 한국어 특화가 강세</span></li>
-        <li><span class="sentence">gold가 넓은 질의는 hit이 자동으로 나오는 <strong>인플레이션</strong>을 구간별 분해·precision@10 병기로 해소.</span><span class="sentence">결과마다 재현 메타(모델 id·시각·top-10 id) 기록</span></li>
-    </ul>
-
-    
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/visual.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -919,28 +536,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Backtesting</span>
         <span class="tech-tag">Evaluation</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">수요 예측 × 시계열 파운데이션 모델 검증 (demand-forecast) — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">시계열 파운데이션 모델(Chronos)의 제로샷 성능 주장을 커머스 수요 데이터에서 직접 검증.</span><span class="sentence">월마트 일별 판매 30,490 시리즈(M5)에서 계통 샘플 500개(바닥 레벨)와 전체 합산 집계 레벨로 h=28 롤링 오리진 백테스트를 구축하고, 오염 검증(M5가 Chronos 학습 코퍼스가 아닌 공식 제로샷 평가셋임을 확인)부터 선행.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <ul class="detail-list">
-        <li>롤링 오리진 백테스트 하네스 — RMSSE(M5 공식)·MASE·WQL, 가변 길이 시리즈·시리즈별 시작 요일 대응, 스케일 미정의는 NaN+제외 보고</li>
-        <li>전 시리즈 공용 LightGBM(랙·롤링·요일·카테고리·달력 공변량, tweedie, 재귀 다단 예측) / Chronos-bolt 제로샷 / 시리즈 특성 기반 모델 라우팅</li>
-        <li>예측 곡선 시각화 — 집계 레벨의 주간 패턴 추종 vs 바닥 레벨 간헐 수요를 한 장으로 (재현 스크립트 포함)</li>
-    </ul>
-
-    <p class="repo-link"><a href="https://github.com/ckc5800/demand-forecast" target="_blank">GitHub 저장소 (라운드별 실측 기록·검증 리포트)</a></p><h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li><span class="sentence"><strong>계층 레벨에서 판정 역전 실측</strong>.</span><span class="sentence">판매 0이 55%인 바닥 레벨은 28일 이동평균이 RMSSE 1위(0.741), 집계 레벨(0 비율 ~0%)은 제로샷 Chronos가 집계 3개 레벨 모두 1위(store 0.717·전사 0.675) — 파운데이션 모델의 가치는 "신호가 있는 곳"에서 큼</span></li>
-        <li><span class="sentence"><strong>지표·집계 방식이 결론을 바꾸는 지점 문서화</strong>.</span><span class="sentence">"전부 0 예측"이 naive를 이기는 간헐 수요 함정, MASE/RMSSE 승자 분화, 판매량 가중 시 이동평균-Chronos 동률(0.718 vs 0.720)</span></li>
-        <li><span class="sentence"><strong>반론 봉쇄</strong> — LightGBM 스윕 6구성 전수 기록·달력 공변량·집계 레벨별 재설계까지 측정.</span><span class="sentence">학습 모델이 학습 0초 제로샷을 평균에서 못 넘는 구도 확인(시리즈별 승수 4/10 한계 병기)</span></li>
-        <li><span class="sentence"><strong>강건성 검증</strong> — 겹치지 않는 대체 샘플·6폴드 확장에서 순위 재현, 컨텍스트 길이 민감도 ±0.5%.</span><span class="sentence">코드 감사로 잠재 버그 4건 수정, 회귀 테스트 10개</span></li>
-    </ul>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/forecast.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -963,37 +559,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Pydantic</span>
         <span class="tech-tag">Python</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현 · 성과</span><span class="sum-close">Portfolio MCP Server — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p>포트폴리오를 AI 도구 생태계에 연결 — Claude Desktop/Claude Code 등 MCP 클라이언트가 경력·프로젝트·논문 정보를 도구로 조회할 수 있도록 표준 프로토콜 서버 구현.</p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><span class="sentence"><strong>도구 설계:</strong> read-only 도구 10개 — 구조화 조회(프로필/프로젝트 목록·상세/논문·특허) + BM25 문서 검색 + 타임라인 + 기술 경험 확인 + 실시간 조회(GitHub 활동·블로그·회사 공식 정보).</span><span class="sentence">검색 실패 시 다음 행동을 안내하는 actionable 오류 응답 설계.</span></p>
-    <p><span class="sentence"><strong>경량 아키텍처:</strong> 의존성 2개(MCP SDK + rank_bm25)만으로 구성 — 임베딩 서버·GPU 불필요, clone 후 30초 내 동작.</span><span class="sentence">실시간 조회는 표준 라이브러리(urllib)만 쓰고, 조회 실패 시 정적 데이터로 답하도록 안내.</span><span class="sentence">추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지.</span></p>
-
-    <ul class="detail-list">
-        <li>FastMCP 기반 stdio 서버, Pydantic 입력 검증, read-only 어노테이션</li>
-        <li>확정 사실(profile.json)과 서술형 문서 검색을 이원화한 구조</li>
-        <li>Claude Code에 사용자 스코프로 등록해 실제 에이전트 세션에서 도구 호출을 검증 — 세션을 재생한 SVG 데모를 README에 수록</li>
-        <li>RAG Agent와 동일 지식 베이스 공유 — RAG·MCP 두 노출 방식 비교 경험</li>
-        <li><span class="sentence">기간 계산을 서버가 맡는 타임라인 도구 — 경력·프로젝트·논문·특허·학력을 시작순으로 정렬하고 개월 수까지 계산해 반환.</span><span class="sentence">rag-agent 평가에서 가장 약했던 유형이 비교(61~67%)였고 실패 다수가 날짜 산술이라, 모델이 계산하지 않도록 값을 미리 내주는 쪽을 택함</span></li>
-        <li>데이터 파일이 바뀌면 다시 읽는 구조 — stdio 서버가 기동 시점 데이터를 들고 있어, 사실을 고쳐도 클라이언트를 재시작하기 전까지 낡은 값을 응답하던 문제를 수정. 리소스도 같은 이유로 읽을 때 생성하도록 바꿈(도구와 리소스가 서로 다른 사실을 말하던 상태)</li>
-        <li><span class="sentence">"X 기술 해봤나요"에 근거로 답하는 도구 — 스택 등재 여부·해당 프로젝트·그 단어가 실제로 들어 있는 문서 조각을 함께 반환.</span><span class="sentence">기록이 없으면 없다고 답하고 지어내지 말라는 지시를 hint로 내려보냄(출처 없어 걷어낸 LoRA는 실제로 "기록 없음"으로 나옴)</span></li>
-    </ul>
-
-    <h4 class="detail-head">성과</h4>
-    <ul class="detail-list">
-        <li>노션 export의 퍼센트 인코딩 경로가 무의미 토큰으로 쪼개져 길이 정규화 페널티를 유발하던 문제를 원문 정제로 해결 (토큰 7,653 → 6,310개, 18% 감소)</li>
-        <li>응답이 오는지만 보던 스모크 테스트를 내용 단언(프로젝트 수·특허 건수)으로 전환, 과정에서 구 사명 미인식 버그 발견·별칭 매칭 추가</li>
-        <li><span class="sentence">rag-agent의 에이전트가 이 서버를 클라이언트로 사용.</span><span class="sentence">제공자와 소비자 양쪽을 모두 구현</span></li>
-        <li><span class="sentence">도구를 엮어야 풀리는 질문 20개로 별도 평가를 만들어 도구 응답만으로 답에 닿는지 검증(현재 20/20).</span><span class="sentence">채점기부터 의심해, 정답 "8"이 응답의 "2018"에 걸려 통과하던 것을 자릿수 경계 규칙으로 고치고 틀린 답이 실제로 떨어지는지 시험</span></li>
-    </ul>
-
-    <p class="repo-link"><a href="https://github.com/ckc5800/portfolio-mcp" target="_blank">GitHub 저장소</a></p>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/mcp.html">상세 보기 → <span class="detail-link-note">배경 · 구현 · 성과</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 </section>
@@ -1014,21 +580,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Generative Model</span>
         <span class="tech-tag">Privacy / De-ID</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현</span><span class="sum-close">AI Face De-ID (얼굴 정보 자동 비식별화) — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">공공 데이터 비식별화에 쓰이는 모자이크 처리는 원본 데이터의 정보 손실을 일으켜, Re-ID·행동 인식 등 얼굴 데이터가 필요한 후속 태스크에 활용하기 어려움.</span><span class="sentence">이를 해결하기 위해 <strong>AI로 생성한 가짜 얼굴로 원본 얼굴을 대체</strong>하는 비식별화 기법을 제안.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p>거리 영상에서 보행자 얼굴 영역 검출 및 랜드마크 검출 → 생성 모델 기반 가짜 얼굴 합성으로 정보 손실을 최소화하면서 개인정보를 보호하는 라벨링 파이프라인.</p>
-
-    <div class="shot-grid">
-        <img class="shot" src="/assets/images/deid-overview.png" alt="Face De-ID 개요">
-        <img class="shot" src="/assets/images/deid-result.png" alt="Face Detection 결과">
-    </div>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/deid.html">상세 보기 → <span class="detail-link-note">배경 · 구현</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 <hr class="rule-sub">
@@ -1047,21 +599,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
         <span class="tech-tag">Time Series</span>
         <span class="tech-tag">PyTorch</span>
     </div>
-    <details>
-        <summary><span class="sum-text">구현 상세 보기</span><span class="sum-hint">배경 · 구현</span><span class="sum-close">심전도 부정맥 진단 AI — 접기</span></summary>
-        <div class="detail-body">
-<h4 class="detail-head">배경</h4>
-    <p><span class="sentence">과기정통부·NIA 주최, 연세대·서울대병원 주관 의료 AI 데이터톤.</span><span class="sentence">심전도(ECG) 데이터셋으로 부정맥 여부를 진단하는 AI 모델 개발 트랙에 참가.</span></p>
-
-    <h4 class="detail-head">구현</h4>
-    <p><strong>신호 전처리:</strong> 기저선 변동(Baseline Wandering) 제거 — 침식·팽창 연산 및 spline 보간, 주파수 노이즈 제거, 근전도 노이즈는 moving average로 평활화.</p>
-    <p><strong>모델:</strong> 8개 lead 중 심전도 관찰에 유리한 lead I의 5,000차원 신호를 입력으로, 1-D Convolution Layer(filter 32, kernel 5)를 계층적으로 연결한 1D-CNN으로 주기적 feature를 추출해 정상/부정맥 이진 분류.</p>
-
-    <div class="shot-grid one narrow">
-        <img class="shot" src="/assets/images/ecg-datathon-poster.png" alt="Heart Disease AI Datathon 2021">
-    </div>
-        </div>
-    </details>
+    <a class="detail-link" href="/projects/ecg.html">상세 보기 → <span class="detail-link-note">배경 · 구현</span><span class="detail-link-hit"> · 상세 본문에 검색어 있음</span></a>
 </div>
 
 </section>
@@ -1069,7 +607,7 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
 <section class="print-summary">
 <h2 class="section-title">그 외 프로젝트 14건</h2>
 <p class="print-summary-note">아래 항목의 상세 기록(배경 · 구현 · 성과 · 회고)은
-포트폴리오 사이트 <strong>ckc5800.github.io/projects.html</strong>에 있습니다.</p>
+포트폴리오 사이트의 프로젝트별 상세 페이지 <strong>ckc5800.github.io/projects/</strong>에 있습니다.</p>
 <table>
     <thead><tr><th>프로젝트</th><th>소속</th><th>기간</th><th>내용</th></tr></thead>
     <tbody>
@@ -1216,22 +754,30 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     }
     index();
 
-    // 상세 페이지로 옮긴 본문(TTS)도 검색되게 — 불러와서 그 카드의 색인에 붙인다.
-    // 일치가 상세 본문에만 있으면 카드의 '상세 보기' 링크를 강조한다
-    [].forEach.call(document.querySelectorAll('.project a.detail-link[href]'), function (link) {
-        var e = entries.filter(function (x) { return x.card.contains(link); })[0];
-        if (!e || !window.fetch || !window.DOMParser) return;
-        fetch(link.getAttribute('href')).then(function (r) { return r.ok ? r.text() : ''; }).then(function (html) {
-            var doc = new DOMParser().parseFromString(html, 'text/html');
-            var rec = doc.getElementById('records');
-            if (!rec) return;
-            [].forEach.call(rec.querySelectorAll('summary'), function (el) { el.remove(); });
-            e.extra = (rec.textContent || '').toLowerCase();
-            e.text += ' ' + e.extra;
-            index();
-            if (input.value.trim()) apply();
-        }).catch(function () {});
-    });
+    // 본문은 프로젝트별 상세 페이지에 있다 — 검색창을 처음 쓸 때 상세 페이지를 불러와
+    // 그 카드의 색인에 붙인다. 일치가 상세 본문에만 있으면 카드의 '상세 보기' 링크를 강조한다
+    var detailsLoaded = false;
+    function loadDetails() {
+        if (detailsLoaded || !window.fetch || !window.DOMParser) return;
+        detailsLoaded = true;
+        [].forEach.call(document.querySelectorAll('.project a.detail-link[href]'), function (link) {
+            var e = entries.filter(function (x) { return x.card.contains(link); })[0];
+            if (!e) return;
+            fetch(link.getAttribute('href')).then(function (r) { return r.ok ? r.text() : ''; }).then(function (html) {
+                var doc = new DOMParser().parseFromString(html, 'text/html');
+                var rec = doc.getElementById('records');
+                if (!rec) return;
+                [].forEach.call(rec.querySelectorAll('summary, .detail-nav'), function (el) { el.remove(); });
+                e.extra = (rec.textContent || '').toLowerCase();
+                e.text += ' ' + e.extra;
+                index();
+                if (input.value.trim()) apply();
+            }).catch(function () {});
+        });
+    }
+    input.addEventListener('focus', loadDetails);
+    input.addEventListener('input', loadDetails);
+    if (input.value.trim()) loadDetails();
     function bm25(i, qTokens) {
         var d = docs[i], s = 0;
         qTokens.forEach(function (t) {
@@ -1584,10 +1130,12 @@ description: 실무 12건과 개인 연구 9건의 프로젝트 기록 — 문�
     }, true);
 
     // 주소창 입력·뒤로가기·같은 해시 재클릭
-    // TTS 본문은 상세 페이지로 옮겼다 — 예전 절 주소(#tts-sec3)는 그쪽으로 보낸다
+    // 본문은 상세 페이지로 옮겼다 — 예전 절 주소(#k8s-sec3)는 그 페이지의 같은 절로 보낸다.
+    // TTS는 주제별로 재배치해 절 번호가 없으므로 페이지 맨 위로
     function moved() {
-        if (!/^#tts-sec\d+$/.test(location.hash)) return false;
-        location.replace('/projects/tts.html');
+        var m = /^#([a-z0-9-]+)-sec(\d+)$/.exec(location.hash);
+        if (!m || !document.getElementById(m[1])) return false;
+        location.replace('/projects/' + m[1] + '.html' + (m[1] === 'tts' ? '' : location.hash));
         return true;
     }
     window.addEventListener('hashchange', function () { if (!moved()) go(location.hash, false); });

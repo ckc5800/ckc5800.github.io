@@ -1,0 +1,59 @@
+---
+layout: default
+title: '3D Semantic Segmentation Research'
+description: '2D 세그멘테이션만으로는 자율주행에 필요한 거리·높이 정보를 얻을 수 없음 — LiDAR와 카메라를 융합하는 Trans-Unet 설계. Transformer의 장거리 의존성에 U-Net의 다중 스케일을 결합'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 모델 개발 · 연구</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">3D Semantic Segmentation Research <span class="badge">인피닉</span></h2>
+    <p class="project-meta">2022.08 ~ 2022.12 · 센서 퓨전 기반 자율주행 연구 — 논문 작성·발표 · 코드 작성 (기여도 25%)</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>2D 세그멘테이션만으로는 자율주행에 필요한 거리·높이 정보를 얻을 수 없음</dd>
+        <dt>해결</dt><dd><span class="sentence">LiDAR와 카메라를 융합하는 Trans-Unet 설계.</span><span class="sentence">Transformer의 장거리 의존성에 U-Net의 다중 스케일을 결합</span></dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">31.94%</span><span class="metric-label">2D MIoU · 단일 모달 2배</span></div>
+        <div class="metric"><span class="metric-value">2편</span><span class="metric-label">논문 (제1저자)</span></div>
+        <div class="metric"><span class="metric-value">2건</span><span class="metric-label">등록 특허 (제1발명자)</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">Trans-Unet</span>
+        <span class="tech-tag">Sensor Fusion</span>
+        <span class="tech-tag">PyTorch</span>
+        <span class="tech-tag">LiDAR</span>
+        <span class="tech-tag">Computer Vision</span>
+        <span class="tech-tag">Autonomous Driving</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 구현 · 성과</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<div class="detail-nav"><span class="detail-nav-label">절 이동</span><a href="#seg3d-sec1">배경</a><a href="#seg3d-sec2">구현</a><a href="#seg3d-sec3">성과</a></div>
+<h4 class="detail-head" id="seg3d-sec1">배경</h4>
+    <p><span class="sentence">자율주행 환경 인식에 3D 거리/높이 정보 필수.</span><span class="sentence">기존 2D 세그멘테이션의 한계로 인한 센서 퓨전 필요.</span></p>
+
+    <h4 class="detail-head" id="seg3d-sec2">구현</h4>
+    <p><span class="sentence"><strong>모델 아키텍처:</strong> Trans-Unet (Transformer + U-Net 하이브리드) 설계로 LiDAR 포인트 클라우드 + 카메라 이미지 효과적 퓨전.</span><span class="sentence">Transformer 장거리 의존성 + U-Net 다중 스케일 피처 추출 결합.</span></p>
+    <p><strong>연구 기여:</strong> 논문 2편 제1저자 게재 (한국자동차공학회 2022.11, 2023.04) 및 특허 2건 등록 (제1발명자).</p>
+
+    <h4 class="detail-head" id="seg3d-sec3">성과</h4>
+    <ul class="detail-list">
+        <li>논문 2편 게재 (제1저자, 한국자동차공학회 추계학술대회 2022.11 · 한국자동차공학회논문집 2023.04) — 2D MIoU 31.94%로 단일 모달의 약 2배, 3D MIoU 17.12%</li>
+        <li>특허 2건 등록 (제1발명자, 2023.05 등록, 등록번호: 1025382250000, 1025382310000)</li>
+    </ul>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/nlp.html">← 이전 · NLP Text Summarization System</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <a href="/projects/latent.html">다음 · Synthetic Data Generation with Latent Diffusion →</a>
+</nav>
+</div>

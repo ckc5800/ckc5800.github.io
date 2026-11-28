@@ -1,0 +1,84 @@
+---
+layout: default
+title: 'LangGraph 기반 Corrective-RAG Agent'
+description: 'RAG 정답률이 낮을 때 검색·청킹·생성 중 어디가 원인인지 분리되지 않음 — 층별 단독 평가 체계를 만들어 병목을 정량 규명. 지표를 쓰기 전에 채점기부터 검증'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 개인 프로젝트</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">LangGraph 기반 Corrective-RAG Agent <span class="badge">개인 프로젝트</span></h2>
+    <p class="project-meta">2026.07 · LLM Agent 시스템 설계 · 구현</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>RAG 정답률이 낮을 때 검색·청킹·생성 중 어디가 원인인지 분리되지 않음</dd>
+        <dt>해결</dt><dd><span class="sentence">층별 단독 평가 체계를 만들어 병목을 정량 규명.</span><span class="sentence">지표를 쓰기 전에 채점기부터 검증</span></dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">80.7 · 81.4%</span><span class="metric-label">정답률 (140문항 · 2회 측정)</span></div>
+        <div class="metric"><span class="metric-value">54 → 842청크</span><span class="metric-label">코퍼스 15.6배 확장 후 재검증</span></div>
+        <div class="metric"><span class="metric-value">6%p</span><span class="metric-label">채점기 자체 결함 정정</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">LangGraph</span>
+        <span class="tech-tag">RAG</span>
+        <span class="tech-tag">Tool Calling</span>
+        <span class="tech-tag">Hybrid Search (FAISS + BM25)</span>
+        <span class="tech-tag">Ollama</span>
+        <span class="tech-tag">FastAPI</span>
+        <span class="tech-tag">Evaluation</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 구현 · 성과 · 평가 방법론 · 실험 기록</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<div class="detail-nav"><span class="detail-nav-label">절 이동</span><a href="#rag-sec1">배경</a><a href="#rag-sec2">구현</a><a href="#rag-sec3">성과</a><a href="#rag-sec4">평가 방법론</a><a href="#rag-sec5">실험 기록</a></div>
+<h4 class="detail-head" id="rag-sec1">배경</h4>
+    <p><span class="sentence">LLM Agent 시스템(RAG, tool orchestration, state 관리)의 E2E 구축 역량 확보 목적.</span><span class="sentence">포트폴리오 기술문서를 지식 베이스로 하는 Q&A Agent를 전부 로컬 환경(Ollama)에서 구현.</span></p>
+
+    <h4 class="detail-head" id="rag-sec2">구현</h4>
+    <ul class="detail-list">
+        <li>LangGraph StateGraph 기반 Corrective-RAG — retrieve → grade(자가 평가) → 판정 부족 시 rewrite 재검색 → generate</li>
+        <li>FAISS(의미) + BM25(키워드) RRF 융합 직접 구현 — 벡터 저장소는 환경변수로 Qdrant 교체 가능, 동일 평가로 비교해 선택 기준 실측</li>
+        <li>에이전트 레이어 3종 — ReAct 도구 호출, Planner–Worker–Synthesizer 멀티홉 분해, MCP 클라이언트</li>
+        <li>인덱싱 전 데이터 검수 CI 연결 — 노션 내부 링크가 코퍼스의 9.4%를 차지하던 오염 발견·제거</li>
+    </ul>
+
+    <h4 class="detail-head" id="rag-sec3">성과</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">평가셋을 10 → 51 → 140문항으로 늘려가며 재측정 — 현재 <strong>140문항 80.7·81.4%</strong>(같은 조건 2회, 포트폴리오 100문항 77~78% · TTS 40문항 90%).</span><span class="sentence">실패를 검색·청킹·생성 층으로 나눠 병목이 생성 단계임을 수치로 확인하고 컨텍스트 수를 튜닝</span></li>
+        <li><span class="sentence">코퍼스를 <strong>54 → 842청크(15.6배)</strong>로 늘린 뒤 튜닝값을 전수 재검증 — 작은 코퍼스에서 정한 청크 크기·top-N·HyDE 판정이 그대로 유지됨을 확인.</span><span class="sentence">"코퍼스가 작아서 기각했다"던 유보를 실제로 시험한 결과.</span><span class="sentence">검색 지표는 10문항 앵커의 recall@1 90%가 확장 평가에서 착시로 드러나, 결론을 확장본 기준으로 갱신하고 하이브리드 검색 결함 7건을 수정</span></li>
+        <li><span class="sentence">채점기가 동의 표기를 오답으로 세고 있던 것을 발견.</span><span class="sentence"><strong>6%p를 정정</strong> — 지표를 쓰기 전에 지표부터 검증한 경우.</span><span class="sentence">기본 모델도 3B → 7B로 전환해 <strong>+8%p(77 → 85%)</strong>를 지연 비용 없이 얻고, 재작성률이 67~76%에서 16%로 떨어지는 것까지 재측정</span></li>
+        <li><span class="sentence">코퍼스에 답이 없는 거부 문항 10개를 넣어 <strong>환각 측정 지표 신설</strong>.</span><span class="sentence">컨텍스트를 넓힐수록 환각이 느는 트레이드오프를 실측</span></li>
+    </ul>
+
+    <h4 class="detail-head" id="rag-sec4">평가 방법론</h4>
+    <ul class="detail-list">
+        <li>검색/생성 분리 평가 — recall@k(LLM 불필요)와 E2E 정답률을 분리해 실패 원인 귀속</li>
+        <li>gold 라벨을 청크 md5·앵커 문자열로 고정 — 재청킹 시 자동 무효화, 전 지표에 무작위 기준선 병기</li>
+        <li>3B 모델의 런 간 편차 ±6%p 실측 — 모든 A/B는 반복 측정, 1~2문항 차이로 결론 내지 않는 원칙</li>
+        <li>RAGAS 도입 검토 후 보류 — 로컬 3B 심판의 일치율 45~50%로 정보량이 없음을 실측. 도입 조건을 "7B 이상·일치율 90%"로 정했다가, 아무것도 판정하지 않는 상수 심판도 90%가 나오는 것을 확인하고 "상수 심판 대비 순증" 기준으로 재정의</li>
+    </ul>
+
+    <h4 class="detail-head" id="rag-sec5">실험 기록</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">Parent-Child 청킹 — 초기엔 유일하게 풀던 집계 질문을 base의 top-N 확장이 함께 해결했고 child recall@1도 열위(78% vs 89%)라 미채택.</span><span class="sentence">판단 근거를 코드 주석에 기록</span></li>
+        <li>시맨틱 청킹(임베딩 유사도 breakpoint, 직접 구현) — 동일 조건 비교에서 base가 전 지표 우위로 미채택</li>
+        <li>격리 단일 호출의 판단이 전체 파이프라인 반복 측정에서 뒤집힌 사례 확보 — n=1 실험의 함정을 직접 측정해 문서화</li>
+        <li>이 사이트의 프로젝트 검색이 살아있는 데모 — BM25 레이어를 순수 브라우저 JS로 이식 (다중 단어 AND, 한글 바이그램으로 조사·어미 대응, 관련도순 정렬). 목차의 검색창에서 바로 체험 가능</li>
+    </ul>
+
+    <p class="repo-link"><a href="https://github.com/ckc5800/rag-agent" target="_blank">GitHub 저장소 (코드 및 개선 히스토리)</a></p>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/llmbench.html">← 이전 · llm-bench</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <a href="/projects/ragbench.html">다음 · 한국어 PDF 전처리 × RAG 검색 품질 벤치마크 (rag-preprocess-bench) →</a>
+</nav>
+</div>

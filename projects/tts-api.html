@@ -1,0 +1,68 @@
+---
+layout: default
+title: 'TTS 스트리밍 API 리팩토링 (ZipVoice 기반)'
+description: '전체 텍스트를 다 합성한 뒤 전송하는 구조라, 문장이 길수록 첫 응답이 비례해 늦어짐 — 엔진의 gRPC 서버 스트리밍을 써서 문장 단위 합성 → 즉시 전송하는 엔드포인트 신설'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 추론 서빙 · 성능 엔지니어링</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">TTS 스트리밍 API 리팩토링 (ZipVoice 기반) <span class="badge">MiCo AI</span></h2>
+    <p class="project-meta">2025.09 ~ 2025.10 · 스트리밍 API 담당 (인수인계, 기여도 100%)</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>전체 텍스트를 다 합성한 뒤 전송하는 구조라, 문장이 길수록 첫 응답이 비례해 늦어짐</dd>
+        <dt>해결</dt><dd>엔진의 gRPC 서버 스트리밍을 써서 문장 단위 합성 → 즉시 전송하는 엔드포인트 신설</dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">1,943 → 985ms</span><span class="metric-label">TTFB · 약 2배 단축</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">FastAPI</span>
+        <span class="tech-tag">Streaming API</span>
+        <span class="tech-tag">ZipVoice</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 구현 · 성과 · 데모 페이지</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<div class="detail-nav"><span class="detail-nav-label">절 이동</span><a href="#tts-api-sec1">배경</a><a href="#tts-api-sec2">구현</a><a href="#tts-api-sec3">성과</a><a href="#tts-api-sec4">데모 페이지</a></div>
+<h4 class="detail-head" id="tts-api-sec1">배경</h4>
+    <p><span class="sentence">사내에서 쓰던 기존 TTS 엔진(ZipVoice)의 스트리밍 API가 담당 대상.</span><span class="sentence">전체 합성이 끝나야 첫 청크가 나가는 구조라 텍스트가 길수록 첫 응답이 비례해 늦어졌고, 실시간 상담에 쓰기 어려웠음.</span><span class="sentence">기존 담당자에게 인계받아 리팩토링을 맡음.</span></p>
+
+    <h4 class="detail-head" id="tts-api-sec2">구현</h4>
+    <p><strong>SSE 청크 디코딩 실패 해결:</strong> 브라우저 <code>decodeAudioData()</code>가 두 번째 청크부터 실패한다는 사내 사용 부서(API 호출측)의 제보를 추적.</p>
+    <ul class="detail-list">
+        <li>원인 — 엔진이 첫 청크에만 RIFF WAV 헤더를 붙이고 이후는 raw PCM만 반환</li>
+        <li>조치 — 첫 청크 헤더에서 샘플레이트·채널을 파싱해 모든 SSE 청크에 독립 헤더를 재생성, 청크 단위 독립 디코딩 가능하게</li>
+    </ul>
+    <p><span class="sentence"><strong>실시간 스트리밍 엔드포인트 신설:</strong> 수정 후에도 기존 <code>/sse</code>는 전체 합성이 끝난 뒤 WAV를 분할 전송하는 구조라, 텍스트가 길수록 TTFB가 비례해 늘어나는 상태.</span><span class="sentence">엔진의 gRPC server streaming을 활용한 <code>/sse-realtime</code>을 신설해 <strong>문장 단위 합성 → 즉시 전송</strong> 구조로 전환.</span></p>
+    <p><strong>정비:</strong> API v2 경로 표준화(v1은 deprecated로 하위 호환 유지), Swagger 문서 정비, 구·신 버전 TTFB를 직접 비교하는 데모 페이지 제공.</p>
+
+    <h4 class="detail-head" id="tts-api-sec3">성과</h4>
+    <ul class="detail-list">
+        <li><span class="sentence"><strong>TTFB 1,943ms → 985ms</strong> — 같은 텍스트를 양쪽 엔드포인트로 완주시킨 비교(58.0초 342청크 / 59.4초 364청크), 데모 페이지 콘솔 로그 그대로.</span><span class="sentence">다른 런에서 334ms도 찍혔으나 첫 청크만 받고 중지한 단일 런이라 대표값으로 쓰지 않음</span></li>
+        <li>원인 분석부터 조치·검증·사내 사용 부서 공유까지 단독 수행</li>
+        <li>이 경험이 이후 Qwen3-TTS 플랫폼을 저지연 스트리밍 중심으로 설계하는 출발점이 됨</li>
+    </ul>
+
+    <h4 class="detail-head" id="tts-api-sec4">데모 페이지</h4>
+    <div class="shot-grid">
+        <img class="shot" src="/assets/images/zipvoice-demo-compare.png" alt="구버전 vs 신버전 TTFB 직접 비교 데모">
+        <img class="shot" src="/assets/images/zipvoice-demo-form.png" alt="TTS API 샘플 데모 폼">
+    </div>
+    <p class="caption">사내 사용 부서에 제공한 비교 데모 페이지 — 동일 텍스트로 구버전(/sse)과 신버전(/sse-realtime)의 TTFB를 직접 비교 체험할 수 있게 구성 (스크린샷의 예시 런: 1943ms → 985ms, 내부 서버 주소는 가림 처리)</p>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/tts-ops.html">← 이전 · TTS 운영 · 품질 관리</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <a href="/projects/stt.html">다음 · STT 배포 →</a>
+</nav>
+</div>

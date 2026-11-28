@@ -1,0 +1,50 @@
+---
+layout: default
+title: '심전도 부정맥 진단 AI'
+description: '심전도 원신호에 기저선 변동·근전도 노이즈가 섞여 그대로 학습하면 판별이 어려움 — 침식·팽창 연산과 spline 보간으로 기저선을 제거한 뒤, lead I 신호를 1D-CNN으로 이진 분류'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 대회 · 대외 팀 프로젝트</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">심전도 부정맥 진단 AI <span class="badge">대회 참가</span></h2>
+    <p class="project-meta">2021 · Heart Disease AI Datathon · 부정맥 진단 트랙 팀 참가 — 디버깅 · 코드 리팩토링 담당 (기여도 25%)</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>심전도 원신호에 기저선 변동·근전도 노이즈가 섞여 그대로 학습하면 판별이 어려움</dd>
+        <dt>해결</dt><dd>침식·팽창 연산과 spline 보간으로 기저선을 제거한 뒤, lead I 신호를 1D-CNN으로 이진 분류</dd>
+    </dl>
+    <div class="tech-tags">
+        <span class="tech-tag">1D-CNN</span>
+        <span class="tech-tag">ECG / Bio-signal</span>
+        <span class="tech-tag">Signal Processing</span>
+        <span class="tech-tag">Time Series</span>
+        <span class="tech-tag">PyTorch</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 구현</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<h4 class="detail-head" id="ecg-sec1">배경</h4>
+    <p><span class="sentence">과기정통부·NIA 주최, 연세대·서울대병원 주관 의료 AI 데이터톤.</span><span class="sentence">심전도(ECG) 데이터셋으로 부정맥 여부를 진단하는 AI 모델 개발 트랙에 참가.</span></p>
+
+    <h4 class="detail-head" id="ecg-sec2">구현</h4>
+    <p><strong>신호 전처리:</strong> 기저선 변동(Baseline Wandering) 제거 — 침식·팽창 연산 및 spline 보간, 주파수 노이즈 제거, 근전도 노이즈는 moving average로 평활화.</p>
+    <p><strong>모델:</strong> 8개 lead 중 심전도 관찰에 유리한 lead I의 5,000차원 신호를 입력으로, 1-D Convolution Layer(filter 32, kernel 5)를 계층적으로 연결한 1D-CNN으로 주기적 feature를 추출해 정상/부정맥 이진 분류.</p>
+
+    <div class="shot-grid one narrow">
+        <img class="shot" src="/assets/images/ecg-datathon-poster.png" alt="Heart Disease AI Datathon 2021">
+    </div>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/deid.html">← 이전 · AI Face De-ID (얼굴 정보 자동 비식별화)</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <span></span>
+</nav>
+</div>

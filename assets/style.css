@@ -2409,3 +2409,15 @@ strong,
     .detail-link .detail-link-hit { display: none !important; }
     .pd-crumb, .pd-pager, .pd .pick-go { display: none !important; }
 }
+
+/* 상세 페이지 — 기록을 펼친 채 보여주는 짧은 프로젝트용 (목차 버튼 없음) */
+.pd-simple .pd-crumb { padding: 0; }
+.pd-simple #records .project { padding-top: 4px; }
+.pd-pager > * { flex: 1 1 0; min-width: 0; }
+.pd-pager > :nth-child(2) { flex: 0 0 auto; }
+.pd-pager > :last-child { text-align: right; }
+@media (max-width: 760px) {
+    .pd-pager { flex-direction: column; }
+    .pd-pager > :last-child { text-align: left; }
+    .pd-pager > span:empty { display: none; }
+}

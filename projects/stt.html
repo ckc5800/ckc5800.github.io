@@ -1,0 +1,57 @@
+---
+layout: default
+title: 'STT 배포'
+description: '대량 상담 전화를 실시간 처리해야 하는데 기존 STT가 채널 부족·추론 지연으로 병목 — 팀이 구성한 Triton 기반 파일·스트리밍 두 모델을 배포·운영하면서, 그 위의 전처리·후처리·서비스 계층을 모듈화해 두 경로가 공통 로직을 쓰도록 정비'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 추론 서빙 · 성능 엔지니어링</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">STT 배포 <span class="badge">MiCo AI</span></h2>
+    <p class="project-meta">2025.07 ~ 2025.09 · STT 배포 · 서빙 담당 (팀 협업)</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>대량 상담 전화를 실시간 처리해야 하는데 기존 STT가 채널 부족·추론 지연으로 병목</dd>
+        <dt>해결</dt><dd><span class="sentence">팀이 구성한 Triton 기반 파일·스트리밍 두 모델을 배포·운영하면서, 그 위의 전처리·후처리·서비스 계층을 모듈화해 두 경로가 공통 로직을 쓰도록 정비</span></dd>
+    </dl>
+    <div class="tech-tags">
+        <span class="tech-tag">Whisper-large-v3-turbo</span>
+        <span class="tech-tag">Faster Whisper</span>
+        <span class="tech-tag">Triton (Python Backend)</span>
+        <span class="tech-tag">Streaming ASR</span>
+        <span class="tech-tag">gRPC / HTTP</span>
+        <span class="tech-tag">Docker</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 구현 · 성과</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<div class="detail-nav"><span class="detail-nav-label">절 이동</span><a href="#stt-sec1">배경</a><a href="#stt-sec2">구현</a><a href="#stt-sec3">성과</a></div>
+<h4 class="detail-head" id="stt-sec1">배경</h4>
+    <p><span class="sentence">대형 보험사 상담센터의 대량 상담 전화 실시간 처리 필요.</span><span class="sentence">기존 STT 시스템 병목으로 인한 채널 부족 및 추론 지연 불안정.</span></p>
+
+    <h4 class="detail-head" id="stt-sec2">구현</h4>
+    <p><span class="sentence"><strong>STT 구조 개선:</strong> Triton Inference Server 기반 음성인식 파이프라인을 전처리·후처리·서비스 계층으로 모듈화해 파일/스트리밍 공통 로직을 통합.</span><span class="sentence">YAML 기반 로그 로테이션·아카이빙 체계와 Docker 구성을 정비하고, 컨테이너 자동 재시작 정책으로 안정성을 보강.</span></p>
+    <p><span class="sentence"><strong>담당 경계:</strong> Triton Python 백엔드로 파일 기반과 실시간 스트리밍 두 추론 모델을 구성하고 HTTP·gRPC를 제공하는 구조는 <strong>팀이 만든 것</strong>이며, 본인은 그 배포·운영과 위 계층 정비를 담당.</span></p>
+    <p><span class="sentence"><strong>화자별 전사 (구현했으나 미적용):</strong> 요청에 담겨 오는 화자 구간을 Faster Whisper의 <code>clip_timestamps</code> 형식으로 변환해 화자마다 따로 전사를 돌리고, 전사 결과를 환각 필터로 clean·flagged·blocked로 나눠 담도록 구현.</span><span class="sentence">결과 품질이 쓸 만한 수준에 못 미쳐 <strong>실제 서비스에는 적용되지 않았음</strong>.</span></p>
+
+    <h4 class="detail-head" id="stt-sec3">성과</h4>
+    <ul class="detail-list">
+        <li>전처리·후처리·서비스 계층 분리로 파일·스트리밍 공통 로직 통합 — 코드 재사용성 확보</li>
+        <li>YAML 기반 로그 로테이션·아카이빙 체계와 Docker 구성 정비</li>
+        <li>컨테이너 자동 재시작 정책으로 운영 안정성 보강</li>
+        <li>팀이 구성한 Triton 기반 파이프라인의 배포·운영 담당 (구성 자체는 팀 성과)</li>
+    </ul>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/tts-api.html">← 이전 · TTS 스트리밍 API 리팩토링 (ZipVoice 기반)</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <a href="/projects/k8s.html">다음 · Kubernetes-based AI Infrastructure →</a>
+</nav>
+</div>

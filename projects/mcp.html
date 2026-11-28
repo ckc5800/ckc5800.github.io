@@ -1,0 +1,71 @@
+---
+layout: default
+title: 'Portfolio MCP Server'
+description: '포트폴리오가 문서로만 있어 AI 도구가 경력·프로젝트를 직접 조회할 수 없음 — MCP 표준 서버로 read-only 도구 10종을 제공하고, 추론은 클라이언트 LLM에 위임해 서버는 결정적으로 유지'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 개인 프로젝트</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">Portfolio MCP Server <span class="badge">개인 프로젝트</span></h2>
+    <p class="project-meta">2026.07 · MCP 서버 설계 · 구현</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>포트폴리오가 문서로만 있어 AI 도구가 경력·프로젝트를 직접 조회할 수 없음</dd>
+        <dt>해결</dt><dd>MCP 표준 서버로 read-only 도구 10종을 제공하고, 추론은 클라이언트 LLM에 위임해 서버는 결정적으로 유지</dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">10종</span><span class="metric-label">read-only 조회 도구</span></div>
+        <div class="metric"><span class="metric-value">18%</span><span class="metric-label">BM25 토큰 감소</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">MCP</span>
+        <span class="tech-tag">FastMCP</span>
+        <span class="tech-tag">BM25</span>
+        <span class="tech-tag">Pydantic</span>
+        <span class="tech-tag">Python</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 구현 · 성과</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<div class="detail-nav"><span class="detail-nav-label">절 이동</span><a href="#mcp-sec1">배경</a><a href="#mcp-sec2">구현</a><a href="#mcp-sec3">성과</a></div>
+<h4 class="detail-head" id="mcp-sec1">배경</h4>
+    <p>포트폴리오를 AI 도구 생태계에 연결 — Claude Desktop/Claude Code 등 MCP 클라이언트가 경력·프로젝트·논문 정보를 도구로 조회할 수 있도록 표준 프로토콜 서버 구현.</p>
+
+    <h4 class="detail-head" id="mcp-sec2">구현</h4>
+    <p><span class="sentence"><strong>도구 설계:</strong> read-only 도구 10개 — 구조화 조회(프로필/프로젝트 목록·상세/논문·특허) + BM25 문서 검색 + 타임라인 + 기술 경험 확인 + 실시간 조회(GitHub 활동·블로그·회사 공식 정보).</span><span class="sentence">검색 실패 시 다음 행동을 안내하는 actionable 오류 응답 설계.</span></p>
+    <p><span class="sentence"><strong>경량 아키텍처:</strong> 의존성 2개(MCP SDK + rank_bm25)만으로 구성 — 임베딩 서버·GPU 불필요, clone 후 30초 내 동작.</span><span class="sentence">실시간 조회는 표준 라이브러리(urllib)만 쓰고, 조회 실패 시 정적 데이터로 답하도록 안내.</span><span class="sentence">추론은 클라이언트 LLM에 위임하고 서버는 결정적으로 유지.</span></p>
+
+    <ul class="detail-list">
+        <li>FastMCP 기반 stdio 서버, Pydantic 입력 검증, read-only 어노테이션</li>
+        <li>확정 사실(profile.json)과 서술형 문서 검색을 이원화한 구조</li>
+        <li>Claude Code에 사용자 스코프로 등록해 실제 에이전트 세션에서 도구 호출을 검증 — 세션을 재생한 SVG 데모를 README에 수록</li>
+        <li>RAG Agent와 동일 지식 베이스 공유 — RAG·MCP 두 노출 방식 비교 경험</li>
+        <li><span class="sentence">기간 계산을 서버가 맡는 타임라인 도구 — 경력·프로젝트·논문·특허·학력을 시작순으로 정렬하고 개월 수까지 계산해 반환.</span><span class="sentence">rag-agent 평가에서 가장 약했던 유형이 비교(61~67%)였고 실패 다수가 날짜 산술이라, 모델이 계산하지 않도록 값을 미리 내주는 쪽을 택함</span></li>
+        <li>데이터 파일이 바뀌면 다시 읽는 구조 — stdio 서버가 기동 시점 데이터를 들고 있어, 사실을 고쳐도 클라이언트를 재시작하기 전까지 낡은 값을 응답하던 문제를 수정. 리소스도 같은 이유로 읽을 때 생성하도록 바꿈(도구와 리소스가 서로 다른 사실을 말하던 상태)</li>
+        <li><span class="sentence">"X 기술 해봤나요"에 근거로 답하는 도구 — 스택 등재 여부·해당 프로젝트·그 단어가 실제로 들어 있는 문서 조각을 함께 반환.</span><span class="sentence">기록이 없으면 없다고 답하고 지어내지 말라는 지시를 hint로 내려보냄(출처 없어 걷어낸 LoRA는 실제로 "기록 없음"으로 나옴)</span></li>
+    </ul>
+
+    <h4 class="detail-head" id="mcp-sec3">성과</h4>
+    <ul class="detail-list">
+        <li>노션 export의 퍼센트 인코딩 경로가 무의미 토큰으로 쪼개져 길이 정규화 페널티를 유발하던 문제를 원문 정제로 해결 (토큰 7,653 → 6,310개, 18% 감소)</li>
+        <li>응답이 오는지만 보던 스모크 테스트를 내용 단언(프로젝트 수·특허 건수)으로 전환, 과정에서 구 사명 미인식 버그 발견·별칭 매칭 추가</li>
+        <li><span class="sentence">rag-agent의 에이전트가 이 서버를 클라이언트로 사용.</span><span class="sentence">제공자와 소비자 양쪽을 모두 구현</span></li>
+        <li><span class="sentence">도구를 엮어야 풀리는 질문 20개로 별도 평가를 만들어 도구 응답만으로 답에 닿는지 검증(현재 20/20).</span><span class="sentence">채점기부터 의심해, 정답 "8"이 응답의 "2018"에 걸려 통과하던 것을 자릿수 경계 규칙으로 고치고 틀린 답이 실제로 떨어지는지 시험</span></li>
+    </ul>
+
+    <p class="repo-link"><a href="https://github.com/ckc5800/portfolio-mcp" target="_blank">GitHub 저장소</a></p>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/forecast.html">← 이전 · 수요 예측 × 시계열 파운데이션 모델 검증 (demand-forecast)</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <a href="/projects/deid.html">다음 · AI Face De-ID (얼굴 정보 자동 비식별화) →</a>
+</nav>
+</div>

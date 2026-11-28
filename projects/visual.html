@@ -1,0 +1,66 @@
+---
+layout: default
+title: '한국어 멀티모달 상품 검색 (visual-search)'
+description: '한국어 문장형 질의는 색·성별 같은 세부 조건에서 임베딩 검색만으로 정확도가 떨어짐 — 실패를 gold 크기 구간별로 분해해 원인을 먼저 규명한 뒤, 질의에서 속성을 뽑아 메타 필터로 결합'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 개인 프로젝트</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">한국어 멀티모달 상품 검색 (visual-search) <span class="badge">개인 프로젝트</span></h2>
+    <p class="project-meta">2026.08 · 커머스 비주얼 검색 E2E 단독 구축</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>한국어 문장형 질의는 색·성별 같은 세부 조건에서 임베딩 검색만으로 정확도가 떨어짐</dd>
+        <dt>해결</dt><dd>실패를 gold 크기 구간별로 분해해 원인을 먼저 규명한 뒤, 질의에서 속성을 뽑아 메타 필터로 결합</dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">90 → 98%</span><span class="metric-label">hit@10 (한국어 50문항)</span></div>
+        <div class="metric"><span class="metric-value">6종</span><span class="metric-label">다국어 전략 실측 비교</span></div>
+        <div class="metric"><span class="metric-value">44K</span><span class="metric-label">상품 인덱스</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">CLIP</span>
+        <span class="tech-tag">Multimodal Retrieval</span>
+        <span class="tech-tag">Hybrid Search</span>
+        <span class="tech-tag">MT / LLM Translation</span>
+        <span class="tech-tag">RRF Ensemble</span>
+        <span class="tech-tag">FastAPI</span>
+        <span class="tech-tag">Evaluation</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 구현 · 성과</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<div class="detail-nav"><span class="detail-nav-label">절 이동</span><a href="#visual-sec1">배경</a><a href="#visual-sec2">구현</a><a href="#visual-sec3">성과</a></div>
+<h4 class="detail-head" id="visual-sec1">배경</h4>
+    <p><span class="sentence">rag-agent에서 구축한 검색 평가 방법론(gold 라벨, 실패 원인 분해, 미채택 실험 기록)을 멀티모달로 확장.</span><span class="sentence">패션 상품 44,072개(공개 데이터셋)를 한국어 문장형 질의("체크무늬 네이비 남성 셔츠")로 검색하는 시스템을 CLIP 임베딩 인덱스부터 평가셋·대화형 데모까지 구축.</span></p>
+
+    <h4 class="detail-head" id="visual-sec2">구현</h4>
+    <ul class="detail-list">
+        <li>이미지+텍스트 복합 질의 — "이 상품이랑 비슷한데 검정색으로": 스타일은 임베딩 가중 합성, 속성은 메타 필터가 담당</li>
+        <li>대화형 정교화 — 후속 발화를 조건 병합, 부정어(말고·빼고) 처리, 대화 경로 UI. 서버는 무상태</li>
+        <li><span class="sentence">FastAPI + 바닐라 JS 데모 — 44K 인덱스에서 검색 응답 <strong>중앙 36ms</strong>(서버 내부 임베딩 24.5 + 랭킹 6.6ms).</span><span class="sentence">질의 임베딩 LRU 캐시가 붙으면 반복 질의는 <strong>13ms</strong>로 단축 (로컬 CPU 재측정, 신규 질의 n=8 중앙).</span><span class="sentence">응답에 단계별 타이밍을 실어 어디서 시간이 가는지 보이게 함</span></li>
+        <li>44K 규모라 정확 탐색(numpy 내적) 채택 — ANN 도입 시점을 규모 기준으로 명시</li>
+    </ul>
+
+    <p class="repo-link"><a href="https://github.com/ckc5800/visual-search" target="_blank">GitHub 저장소 (데모 GIF·평가 리포트·번역문 전수 기록)</a></p><h4 class="detail-head" id="visual-sec3">성과</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">한국어 50문항 × 44K 기준 <strong>hit@10 90% → 98%</strong>.</span><span class="sentence">임베딩 단독의 세부 조건 약점을 구간 분해로 먼저 규명(gold≤50 구간 3문항, precision@10 0.10)한 뒤, 질의에서 색·성별·용도를 뽑아 메타 필터로 결합해 해소(0.53).</span><span class="sentence">gold와 필터가 같은 메타데이터 어휘를 쓰므로 추출이 정확할 때의 상한에 가까운 값임을 함께 기록</span></li>
+        <li><span class="sentence">같은 이미지 인덱스에서 텍스트 경로만 바꿔 <strong>다국어 전략 6종을 실측 비교</strong>.</span><span class="sentence">m-clip 48% &lt; 소형 MT 86% &lt; <strong>LLM(3B)+커머스 용어집 92%</strong>. 번역기는 크기순이 아님(NLLB 600M 76% &lt; 8배 작은 opus 86%)</span></li>
+        <li><span class="sentence"><strong>대형 멀티링구얼(jina-v2 865M)과는 상보 관계</strong>. 지표는 jina-v2가 앞서지만 임베딩 비용이 ko-clip의 약 130배.</span><span class="sentence">실패 문항도 정확히 갈림. 외래어는 멀티링구얼이, 콩글리시는 한국어 특화가 강세</span></li>
+        <li><span class="sentence">gold가 넓은 질의는 hit이 자동으로 나오는 <strong>인플레이션</strong>을 구간별 분해·precision@10 병기로 해소.</span><span class="sentence">결과마다 재현 메타(모델 id·시각·top-10 id) 기록</span></li>
+    </ul>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/pdm.html">← 이전 · 예지보전 Agent (pdm-agent)</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <a href="/projects/forecast.html">다음 · 수요 예측 × 시계열 파운데이션 모델 검증 (demand-forecast) →</a>
+</nav>
+</div>

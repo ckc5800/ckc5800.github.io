@@ -1,0 +1,60 @@
+---
+layout: default
+title: 'Speaker Diarization with Pyannote'
+description: '자사 메신저 제품의 영상통화 회의록 기능에 화자 구분이 필요했으나, STT는 텍스트만 돌려줘 누가 말했는지 알 수 없었음 — Pyannote 사전 학습 모델을 평가하고 데이터를 모아 파인튜닝을 시도했으나 DER 개선이 없어 미채택 — 판단 근거와 회고를 아래 기록'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 모델 개발 · 연구</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">Speaker Diarization with Pyannote <span class="badge">MiCo AI</span></h2>
+    <p class="project-meta">2025.04 ~ 2025.07 · 화자 분리 모델 평가 · 파인튜닝 (미채택)</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>자사 메신저 제품의 영상통화 회의록 기능에 화자 구분이 필요했으나, STT는 텍스트만 돌려줘 누가 말했는지 알 수 없었음</dd>
+        <dt>해결</dt><dd><span class="sentence">Pyannote 사전 학습 모델을 평가하고 데이터를 모아 파인튜닝을 시도했으나 DER 개선이 없어 미채택 — 판단 근거와 회고를 아래 기록</span></dd>
+    </dl>
+    <div class="tech-tags">
+        <span class="tech-tag">Pyannote</span>
+        <span class="tech-tag">Speaker Diarization</span>
+        <span class="tech-tag">Fine-tuning</span>
+        <span class="tech-tag">PyTorch</span>
+        <span class="tech-tag">Audio Processing</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 구현 · 성과 · 미채택 기록과 회고</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<div class="detail-nav"><span class="detail-nav-label">절 이동</span><a href="#diarization-sec1">배경</a><a href="#diarization-sec2">구현</a><a href="#diarization-sec3">성과</a><a href="#diarization-sec4">미채택 기록과 회고</a></div>
+<h4 class="detail-head" id="diarization-sec1">배경</h4>
+    <p><span class="sentence">회사가 만드는 메신저·협업 제품에 영상통화 회의록·전사 기능을 넣으려면 발화자 식별이 필요했음.</span><span class="sentence">STT는 음성 인식만 제공해 누가 말했는지 구분할 수단이 없었고, 화자 분리 모델을 검토해 제품에 쓸 수 있는 수준인지 판정하는 것이 과제였음.</span></p>
+
+    <h4 class="detail-head" id="diarization-sec2">구현</h4>
+    <p><span class="sentence"><strong>모델 평가:</strong> Pyannote 사전 학습 모델의 DER을 측정하고, 채택 가능한 수준인지 판정하는 것이 1차 목표였음.</span></p>
+    <p><span class="sentence"><strong>파인튜닝 시도:</strong> 화자 분리 데이터를 모아 파라미터 튜닝과 학습을 수행하고 DER로 평가.</span></p>
+
+    <h4 class="detail-head" id="diarization-sec3">성과</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">모델 평가와 파인튜닝 파이프라인(데이터 수집 → 학습 → DER 측정)을 구축해 <strong>채택 여부를 판정할 근거를 만듦</strong>.</span><span class="sentence">결론은 미채택. 화자 분리는 이후 사내 회의록 STT 작업(2025.07 ~ 09)에서 STT와 연동</span></li>
+        <li>파인튜닝은 <strong>사전 학습 모델 대비 DER 개선이 없어 미채택</strong>. 결과를 포장하지 않고 그대로 기록</li>
+    </ul>
+
+    <h4 class="detail-head" id="diarization-sec4">미채택 기록과 회고</h4>
+    <ul class="detail-list">
+        <li><span class="sentence">학습에 들어가기 전에 확보한 데이터의 규모·품질이 파인튜닝을 지탱할 수준인지부터 점검했어야 했다고 봄</span></li>
+        <li><span class="sentence">지금이라면 학습부터 하지 않음.</span><span class="sentence">사전 학습 모델의 DER을 먼저 재고, 실제 사용 음성 몇십 건이라도 직접 라벨링해 실패 유형(중첩 발화·짧은 맞장구·채널 특성)을 분류한 뒤, 그 유형이 학습으로 풀리는 문제인지부터 판정했을 것</span></li>
+        <li><span class="sentence">모델을 바꾸는 대신 후처리로 접근하는 선택지도 검증하지 않았음.</span><span class="sentence">화자 수를 고정하거나 짧은 구간을 병합하는 규칙만으로도 얼마나 좁혀지는지 재봤어야 했음</span></li>
+    </ul>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/k8s.html">← 이전 · Kubernetes-based AI Infrastructure</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <a href="/projects/nlp.html">다음 · NLP Text Summarization System →</a>
+</nav>
+</div>

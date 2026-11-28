@@ -1,0 +1,60 @@
+---
+layout: default
+title: 'llm-bench'
+description: '추론 서버 성능을 손으로 재다 보니 병목이 큐잉인지 연산인지 구분되지 않음 — 동시성 수준별 스윕으로 TTFT와 처리량을 함께 기록해, 처리량이 고정된 채 지연만 느는 큐잉을 분리'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 개인 프로젝트</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">llm-bench <span class="badge">개인 프로젝트</span></h2>
+    <p class="project-meta">2026.07 · LLM 추론 벤치마크 CLI 설계 · 구현</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>추론 서버 성능을 손으로 재다 보니 병목이 큐잉인지 연산인지 구분되지 않음</dd>
+        <dt>해결</dt><dd>동시성 수준별 스윕으로 TTFT와 처리량을 함께 기록해, 처리량이 고정된 채 지연만 느는 큐잉을 분리</dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">12.4 → 0.93초</span><span class="metric-label">TTFT p50</span></div>
+        <div class="metric"><span class="metric-value">8.1 → 22.9</span><span class="metric-label">처리량 (tokens/s)</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">Benchmark</span>
+        <span class="tech-tag">asyncio</span>
+        <span class="tech-tag">TTFT / Latency</span>
+        <span class="tech-tag">Observability</span>
+        <span class="tech-tag">Python</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 구현 · 성과</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<div class="detail-nav"><span class="detail-nav-label">절 이동</span><a href="#llmbench-sec1">배경</a><a href="#llmbench-sec2">구현</a><a href="#llmbench-sec3">성과</a></div>
+<h4 class="detail-head" id="llmbench-sec1">배경</h4>
+    <p><span class="sentence">TTS 게이트웨이 TTFB를 절반 가까이 줄이며 손으로 하던 측정을 도구화.</span><span class="sentence">OpenAI 호환 엔드포인트(Ollama, vLLM 등)에 동시 부하를 걸어 TTFT·지연 percentile·처리량을 측정하는 CLI.</span></p>
+
+    <h4 class="detail-head" id="llmbench-sec2">구현</h4>
+    <p><span class="sentence"><strong>측정 설계:</strong> asyncio + httpx로 동시성 수준별 스윕.</span><span class="sentence">스트리밍 청크 단위로 요청별 TTFT(첫 토큰까지 시간)를 기록하고 처리량은 합산 tokens/s로, p50/p95 집계.</span><span class="sentence">리포트에 출력 토큰 분포와 소표본 경고(요청 4개면 p95는 사실상 최댓값)를 함께 실어, 지연이 서버 속도 탓인지 생성량 탓인지 읽는 사람이 구분하도록 함.</span><span class="sentence">예열 요청으로 모델 로드 시간을 측정에서 분리.</span><span class="sentence">의존성은 httpx 하나, 차트는 SVG 직접 생성.</span></p>
+
+    <h4 class="detail-head" id="llmbench-sec3">성과</h4>
+    <ul class="detail-list">
+        <li>로컬 Ollama(CPU) 기준선: 동시성 1에서 TTFT 0.62초, 7.6 tokens/s</li>
+        <li><span class="sentence">동시성을 2·4로 올리자 TTFT는 7.9초·12.4초로 악화되는데 처리량은 8.1 tokens/s에 고정.</span><span class="sentence">요청이 병렬로 처리되지 않고 줄을 서고 있다는 신호</span></li>
+        <li><span class="sentence">원인은 Ollama 기본 설정(NUM_PARALLEL=1)의 요청 직렬화.</span><span class="sentence">벤치마크 도구가 병목의 위치를 짚어냄</span></li>
+        <li><span class="sentence">NUM_PARALLEL=4로 서버 설정만 바꿔 같은 스윕을 재실행하니 TTFT p50이 12.4초에서 0.93초로, 합산 처리량이 8.1에서 22.9 tokens/s로 스케일.</span><span class="sentence">진단 → 설정 변경 → 재측정까지 한 번에 확인</span></li>
+    </ul>
+
+    <p class="repo-link"><a href="https://github.com/ckc5800/llm-bench" target="_blank">GitHub 저장소</a></p>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/quhedge.html">← 이전 · Data Collection & Preprocessing</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <a href="/projects/rag.html">다음 · LangGraph 기반 Corrective-RAG Agent →</a>
+</nav>
+</div>

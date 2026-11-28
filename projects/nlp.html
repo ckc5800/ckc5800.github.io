@@ -1,0 +1,59 @@
+---
+layout: default
+title: 'NLP Text Summarization System'
+description: '휴가·부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 시간이 오래 걸림 — 대화는 BART, 문서는 T5로 나눠 개발하고 사내 메신저에 탑재'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 모델 개발 · 연구</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">NLP Text Summarization System <span class="badge">인피닉</span></h2>
+    <p class="project-meta">2024.01 ~ 2024.07 · 사내 지식 관리 · 요약 시스템 개발</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>휴가·부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 시간이 오래 걸림</dd>
+        <dt>해결</dt><dd>대화는 BART, 문서는 T5로 나눠 개발하고 사내 메신저에 탑재</dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">2초대</span><span class="metric-label">업무 대화 요약</span></div>
+        <div class="metric"><span class="metric-value">약 300명</span><span class="metric-label">사내 메신저 전사 탑재</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">BART</span>
+        <span class="tech-tag">T5</span>
+        <span class="tech-tag">Hugging Face</span>
+        <span class="tech-tag">NLP</span>
+        <span class="tech-tag">PyTorch</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 구현 · 성과</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<div class="detail-nav"><span class="detail-nav-label">절 이동</span><a href="#nlp-sec1">배경</a><a href="#nlp-sec2">구현</a><a href="#nlp-sec3">성과</a></div>
+<h4 class="detail-head" id="nlp-sec1">배경</h4>
+    <p><span class="sentence">휴가나 부재 후 복귀한 직원이 단체방에 쌓인 업무 대화를 따라잡는 데 오랜 시간이 걸린다는 문제에서 출발.</span><span class="sentence">사내 메신저에 넣을 한국어 요약 모델 개발이 목표.</span></p>
+
+    <h4 class="detail-head" id="nlp-sec2">구현</h4>
+    <p><span class="sentence"><strong>모델 설계:</strong> 대화 요약은 BART, 문서 요약은 T5로 나눠 개발.</span><span class="sentence">후속으로 사전 학습 표현을 훼손하지 않는 R3F 정규화 파인튜닝을 설계하고 적용을 계획.</span></p>
+    <p><span class="sentence"><strong>연구 계획:</strong> 한국어 대화-요약 쌍 데이터 수집·전처리와 한국어 임베딩 모델 선택을 1단계로 잡고, ROUGE 점수와 사내 인원 휴먼 평가를 평가 지표로 설정.</span></p>
+
+    <h4 class="detail-head" id="nlp-sec3">성과</h4>
+    <ul class="detail-list">
+        <li>사내 메신저에 요약 기능을 붙여 <strong>전 직원(약 300명)</strong>이 쓰는 서비스에 실제 적용</li>
+        <li>긴 사내 공지 문서를 한 줄 요약으로 압축, 실제 업무 대화는 2초대에 요약</li>
+        <li>카카오톡 대화 요약 기능과 나란히 비교해 유사한 품질의 요약을 확인한 데모 수행</li>
+        <li>STT 결과 텍스트를 활용한 자연어 처리 기능 개발과 전처리·평가 환경 구축도 함께 수행</li>
+    </ul>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/diarization.html">← 이전 · Speaker Diarization with Pyannote</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <a href="/projects/seg3d.html">다음 · 3D Semantic Segmentation Research →</a>
+</nav>
+</div>

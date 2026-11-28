@@ -1,0 +1,64 @@
+---
+layout: default
+title: 'Synthetic Data Generation with Latent Diffusion'
+description: '국방 도메인은 보안 제약으로 학습 데이터 수집이 어렵고, GAN은 모드 붕괴로 대안이 못 됨 — 웹에서 모은 전차 이미지 7,586장으로 Latent Diffusion을 학습해 새 전차 이미지를 생성하고 실제 데이터와 비교'
+---
+<div class="pd pd-simple">
+<p class="pd-crumb"><a href="/projects.html">← 프로젝트 목록</a> &nbsp;·&nbsp; 모델 개발 · 연구</p>
+
+<section class="group" id="top">
+<div class="project">
+    <h2 class="pd-title">Synthetic Data Generation with Latent Diffusion <span class="badge">인피닉</span></h2>
+    <p class="project-meta">2023.09 ~ 2023.12 · 생성 모델 기반 국방 데이터 확보 연구</p>
+    <dl class="ps">
+        <dt>문제</dt><dd>국방 도메인은 보안 제약으로 학습 데이터 수집이 어렵고, GAN은 모드 붕괴로 대안이 못 됨</dd>
+        <dt>해결</dt><dd>웹에서 모은 전차 이미지 7,586장으로 Latent Diffusion을 학습해 새 전차 이미지를 생성하고 실제 데이터와 비교</dd>
+    </dl>
+    <div class="metrics">
+        <div class="metric"><span class="metric-value">우수 논문상</span><span class="metric-label">한국국방기술학회 2023</span></div>
+        <div class="metric"><span class="metric-value">2편</span><span class="metric-label">관련 논문</span></div>
+    </div>
+    <div class="tech-tags">
+        <span class="tech-tag">Latent Diffusion</span>
+        <span class="tech-tag">Generative Model</span>
+        <span class="tech-tag">PyTorch</span>
+        <span class="tech-tag">Data Augmentation</span>
+    </div>
+</div>
+</section>
+
+<section class="group" id="records">
+    <h2 class="group-title">상세 기록<span class="group-count">배경 · 구현 · 성과 · 생성 결과</span></h2>
+    <div class="project">
+        <div class="detail-body">
+<div class="detail-nav"><span class="detail-nav-label">절 이동</span><a href="#latent-sec1">배경</a><a href="#latent-sec2">구현</a><a href="#latent-sec3">성과</a><a href="#latent-sec4">생성 결과</a></div>
+<h4 class="detail-head" id="latent-sec1">배경</h4>
+    <p><span class="sentence">국방 도메인 AI 모델 개발의 학습 데이터 부족 (보안 제약으로 수집 어려움).</span><span class="sentence">GAN 모드 붕괴 문제 및 범용 생성 모델의 도메인 불일치.</span></p>
+
+    <h4 class="detail-head" id="latent-sec2">구현</h4>
+    <p><span class="sentence"><strong>진행:</strong> 선행 연구를 인수인계받아 Latent Diffusion 기반 전차 이미지 생성 실험을 이어서 진행.</span></p>
+    <p><strong>검증 및 평가:</strong> 웹에서 모은 전차 이미지 7,586장으로 학습해 새 전차 이미지를 생성하고 실제 데이터와 비교 — 상당 부분 유사하나 아직 실제 데이터를 대체할 수준은 아님을 확인. 후속으로 UNet 대신 UNet++·UNet3+ 구조 적용을 제시.</p>
+
+    <h4 class="detail-head" id="latent-sec3">성과</h4>
+    <ul class="detail-list">
+        <li><strong>우수 논문상 수상:</strong> "국방 데이터 확보를 위한 생성모델 Latent Diffusion 실험" (한국국방기술학회 2023.11)</li>
+        <li>추가 논문: "GAN을 활용한 데이터 생성 연구 동향" (한국항공우주학회 2023)</li>
+    </ul>
+
+    <h4 class="detail-head" id="latent-sec4">생성 결과</h4>
+    <div class="shot-grid">
+        <img class="shot" src="/assets/images/image 47.png" alt="Synthetic Data 1">
+        <img class="shot" src="/assets/images/image 48.png" alt="Synthetic Data 2">
+        <img class="shot" src="/assets/images/image 49.png" alt="Synthetic Data 3">
+        <img class="shot" src="/assets/images/image 50.png" alt="Synthetic Data 4">
+    </div>
+        </div>
+    </div>
+</section>
+
+<nav class="pd-pager">
+    <a href="/projects/seg3d.html">← 이전 · 3D Semantic Segmentation Research</a>
+    <a href="/projects.html">프로젝트 목록</a>
+    <a href="/projects/tank.html">다음 · Tank Object Detection Model →</a>
+</nav>
+</div>
