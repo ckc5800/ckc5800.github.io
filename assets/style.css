@@ -2346,3 +2346,66 @@ strong,
 .org {
     color: var(--text);
 }
+
+/* ==========================================================
+   프로젝트 상세 페이지 (/projects/<id>.html) — 개요 · 핵심 성과 · 주제별 기록
+   ========================================================== */
+.pd-crumb { font-size: 13px; color: var(--text-secondary); margin: 0 0 14px; }
+.pd-crumb a { color: var(--accent); text-decoration: none; }
+.pd-title { font-size: 32px; letter-spacing: -0.8px; line-height: 1.25; margin: 0; }
+.pd .group-title { margin-bottom: 18px; }
+.pd-hl { grid-template-columns: repeat(3, 1fr); }
+.pd .pick-go { margin-top: auto; padding-top: 8px; font-size: 12px; font-weight: 600; color: var(--accent); }
+.pd .pick-note { color: var(--text-body); }
+.pd .when { display: inline-block; margin-left: 8px; padding: 1px 9px; font-size: 12px; font-weight: 500;
+         color: var(--text-secondary); border: 1px solid var(--separator); border-radius: 999px; vertical-align: 3px; }
+.pd .blk + .blk { margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--hairline); }
+.pd [id] { scroll-margin-top: calc(var(--nav-h, 56px) + 76px); }
+.pd details.theme + details.theme { margin-top: 14px; }
+.pd-nav a.t { color: var(--text); font-weight: 600; margin-top: 6px; }
+.pd-nav a.sub { padding-left: 24px; font-size: 11.5px; }
+.pd-pager { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 36px 0 0; font-size: 14px; }
+.pd-pager a { color: var(--accent); text-decoration: none; padding: 10px 14px; border: 1px solid var(--separator);
+              border-radius: 10px; background: var(--surface); }
+.pd .pd-stage { margin: 18px 0 6px; font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+@media (max-width: 1499.98px) { .pd-crumb { padding-right: 170px; } }
+@media (max-width: 760px) {
+  .pd-title { font-size: 26px; }
+  .pd-crumb { padding-right: 0; padding-top: 44px; }
+  .pd-hl { grid-template-columns: 1fr; gap: 8px; }
+  .pd-hl .pick-card { padding: 11px 14px; gap: 2px; }
+  .pd-hl .pick-num { font-size: 17px; }
+  .pd-hl .pick-name { font-size: 14px; }
+  .pd-hl .pick-note { font-size: 12.5px; line-height: 1.45; }
+  .pd-hl .pick-go { padding-top: 2px; }
+}
+
+/* 목록 카드에서 상세 페이지로 가는 링크 */
+.detail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 18px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--separator);
+    border-radius: 10px;
+    background: var(--surface);
+    transition: border-color .15s ease;
+}
+.detail-link:hover { border-color: var(--accent); }
+.detail-link .detail-link-note { font-weight: 400; color: var(--text-secondary); }
+/* 검색어가 상세 페이지 본문에만 있을 때 */
+.detail-link.has-hit { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+.detail-link .detail-link-hit { display: none; font-weight: 500; }
+.detail-link.has-hit .detail-link-hit { display: inline; }
+
+@media print {
+    .detail-link { border: 0; padding: 0; margin-top: 10px; font-size: 9.5pt; }
+    .detail-link::after { content: " (https://ckc5800.github.io" attr(href) ")"; font-weight: 400; color: #666; }
+    .detail-link .detail-link-hit { display: none !important; }
+    .pd-crumb, .pd-pager, .pd .pick-go { display: none !important; }
+}
